@@ -1,0 +1,337 @@
+/* General */
+button {
+    border-radius: 8px;
+    font-size: 18px;
+    background-color: darkgrey;
+    color: white;
+    margin-bottom: 5px;
+    border: 1px solid black;
+    position: absolute;
+}
+
+.editButton {
+    alignment: left;
+    margin-left: 20px;
+}
+
+.okButton {
+    position: absolute;
+    right: 40px;
+}
+
+.module {
+    border: 1px solid black;
+    border-radius: 8px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.row {
+    margin: 15px;
+}
+
+.navbar-default {
+    background-color: darkgrey;
+    color: white;
+    height: 40px;
+}
+
+.container {
+    max-width: 1700px;
+    margin: auto;
+    font-family: Helvetica;
+}
+
+.form-control {
+    width: 120px;
+    height: 30px;
+}
+
+.subheading {
+    font-weight: bold;
+}
+
+.moduleHeading {
+    padding-top: 10px;
+    padding-left: 5px;
+}
+
+.inModule {
+    margin: 4px;
+    height: 30px;
+}
+
+input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+input[type="time"] {
+    font-size: 90%;
+}
+
+#patientInformation, #medication {
+    height: 290px;
+    position: relative;
+}
+
+#respiratoryTract, #catheter, #tube, #positioning {
+    height: 280px;
+}
+
+/* Error Messages */
+
+#error1 {
+    margin-top: -140px;
+    margin-left: 100px;
+    color: red;
+    font-size: 200%;
+    font-weight: bold;
+    position: absolute;
+    visibility: hidden;
+}
+
+#error2 {
+    margin-top: -140px;
+    margin-left: 300px;
+    color: red;
+    font-size: 200%;
+    font-weight: bold;
+    position: absolute;
+    visibility: hidden;
+}
+
+#error3 {
+    margin-top: -120px;
+    margin-left: 100px;
+    color: red;
+    font-size: 200%;
+    font-weight: bold;
+    position: absolute;
+    visibility: hidden;
+}
+
+#error4 {
+    margin-top: -105px;
+    margin-left: 100px;
+    color: red;
+    font-size: 200%;
+    font-weight: bold;
+    position: absolute;
+    visibility: hidden;
+}
+
+#error5 {
+    margin-top: -135px;
+    margin-left: 100px;
+    color: red;
+    font-size: 200%;
+    font-weight: bold;
+    position: absolute;
+    visibility: hidden;
+}
+
+#error6 {
+    margin-top: 5px;
+    margin-left: 100px;
+    color: red;
+    font-size: 200%;
+    font-weight: bold;
+    position: absolute;
+    visibility: hidden;
+}
+
+
+/* Patient Information */
+#patientInformation {
+    margin: 1px;
+    padding: 3px;
+}
+
+#height, #weight {
+    margin-top: -10px;
+}
+
+#bodyWeight {
+    margin-top: -8px;
+    text-align: left;
+}
+
+.allergies {
+    margin-top: -3px;
+}
+
+#allergiesInput {
+    width: 120px;
+    height: 30px;
+    margin-left: 8px;
+}
+
+#editPatientInformation, #okPatientInformation, #editMedication, #okMedication {
+    margin-top: -20px;
+}
+
+
+/* Medication */
+p.dosis, p.actual {
+    font-size: small;
+    text-align: left;
+}
+
+#dropDownMedication1, #dropDownMedication2, #dropDownMedication3 {
+    width: 100px;
+    height: 30px;
+}
+
+.inModuleMedication {
+    height: 40px;
+}
+
+.actual {
+    margin-top: -15px;
+}
+
+.lastRow {
+    margin-bottom: 30px;
+}
+
+
+/* Information Sheet */
+#informationSheet {
+    border: darkgrey;
+    background-color: gainsboro;
+    border-radius: 2px;
+}
+
+p {
+    text-align: center;
+}
+
+.subheadingInfo {
+    text-align: center;
+    font-weight: bold;
+}
+
+#rowInfo, #rowInfo1, #rowInfo2, #rowInfo3 {
+   height: 50px;
+}
+
+#rowInfo, #rowInfo1, #rowInfo2 {
+    border-bottom: 1px solid ghostwhite;
+}
+
+
+/* Process */
+#processButton {
+    margin-top: 100px;
+    width: 50%;
+}
+
+#process {
+    border: 0px;
+}
+
+
+/* Respiratory Tract */
+#RTHeading {
+    margin-bottom: 20px;
+}
+
+#dropDownRT1 {
+    width: 280px;
+    height: 30px;
+}
+
+#dropDownRT2, #dropDownRT3 {
+    width: 225px;
+    height: 30px;
+    margin-left: 10px;
+}
+
+#dropDownRT3 {
+    margin-left: 15px;
+}
+
+.textRT {
+    text-align: left;
+}
+
+#editRT, #okRT {
+    margin-top: 45px;
+}
+
+
+/* Catheter */
+#catheterHeading {
+    margin-bottom: 20px;
+}
+
+#arterialInput, #PVCInput, #CVCInput {
+    width: 80px;
+}
+
+#dropDownArterial, #dropDownPVC, #dropDownCVC {
+    width: 60px;
+    height: 30px;
+    margin-left: 5px;
+}
+
+#editCatheter, #okCatheter {
+    margin-top: 55px;
+}
+
+
+/* Tube */
+#tubeHeading {
+    margin-bottom: 20px;
+}
+
+#dropDownTube1, #dropDownTube2 {
+    width: 60px;
+    height: 30px;
+}
+
+#okTube, #editTube {
+    margin-top: 20px;
+}
+
+#timeTube {
+margin-top: 10px;
+}
+
+
+/* Positioning */
+ #torso, #spine, #shoulder {
+    width: 200px;
+}
+
+.mainPos, .head {
+    margin-left: -10px;
+}
+
+#okPositioning, #editPositioning {
+    margin-top: 160px;
+}
+
+/* Verdeckung der Maintask während Unterbrechung
+#verdeckung {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255,255,255,1);
+  z-index: 2;
+  cursor: pointer;
+}
+#testbutton {
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin-top: 100px;
+  width: 50%;
+}
+*/
+

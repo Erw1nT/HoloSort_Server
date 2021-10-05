@@ -1,0 +1,129 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.31'
+    // uncomment for javafx for versions higher than 8
+    // tested only for java 11
+    id 'org.openjfx.javafxplugin' version '0.0.9'
+}
+
+apply plugin: "org.openjfx.javafxplugin"
+
+javafx {
+    version = "11.0.2"
+    modules = [ 'javafx.controls', 'javafx.web', 'javafx.media']
+}
+
+def artifactName = 'MpmGame'
+group 'cerg.mpmgame'
+version '0.5.5'
+
+sourceCompatibility = 1.8
+
+repositories.ext.cergRepo = {
+    repositories.maven {
+        url "https://cerg2.uqcloud.net/repository/cerg"
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+    cergRepo()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+    mavenLocal()
+}
+
+dependencies {
+	// compile time dependencies
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation group: 'com.1stleg', name: 'jnativehook', version: '2.0.3'
+    implementation "no.tornado:tornadofx:1.7.18"
+    implementation "cerg.networking:NetworkingService:mnv-version-7"
+    implementation "cerg.mpmgame:addons:0.4.8"
+    implementation "org.json:json:20180813"
+    implementation "cerg.logging:Logging:0.3.2"
+    implementation group: 'io.netty', name: 'netty-all', version: '4.1.34.Final'
+    implementation fileTree(dir: 'libs', include: ['jfxchartext-1.1.jar'])
+    // uncomment for javafx for versions higher than 8
+    implementation "org.openjfx:javafx-plugin:0.0.9"
+    implementation('org.apache.commons:commons-csv:1.5')
+    implementation "cerg:tinysound:1.1.7"
+
+	// test dependencies
+    testCompile('org.junit.jupiter:junit-jupiter-api:5.1.0')
+    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.1.0')
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+task demo(type: Jar, dependsOn: jar) {
+    manifest {
+        attributes 'Main-Class': 'test.MPMGameDemoKt'
+    }
+    archiveName = "${baseName}-demo.${extension}"
+    from { configurations.compileClasspath.findAll().collect { it.isDirectory() ? it : zipTree(it) } }
+    from { sourceSets.test.output }
+    with jar
+}
+
+static def getDate() {
+    return new Date().format('yyyy-MM-dd--HH-mm-ss')
+}
+
+task config(type: Jar, dependsOn: jar) {
+    manifest {
+        attributes 'Main-Class': 'config.WelcomeScreenKt'
+        attributes 'Implementation-Version': version
+        attributes 'Implementation-Title': getDate()
+    }
+    archiveName = "${artifactName}-config-${version}.${extension}"
+    from { configurations.compileClasspath.findAll().collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+task menu(type: Jar, dependsOn: jar) {
+    manifest {
+        attributes 'Main-Class': 'config.MenuScreenKt'
+        attributes 'Implementation-Version': version
+        attributes 'Implementation-Title': getDate()
+    }
+    archiveName = "${artifactName}-menu-${version}.${extension}"
+    from { configurations.compileClasspath.findAll().collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+task monitor(type: Jar, dependsOn: jar) {
+    manifest {
+        attributes 'Main-Class': 'views.NetworkingServiceMonitorKt'
+    }
+    archiveName = "${baseName}-NetworkingService.${extension}"
+    from { configurations.compileClasspath.findAll().collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Version': version
+        attributes 'Implementation-Title': getDate()
+    }
+    from { configurations.compileClasspath.filter{ !it.isDirectory() && it.name.startsWith('jfxchartext-') }.collect { zipTree(it)} }
+    archiveName = "${artifactName}-${version}.${extension}"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    extension = 'zip'
+    from javadoc.destinationDir
+}

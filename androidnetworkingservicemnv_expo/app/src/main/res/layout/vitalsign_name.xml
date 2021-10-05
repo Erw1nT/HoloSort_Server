@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/vitalSignName"
+        android:layout_width="@dimen/vital_signs_width"
+        android:layout_height="@dimen/vital_signs_height"
+        android:text="HR"
+        android:textColor="@color/hr"
+        android:textSize="@dimen/vital_signs_name_size"
+        android:gravity="center_vertical"
+        android:background="#00000000"/>

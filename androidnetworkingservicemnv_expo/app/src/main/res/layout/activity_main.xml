@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/margin" android:keepScreenOn="true">
+
+    <TextView
+        android:id="@+id/gap"
+        android:layout_width="@dimen/vital_signs_width"
+        android:layout_height="@dimen/vital_signs_gap_height"
+        android:text=""
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/vital_signs_size"
+        android:background="#00000000"/>
+
+    <LinearLayout
+        android:id="@+id/vitalSignNamesLinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/gap"
+        android:orientation="vertical"
+        android:gravity="center_vertical"
+        android:background="#00000000"></LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/patientColumsLinearLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/vitalSignNamesLinearLayout"
+        android:layout_toRightOf="@+id/vitalSignNamesLinearLayout"
+        android:orientation="horizontal"></LinearLayout>
+
+</RelativeLayout>

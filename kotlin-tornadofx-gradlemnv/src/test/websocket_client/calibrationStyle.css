@@ -1,0 +1,96 @@
+
+#overlayCalibration, #overlayCalibrationAR, #overlayCalibrationGlance {
+    display: none;
+    background-color: black;
+}
+
+
+
+.squareAR {
+    height: 369px;
+    width: 656px;
+    border: 20px white solid;
+    background-color: black;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+.numCenter {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 130%;
+    color: white;
+}
+
+
+
+.numGlance {
+    position: fixed;
+    top: 5%;
+    left: 50%;
+}
+
+.noTopLeft {
+    color: white;
+    font-size: 200%;
+    position: fixed; /* or absolute */
+    top: 0%;
+    left: 5%;
+}
+
+.noTopRight {
+    color: white;
+    font-size: 200%;
+    position: fixed; /* or absolute */
+    top: 0%;
+    left: 95%;
+}
+
+.noBottomLeft {
+    color: white;
+    font-size: 200%;
+    position: fixed; /* or absolute */
+    top: 90%;
+    left: 5%;
+}
+
+.noBottomRight {
+    color: white;
+    font-size: 200%;
+    position: fixed; /* or absolute */
+    top: 90%;
+    left: 95%;
+}
+
+.button {
+    position: fixed;
+    top: 90%;
+    left: 60%;
+    font-size: 150%;
+    height: 50px;
+    width: 100px;
+    transform: translate(-50%, -50%);
+    border: white 2px solid;
+    border-radius: 10px;
+    background-color: black;
+    color: white;
+}
+
+.redobutton{
+    position: fixed;
+    top: 90%;
+    left: 40%;
+    font-size: 150%;
+    height: 50px;
+    width: 100px;
+    transform: translate(-50%, -50%);
+    border: white 2px solid;
+    border-radius: 10px;
+    background-color: black;
+    color: white;
+}

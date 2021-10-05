@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+
+<html style="width: 95%; height: 95%">
+<head style="width: 100%">
+    <title>Websockets Connection Example</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <script type="text/javascript" src="websocket.js"></script>
+    <script src="script.js" type="text/javascript"></script>
+
+
+</head>
+
+<body style="width: 100%;height: 95%">
+
+<div style="width: 100%">
+    <input id="endpoint" type="text" value="ws://localhost:8888/websocket" style="width: 400px">
+    <button id="connect" onclick="WS.open(document.getElementById('endpoint').value)">Connect</button>
+    <button id="disconnect" disabled="disabled" onclick="WS.disconnect()">Disconnect</button>
+</div>
+<div style="
+     width: 100%;margin-top: 5px">
+    <input id="message" type="text" value="Type a Message in Here" style="width: 600px">
+    <button id="echo" disabled="disabled" onclick="WS.echo(document.getElementById('message').value); ">Echo</button>
+    <button id="send" disabled="disabled" onclick="WS.send(document.getElementById('message').value)">Send</button>
+</div>
+<textarea id="log" disabled="disabled" style="width: 95%;height: 95%;margin-top: 5px"></textarea>
+
+<script type="text/javascript">
+    if (!WS.isSupported) {
+        alert("WebSockets are not supported by this browser");
+    } else {
+        WS.registerOnOpenHandler(function () {
+            document.getElementById('log').append("Connected to Server\n");
+            document.getElementById('connect').disabled = "disabled";
+            document.getElementById('disconnect').disabled = "";
+            document.getElementById('echo').disabled = "";
+            document.getElementById('send').disabled = "";
+        });
+        WS.registerOnCloseHandler(function () {
+            document.getElementById('log').append("Disconnected from Server\n");
+            document.getElementById('connect').disabled = "";
+            document.getElementById('disconnect').disabled = "disabled";
+            document.getElementById('echo').disabled = "disabled";
+            document.getElementById('send').disabled = "disabled";
+        });
+        WS.registerOnMessageHandler(function (event) {
+            document.getElementById('log').append(event.data + "\n");
+            WS.loadExperimentData(event);
+        });
+        WS.registerOnErrorHandler(function (error) {
+            document.getElementById('log').append(error +
+                ": something bad happened, check console. perhaps it's just the server not running ;-)\n");
+        });
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,824 @@
+<!DOCclass html>
+<html lang="en">
+<head>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
+    <link rel="stylesheet" type="text/css" href="calibrationStyle.css">
+    <link rel="stylesheet" type="text/css" href="stylesheet.css">
+
+    <script src="websocket.js"></script>
+    <script src="selectors.js"></script>
+    <script src="script.js"></script>
+    <script src="calculations.js"></script>
+
+
+    <meta charset="UTF-8">
+    <title>Patient Documentation</title>
+</head>
+<body>
+<div id="Connection">
+    <div style="width: 100%">
+        <input id="endpoint" type="text" value="ws://localhost:8888/websocket" style="width: 400px">
+        <button id="connect"
+                onclick="WS.open(document.getElementById('endpoint').value)">
+            Connect
+        </button>
+        <button id="disconnect" disabled="disabled" style="display: none" onclick="WS.disconnect()">Disconnect</button>
+        <a id="networkStatus"></a>
+    </div>
+    <div style="
+     width: 100%;margin-top: 5px">
+        <input id="message" type="text" value="Type a Message in Here" style="width: 600px">
+        <button id="echo" disabled="disabled" onclick="WS.echo(document.getElementById('message').value)">Echo</button>
+        <button id="send" disabled="disabled" onclick="WS.send(document.getElementById('message').value)">Send</button>
+    </div>
+</div>
+<script type="text/javascript">
+    if (!WS.isSupported) {
+        alert("WebSockets are not supported by this browser");
+    } else {
+        WS.registerOnOpenHandler(function () {
+            //document.getElementById('log').append("Connected to Server\n");
+            document.getElementById('connect').disabled = "disabled";
+            document.getElementById('disconnect').disabled = "";
+            document.getElementById('echo').disabled = "";
+            document.getElementById('send').disabled = "";
+
+        });
+        WS.registerOnCloseHandler(function () {
+            // document.getElementById('log').append("Disconnected from Server\n");
+            document.getElementById('connect').disabled = "";
+            document.getElementById('disconnect').disabled = "disabled";
+            document.getElementById('echo').disabled = "disabled";
+            document.getElementById('send').disabled = "disabled";
+        });
+        WS.registerOnMessageHandler(function (event) {
+            let jsonMessage = JSON.parse(event.data);
+            let type = jsonMessage.type;
+            if (type === "expData") {
+                WS.loadExperimentData(event);
+            } else if (type === "backend") {
+                let time = jsonMessage.content;
+                var now = new Date();
+                var endInterruption = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
+                    .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
+                var endInterruptionInteger = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - localStorage["fixedDate"]).toFixed(3);
+
+                localStorage["endTimeInteger"] = endInterruptionInteger;
+                console.log(endInterruptionInteger);
+                console.log("fixed Date: " + localStorage["fixedDate"]);
+
+                localStorage["endTimeInt"] = endInterruption;
+                console.log(endInterruption);
+
+            }
+
+
+        });
+        WS.registerOnErrorHandler(function (error) {
+            //document.getElementById('log').append(error +
+            //  ": something bad happened, check console. perhaps it's just the server not running ;-)\n");
+            $("#networkStatus").text("Not Connected");
+        });
+    }
+
+
+    function afterCalibration() {
+        WS.endCalibrationHMD(true);
+        document.getElementById('primaryTask').style.display = "inline";
+        document.getElementById('overlayCalibration').style.display = "none";
+        document.getElementById('overlayCalibrationAR').style.display = "none";
+        document.getElementById('overlayCalibrationGlance').style.display = "none";
+        document.body.style.backgroundColor = "white";
+    }
+
+    let calibrationNumbersTopLeft = [2, 9, 3, 8, 2, 3, 6, 3, 1, 8, 2, 3, 9, 5, 6, 3, 7, 3, 6, 2, 9, 6, 3, 9, 6, 2, 2, 9, 3, 8, 2];
+    let calibrationNumbersTopRight = [3, 6, 3, 1, 4, 7, 9, 3, 1, 2, 3, 5, 3, 5, 6, 3, 4, 1, 4, 4, 3, 6, 2, 9, 6, 3, 5, 6, 9, 7];
+    let calibrationNumbersBottomLeft = [9, 3, 4, 2, 3, 6, 8, 5, 2, 7, 4, 2, 8, 4, 3, 2, 5, 1, 7, 5, 6, 3, 5, 8, 4, 6, 7];
+    let calibrationNumbersBottomRight = [5, 3, 2, 2, 5, 1, 9, 4, 6, 7, 1, 3, 5, 6, 2, 4, 5, 1, 8, 3, 6, 2, 9, 6, 3, 5, 6, 2];
+    let calibrationNumbersCenter = [3, 7, 3, 4, 2, 7, 2, 8, 9, 3, 6, 2, 1, 2, 4, 2, 6, 7, 8, 4, 2, 1, 3, 5, 6, 3, 4, 5];
+
+    function redoCalibration() {
+        if (calibrationNumbersTopLeft.length !== 0 && calibrationNumbersTopRight.length !== 0 && calibrationNumbersBottomRight.length !== 0 && calibrationNumbersBottomLeft.length !== 0) {
+            for (let i = 0; i < 3; i++) {
+                document.getElementsByClassName('noTopLeft')[i].innerHTML = calibrationNumbersTopLeft[0].toString();
+                document.getElementsByClassName('noTopRight')[i].innerHTML = calibrationNumbersTopRight[0].toString();
+                document.getElementsByClassName('noBottomLeft')[i].innerHTML = calibrationNumbersBottomLeft[0].toString();
+                document.getElementsByClassName('noBottomRight')[i].innerHTML = calibrationNumbersBottomRight[0].toString();
+            }
+        }
+        if (calibrationNumbersTopLeft.length >= 2) {
+            //document.getElementsByClassName('numGlance')[0].innerHTML = calibrationNumbersCenter[0].toString();
+            document.getElementsByClassName('numCenter')[0].innerHTML = calibrationNumbersCenter[0].toString();
+        }
+        calibrationNumbersTopLeft.shift();
+        calibrationNumbersTopRight.shift();
+        calibrationNumbersBottomLeft.shift();
+        calibrationNumbersBottomRight.shift();
+        calibrationNumbersCenter.shift();
+
+        WS.endCalibrationHMD(false);
+    }
+
+
+</script>
+<div id="overlayCalibrationAR">
+    <div class="calibration">
+        <div class="squareAR">
+            <div class="numCenter">8</div>
+        </div>
+        <div class="noTopLeft">5</div>
+        <div class="noTopRight">7</div>
+        <div class="noBottomLeft">4</div>
+        <div class="noBottomRight">1</div>
+    </div>
+    <div>
+        <button class="redobutton" id="redo" onclick=redoCalibration()>Redo</button>
+        <button class="button" id="next" onclick=afterCalibration()>Next</button>
+    </div>
+</div>
+
+<div id="overlayCalibrationGlance">
+    <div class="calibration">
+        <div class="noTopLeft">5</div>
+        <div class="noTopRight">7</div>
+        <div class="noBottomLeft">4</div>
+        <div class="noBottomRight">1</div>
+    </div>
+    <div>
+        <button class="redobutton" id="redoGlance" onclick=redoCalibration()>Redo</button>
+        <button class="button" id="nextGlance" onclick=afterCalibration()>Next</button>
+    </div>
+</div>
+
+<div id="overlayCalibration">
+    <div class="calibration">
+        <div class="noTopLeft">5</div>
+        <div class="noTopRight">7</div>
+        <div class="noBottomLeft">4</div>
+        <div class="noBottomRight">1</div>
+    </div>
+    <div>
+        <button class="redobutton" id="redoAR" onclick=redoCalibration()>Redo</button>
+        <button class="button" id="nextAR" onclick=afterCalibration()>Next</button>
+    </div>
+</div>
+
+<div id="verdeckung" onclick="sichtbar()"></div>
+<div><button id="testbutton" onclick="unsichtbar()">Turn on Verdeckung</button></div>
+
+<div id="primaryTask" style="display: none">
+
+
+    <div id="overlay">
+        <div id="text">Overlay Text</div>
+        <button class="overlayButton" id="startExp">Start</button>
+        <button class="overlayButton" id="redoTraining">Redo</button>
+    </div>
+
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" id="patientLabel">Patient:</a>
+                <a class="navbar-brand" id="name">Max Mustermann</a>
+                <a class="navbar-brand" id="dateOfBirth">13/04/1968</a>
+            </div>
+            <ul class="nav navbar-nav navbar-center">
+                <!--  <li><a class="navbar-brand" id="networkStatus">Not Connected</a>-->
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+
+                <li style="padding: 10px"><a style="font-weight: bold">Attending Physician: </a>
+                    <a id="namePhysician">Dr. Smith</a>
+                    <a style="font-weight: bold"> Date:</a>
+                    <a id="todaysDate">14/07/2019</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+
+            <!-- Module Patient Information-->
+            <div class="col-sm-4">
+                <div class="module" id="patientInformation">
+                    <div class="row moduleTop" id="patientTop">
+                        <div class="edit">
+                            <button class="editButton" id="editPatientInformation"><span class="pencil">&#9998;</span>
+                            </button>
+                        </div>
+                        <div><h5 class="moduleHeading">Patient Information</h5></div>
+
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6" id="body">
+                            <div class="form-group">
+                                <label class="subheading">Height in cm</label>
+                                <input class="form-control" id="height">
+                            </div>
+                            <div class="form-group">
+                                <label class="subheading">Weight in kg</label>
+                                <input class="form-control" id="weight">
+                            </div>
+                            <label class="subheading">Ideal body weight</label>
+                            <p id="bodyWeight">--</p>
+                        </div>
+
+                        <div class="col-sm-6" id="allergies">
+                            <label class="subheading">Allergies</label>
+                            <div class="checkbox allergies">
+                                <label><input type="checkbox" value="No allergies" id="checkAllergies1">No
+                                    allergies</label>
+                            </div>
+                            <div class="checkbox allergies">
+                                <label><input type="checkbox" value="Pollen" id="checkAllergies2">Pollen</label>
+                            </div>
+                            <div class="checkbox allergies">
+                                <label><input type="checkbox" value="Latex" id="checkAllergies3">Latex</label>
+                            </div>
+                            <div class="form-inline allergies">
+                                <label>
+                                    <input type="checkbox" value="" id="checkAllergiesInput"><input class="form-control"
+                                                                                                    id="allergiesInput">
+                                </label>
+                            </div>
+
+                        </div>
+                        <button class="okButton" id="okPatientInformation">OK</button>
+                    </div>
+
+
+                    <div id="error1">Wrong Module</div>
+
+                </div>
+            </div>
+
+            <!-- Module Medication-->
+            <div class="col-sm-8">
+                <div class="module" id="medication">
+                    <div class="row moduleTop" id="medicationTop">
+                        <div class="edit">
+                            <button class="editButton" id="editMedication"><span class="pencil">&#9998;</span></button>
+                        </div>
+                        <div><h5 class="moduleHeading">Medication</h5></div>
+
+                    </div>
+
+                    <div class="row inModule">
+                        <div class="col-sm-3" id="drug">
+                            <label class="subheading">Drug</label>
+                        </div>
+                        <div class="col-sm-3" id="dosis">
+                            <label class="subheading">Dosis</label>
+                        </div>
+                        <div class="col-sm-3" id="dosisKg">
+                            <label class="subheading">Dosis/kg</label>
+                        </div>
+                        <div class="col-sm-3" id="time">
+                            <label class="subheading">Time</label>
+                        </div>
+                    </div>
+
+                    <div class="row inModuleMedication">
+                        <div class="col-sm-3">
+                            <label>Sterofundin</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <select id="dropDownMedication1">
+                                <option value=""></option>
+                                <option value="300">300 ml</option>
+                                <option value="350">350 ml</option>
+                                <option value="400">400 ml</option>
+                                <option value="450">450 ml</option>
+                                <option value="500">500 ml</option>
+                                <option value="550">550 ml</option>
+                                <option value="600">600 ml</option>
+                                <option value="700">700 ml</option>
+                                <option value="800">800 ml</option>
+                                <option value="900">900 ml</option>
+                            </select>
+                        </div>
+
+                        <div class="col-sm-3">
+                            <p class="dosis">ideal: 6.6 ml/kg</p>
+                            <p class="actual">actual: <span id="actualStero">---</span> ml/kg</p>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="time" id="timeMedication1"> (hh:mm)
+                        </div>
+                    </div>
+
+                    <div class="row inModuleMedication">
+                        <div class="col-sm-3">
+                            <label>Fentanyl</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <select id="dropDownMedication2">
+                                <option value=""></option>
+                                <option value="0.1">0.1 mg</option>
+                                <option value="0.15">0.15 mg</option>
+                                <option value="0.2">0.2 mg</option>
+                                <option value="0.25">0.25 mg</option>
+                                <option value="0.3">0.3 mg</option>
+                                <option value="0.35">0.35 mg</option>
+                                <option value="0.4">0.4 mg</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3">
+                            <p class="dosis">ideal: 3.0 µg/kg</p>
+                            <p class="actual">actual: <span id="actualFena">---</span> µg/kg</p>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="time" id="timeMedication2"> (hh:mm)
+                        </div>
+                    </div>
+
+                    <div class="row inModuleMedication lastRow">
+                        <div class="col-sm-3">
+                            <label>Propofol 1%</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <select id="dropDownMedication3">
+                                <option value=""></option>
+                                <option value="100">100 mg</option>
+                                <option value="120">120 mg</option>
+                                <option value="140">140 mg</option>
+                                <option value="160">160 mg</option>
+                                <option value="180">180 mg</option>
+                                <option value="200">200 mg</option>
+                                <option value="220">220 mg</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-3">
+                            <p class="dosis">ideal: 22 mg/kg</p>
+                            <p class="actual">actual: <span id="actualProp">---</span> mg/kg</p>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="time" id="timeMedication3"> (hh:mm)
+                        </div>
+                    </div>
+
+
+                    <button class="okButton" id="okMedication">OK</button>
+
+                    <div id="error2">Wrong Module</div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="row">
+
+            <!-- Module Information Sheet-->
+            <div class="col-sm-10">
+                <div class="module" id="informationSheet">
+                    <div class="row inModule" id="rowInfo">
+                        <div class="col-sm-2">
+                            <p class="subheadingInfo">Patient Information</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="subheadingInfo">Medication</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="subheadingInfo">Respiratory Tract</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="subheadingInfo">Catheter</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="subheadingInfo">Tube</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="subheadingInfo">Positioning</p>
+                        </div>
+                    </div>
+
+                    <div class="row rowDescription">
+                        <div class="col-sm-2">
+                            <p>Height in cm</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Sterofundin (hh:mm)</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Name</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Type</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Name</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Main</p>
+                        </div>
+                    </div>
+
+                    <div class="row inModule" id="rowInfo1">
+                        <div class="col-sm-2">
+                            <p id="heightInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="drugOneInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="respiratoryDescriptionInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="catheterTypeInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="tubeDescriptionInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="positioningMainInfo">-</p>
+                        </div>
+                    </div>
+
+                    <div class="row rowDescription">
+                        <div class="col-sm-2">
+                            <p>Weight in kg</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Fentanyl (hh:mm)</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Type</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Description</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Type</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Head</p>
+                        </div>
+                    </div>
+
+                    <div class="row inModule" id="rowInfo2">
+                        <div class="col-sm-2">
+                            <p id="weightInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="drugTwoInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="respiratoryTypeInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="catheterDescriptionInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="tubeTypeInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="positioningHeadInfo">-</p>
+                        </div>
+                    </div>
+
+                    <div class="row rowDescription">
+                        <div class="col-sm-2">
+                            <p>Allergies</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Propofol 1% (hh:mm)</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Size</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Position</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>hh:mm</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p>Trunk</p>
+                        </div>
+                    </div>
+
+                    <div class="row inModule" id="rowInfo3">
+                        <div class="col-sm-2">
+                            <p id="allergiesInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="drugThreeInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="respiratorySizeInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="catheterPositionInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="tubeTimeInfo">-</p>
+                        </div>
+                        <div class="col-sm-2">
+                            <p id="positioningTrunkInfo">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Process Button -->
+            <div class="col-sm-2">
+                <div class="row" id="rowTrialInfo">
+                    <h5 id="trialInfo"></h5>
+                </div>
+                <button id="processButton">Process</button>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <!-- Module Respiratory Tract-->
+            <div class="col-sm-3">
+                <div class="module" id="respiratoryTract">
+                    <div class="row moduleTop" id="respiratoryTop">
+                        <div class="edit">
+                            <button class="editButton" id="editRT"><span class="pencil">&#9998;</span></button>
+                        </div>
+                        <div><h5 class="moduleHeading" id="RTHeading">Respiratory Tract</h5></div>
+
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="row inModule">
+                            <label class="textRT">Name</label>
+                            <select id="dropDownRT1">
+                                <option value=""></option>
+                                <option value="Endotracheal tube">Endotracheal tube</option>
+                                <option value="Tracheostomy tube">Tracheostomy tube</option>
+                            </select>
+                        </div>
+
+                        <div class="row inModule">
+                            <label class="textRT">Type</label>
+                            <select id="dropDownRT2">
+                                <option value=""></option>
+                                <option value="cuffed">cuffed</option>
+                                <option value="uncuffed">uncuffed</option>
+                            </select>
+                        </div>
+
+                        <div class="row inModule">
+
+                            <label class="textRT">Size</label>
+
+
+                            <select id="dropDownRT3">
+                                <option value=""></option>
+                                <option value="7 mm">7 mm</option>
+                                <option value="8 mm">8 mm</option>
+                                <option value="9 mm">9 mm</option>
+                                <option value="10 mm">10 mm</option>
+                            </select>
+
+                        </div>
+                    </div>
+                    <div id="error3">Wrong Module</div>
+                    <button class="okButton" id="okRT">OK</button>
+                </div>
+            </div>
+
+            <!-- Module Catheter-->
+            <div class="col-sm-3 ">
+                <div class="module" id="catheter">
+                    <div class="row moduleTop" id="catheterTop">
+                        <div class="edit">
+                            <button class="editButton" id="editCatheter"><span class="pencil">&#9998;</span>
+                            </button>
+                        </div>
+                        <div><h5 class="moduleHeading" id="catheterHeading">Catheter</h5></div>
+
+                    </div>
+
+                    <div class="row inModule" id="catheterHeadings">
+                        <div class="col-sm-4 form-inline">
+                            <label>Type</label>
+                        </div>
+
+                        <div class="col-sm-4 form-inline catheterDesCol">
+                            <label>Description</label>
+                        </div>
+
+                        <div class="col-sm-4 form-inline catheterDesCol">
+                            <label id="posLabel">Position</label>
+
+                        </div>
+                    </div>
+                    <div class="row inModule">
+                        <div class="col-sm-4 form-inline">
+                            <input type="radio" name="catheterRadio" value="arterial"
+                                   id="checkArterial">Arterial</input>
+                        </div>
+
+                        <div class="col-sm-4 catheterDesCol">
+                            <input class="form-control" id="arterialInput">
+                        </div>
+
+                        <div class="col-sm-4 catheterDesCol">
+                            <select id="dropDownArterial">
+                                <option value=""></option>
+                                <option value="left">left</option>
+                                <option value="right">right</option>
+                            </select>
+
+                        </div>
+                    </div>
+                    <p>
+
+                    <div class="row inModule">
+                        <div class="col-sm-4">
+                            <input type="radio" name="catheterRadio" value="CVC" id="checkCVC">CVC</input>
+                        </div>
+
+                        <div class="col-sm-4 catheterDesCol">
+                            <input class="form-control" id="CVCInput">
+                        </div>
+
+                        <div class="col-sm-4 catheterDesCol">
+                            <select id="dropDownCVC">
+                                <option value=""></option>
+                                <option value="left">left</option>
+                                <option value="right">right</option>
+                            </select>
+
+                        </div>
+                    </div>
+                    <p>
+                    <p>
+                        <div class="row inModule">
+                            <div class="col-sm-4">
+                                <input type="radio" name="catheterRadio" value="PVC" id="checkPVC">PVC</input>
+                            </div>
+
+                            <div class="col-sm-4 catheterDesCol">
+                                <input class="form-control" id="PVCInput">
+                            </div>
+
+                            <div class="col-sm-4 catheterDesCol">
+                                <select id="dropDownPVC">
+                                    <option value=""></option>
+                                    <option value="left">left</option>
+                                    <option value="right">right</option>
+                                </select>
+
+                            </div>
+                    <p>
+                </div>
+                <button class="okButton" id="okCatheter">OK</button>
+                <div id="error4">Wrong Module</div>
+
+            </div>
+        </div>
+
+        <!-- Module Tube -->
+        <div class="col-sm-3">
+            <div class="module" id="tube">
+                <div class="row moduleTop" id="tubeTop">
+                    <div class="edit">
+                        <button class="editButton" id="editTube"><span class="pencil">&#9998;</span></button>
+                    </div>
+                    <div><h5 class="moduleHeading" id="tubeHeading">Tube</h5></div>
+
+                </div>
+
+
+                <div class="row inModule">
+                    <div class="col-sm-8">
+                        <label id="nameHeading">Name</label>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <label id="typeHeading">Type</label>
+                    </div>
+                </div>
+                <div class="row inModule">
+                    <div class="col-sm-8">
+                        <label><input type="radio" name="tubeRadio" value="Stomach Tube" id="checkTube1">Stomach
+                            tube</label>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <select id="dropDownTube1">
+                            <option value=""></option>
+                            <option value="oral">oral</option>
+                            <option value="left nasal">left nasal</option>
+                            <option value="right nasal">right nasal</option>
+                        </select>
+                    </div>
+                </div>
+                <p>
+
+                <div class="row inModule">
+                    <div class="col-sm-8">
+                        <label><input type="radio" name="tubeRadio" value="Temperature Tube" id="checkTube2">Temperature
+                            tube</label>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <select id="dropDownTube2">
+                            <option value=""></option>
+                            <option value="oral">oral</option>
+                            <option value="rectal">rectal</option>
+                        </select>
+
+                    </div>
+                </div>
+                <p>
+
+                <div class="row inModule">
+                    <div class="col-sm-8">
+                        <label><input type="radio" name="tubeRadio" value="TEE-Tube"
+                                      id="checkTube3">TEE-tube</label>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <select id="dropDownTube3">
+                            <option value=""></option>
+                            <option value="oral">oral</option>
+                            <option value="rectal">rectal</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row inModule">
+                    <div class="col-sm-8">
+                        <label id="timeHeading">Time</label>
+                    </div>
+                </div>
+                <div class="row inModule">
+                    <div class="format-inline">
+                        <input type="time" id="timeTube"> (hh:mm)
+                    </div>
+                </div>
+
+                </div>
+
+                <button class="okButton" id="okTube">OK</button>
+
+                <div id="error5">Wrong Module</div>
+
+
+
+
+            </div>
+     
+
+        <!-- Module Positioning -->
+        <div class="col-sm-3">
+            <div class="module" id="positioning">
+                <div class="row moduleTop" id="positioningTop">
+                    <div class="edit">
+                        <button class="editButton" id="editPositioning"><span class="pencil">&#9998;</span>
+                        </button>
+                    </div>
+                    <div><h5 class="moduleHeading">Positioning</h5></div>
+
+                </div>
+
+
+                <div class="row inModule">
+                    <div class="col-sm-6 mainPos">
+                        <label class="subheading">Main</label>
+                        <label><input type="radio" name="posRadio" value="supine position" id="supinePos">Supine
+                            position</label>
+                        <label id="torso"><input type="radio" name="posRadio" value="torso high" id="torsoHigh">Torso
+                            high</label>
+                        <label><input type="radio" name="posRadio" value="torso low" id="torsoLow">Torso low</label>
+                        <label><input type="radio" name="posRadio" value="stomach" id="stomach">Stomach</label>
+                    </div>
+
+                    <div class="col-sm-6 head">
+                        <label class="subheading">Head</label>
+                        <p>
+                            <label><input type="radio" name="headRadio" value="in foam shell" id="foamShell">In foam
+                                shell</label>
+                            <label><input type="radio" name="headRadio" value="on gel ring" id="gelRing">On gel
+                                ring</label>
+                        <p id="trunk"><label class="subheading">Trunk</label>
+                            <label id="spine"><input type="radio" name="trunkRadio" value="spine orthograde"
+                                                     id="spineOrtho">Spine orthograde</label>
+                            <label id="shoulder"><input type="radio" name="trunkRadio" value="shoulder support"
+                                                        id="shoulderSupport">Shoulder support</label></p>
+                    </div>
+                </div>
+                <button class="okButton" id="okPositioning">OK</button>
+                <div id="error6">Wrong Module</div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

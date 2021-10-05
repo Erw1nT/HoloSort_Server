@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <LinearLayout
+            android:id="@+id/serverAddressLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="10dp">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="Server/IP:"
+        />
+        <EditText
+                android:id="@+id/serverAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:hint="e.g. 10.16.97.48"
+                android:gravity="center"
+        />
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/deviceIdLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_below="@id/serverAddressLayout"
+            android:padding="10dp">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:text="Device Id:"
+        />
+
+        <EditText
+                android:id="@+id/deviceId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:hint="e.g. Vuzix M300"
+                android:gravity="center"/>
+    </LinearLayout>
+
+    <Button
+            android:id="@+id/updateButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Update"
+            android:layout_below="@id/deviceIdLayout"
+            android:layout_marginBottom="10dp"
+    />
+    <TextView
+            android:id="@+id/statusText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/status"
+            android:text=""
+            android:gravity="center"
+            android:layout_below="@id/updateButton"
+    />
+
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_marginTop="220dp"
+            android:layout_marginRight="2dp" android:layout_marginLeft="2dp">
+        <Button
+                android:id="@+id/calibrationScreenButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Calibration"
+                android:gravity="center" android:layout_weight="1" android:saveEnabled="false"
+                android:visibility="visible" android:focusable="true"/>
+        <Button
+                android:id="@+id/arithmeticScreenButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Arithmetic"
+                android:layout_weight="1" android:focusable="true"/>
+        <Button
+                android:id="@+id/alarmScreenButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Alarm"
+                android:gravity="center" android:layout_weight="1" android:focusable="true"/>
+    </LinearLayout>
+
+</RelativeLayout>

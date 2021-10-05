@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+                android:id="@+id/layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:keepScreenOn="true" android:visibility="visible"
+>
+    <ImageView
+            android:src="@android:color/black"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:id="@+id/background" android:visibility="invisible"
+            android:backgroundTint="@color/black"/>
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_centerInParent="true"
+            android:id="@+id/centerLayout" android:gravity="center"
+            android:layout_alignParentBottom="false" android:layout_alignParentLeft="false"
+            android:layout_alignParentEnd="false" android:layout_alignParentRight="false"
+            android:layout_alignParentStart="false" android:layout_alignParentTop="false">
+
+        <ImageView
+                android:src="@android:color/white"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" android:id="@+id/whiteRectangle" android:visibility="visible"
+                android:backgroundTint="@color/white"/>
+        <TextView
+                android:text="8"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" android:id="@+id/centerLeftUp"
+                android:textColor="@color/black" android:textSize="40sp"
+                android:visibility="visible" android:gravity="top|left"/>
+        <TextView
+                android:text="5"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" android:id="@+id/centerLeftLow"
+                android:textColor="@color/black" android:textSize="40sp"
+                android:visibility="visible" android:gravity="bottom|left"/>
+        <TextView
+                android:text="2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" android:id="@+id/centerRightUp"
+                android:textSize="40sp"
+                android:textColor="@color/black" android:visibility="visible" android:gravity="right|top"/>
+        <TextView
+                android:text="1"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" android:id="@+id/centerRightLow"
+                android:textSize="40sp"
+                android:textColor="@color/black" android:visibility="visible" android:gravity="bottom|right"/>
+    </RelativeLayout>
+</RelativeLayout>

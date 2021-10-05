@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--<color name="hr" type="color">#00ff00</color>-->
+    <!--<color name="spo2" type="color">#87cefa</color>-->
+    <!--<color name="bp" type="color">#ff69b4</color>-->
+    <!--<color name="resp" type="color">#ffff00</color>-->
+    <!--<color name="etco2" type="color">#ffff00</color>-->
+    <!--<color name="temp" type="color">#ffffff</color>-->
+    <!--<color name="defaultcolour" type="color">#ffffff</color>-->
+
+    <!--<color name="darkgrey">#101010</color>-->
+    <!--<color name="grey">#303030</color>-->
+
+    <!--<color name="hi">#ffffff</color>-->
+    <!--<color name="med">#999999</color>-->
+    <!--<color name="lo">#666666</color>-->
+
+
+    <color name="hr" type="color">#07F307</color>
+    <color name="spo2" type="color">#4a718a</color>
+    <color name="bp" type="color">#7F345A</color>
+    <color name="resp" type="color">#7f7f00</color>
+    <color name="etco2" type="color">#ffffff</color>
+    <color name="temp" type="color">#7f7f7f</color>
+    <color name="defaultcolour" type="color">#7f7f7f</color>
+
+    <color name="darkgrey">#313131</color>
+    <color name="grey">#646464</color>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="status">#93a343</color>
+
+    <color name="hi">#ffffff</color>
+    <color name="med">#999999</color>
+    <color name="lo">#666666</color>
+    <color name="critical">#FFC107</color>
+    <color name="veryCritical">#D400D4</color>
+
+</resources>

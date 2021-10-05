@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="connected">connected</string>
+    <string name="disconnected">disconnected</string>
+    <string name="invalid_server_or_ip">Invalid Server Name or IP</string>
+    <string name="insufficient_download_space">Not enough Space to download the Sounds</string>
+    <string name="received_patient_init">Received Initial Patient Data</string>
+    <string name="received_sound_conf">Received Sound Configuration</string>
+    <string name="downloaded_sound_conf">Downloaded all Sound Files</string>
+    <string name="sounds_ready">All Sounds are ready to be played</string>
+</resources>
