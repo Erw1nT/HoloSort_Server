@@ -113,7 +113,7 @@ jar {
         attributes 'Implementation-Version': version
         attributes 'Implementation-Title': getDate()
     }
-    from { configurations.compileClasspath.filter{ !it.isDirectory() && it.name.startsWith('jfxchartext-') }.collect { zipTree(it)} }
+    from { configurations.compileClasspath.filter{ !it.isDirectory() && it.name.startsWith('jfxchartext-') }.collect {zipTree(it)} }
     archiveName = "${artifactName}-${version}.${extension}"
 }
 

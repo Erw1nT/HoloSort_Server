@@ -423,6 +423,16 @@ class NetworkingServiceMonitor : View() {
 
                 }
             }
+
+            val sendToLens = button("Send to Lens")
+            {
+                enableWhen(isNetworkingActiveBinding.and(isStarted))
+                action {
+                    val lens = subscriberTable.items.find{ it.name == "lens" } ?: return@action
+                    Publisher.sendMessage(JSONObject("{\"type\": \"message\", \"content\": {\"string1\": \"content1\"}}\""), lens)
+                }
+            }
+
             runLater { startWebsocket.requestFocus() }
         }
 
