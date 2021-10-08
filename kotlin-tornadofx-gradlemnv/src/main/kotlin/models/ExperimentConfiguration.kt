@@ -18,7 +18,7 @@ class ExperimentConfiguration : JsonModel {
     var trialsConfig by trialsConfigProperty
 
      */
-    val trialsConfigProperty = SimpleObjectProperty<TrialsConfiguration<TrialTemplate>>()
+    val trialsConfigProperty = SimpleObjectProperty<TrialsConfiguration<Trial>>()
     var trialsConfig by trialsConfigProperty
 
     val outputDirectoryProperty = SimpleStringProperty()

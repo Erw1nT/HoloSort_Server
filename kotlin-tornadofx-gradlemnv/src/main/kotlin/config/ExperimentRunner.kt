@@ -31,7 +31,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 
 
-class ExperimentRunner : AbstractTrialDesigner<TrialTemplate>(TrialsConfiguration(TrialTemplate::class.java)) {
+class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial::class.java)) {
 
     val expConfigProperty = SimpleObjectProperty<ExperimentConfiguration>(ExperimentConfiguration())
     var expConfiguration by expConfigProperty
@@ -369,7 +369,7 @@ class ExperimentRunner : AbstractTrialDesigner<TrialTemplate>(TrialsConfiguratio
     }
 
     fun verifyTrialConfigurations(
-        trailConfig: TrialsConfiguration<TrialTemplate>,
+        trailConfig: TrialsConfiguration<Trial>,
         filePath: String
     ): Pair<Boolean, String> {
         try {

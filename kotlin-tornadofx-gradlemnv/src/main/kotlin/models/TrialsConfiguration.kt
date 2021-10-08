@@ -10,7 +10,7 @@ import javax.json.JsonObject
 class TrialsConfiguration<T : Trial>(raaClazz: Class<T>) : TrialJsonModel<T>(raaClazz) {
 
     val trials: ObservableList<T> = FXCollections.observableArrayList<T>()
-    var trainingsTrial: Trial = TrialTemplate()
+    var trainingsTrial: Trial = Trial()
     val patientSeedProperty = SimpleIntegerProperty(0)
     var patientSeed by patientSeedProperty
 

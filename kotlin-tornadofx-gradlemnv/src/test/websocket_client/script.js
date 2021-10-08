@@ -223,8 +223,8 @@ $(document).ready(function () {
         unsichtbar();
         }
         if (currentsichtbarkeit == 0){
-        unsichtbar(); */
-        }
+        unsichtbar();
+        } */
     }
 
     function resetInterruptionInfo() {

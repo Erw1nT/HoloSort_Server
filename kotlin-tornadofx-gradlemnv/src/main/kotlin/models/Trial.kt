@@ -7,7 +7,7 @@ import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 import javax.json.JsonObject
 
-open class Trial(id: Int = 1, interruptionTrial: Boolean = false, sichtbarkeit: Boolean = false) : JsonModel {
+class Trial(id: Int = 1, interruptionTrial: Boolean = false, sichtbarkeit: Boolean = false) : JsonModel {
 
     val idProperty = SimpleIntegerProperty(id)
     var id by idProperty

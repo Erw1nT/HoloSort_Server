@@ -19,7 +19,7 @@ import java.util.stream.Collectors
 import kotlin.random.Random
 
 
-class TrialDesigner : AbstractTrialDesigner<TrialTemplate>(TrialsConfiguration(TrialTemplate::class.java)) {
+class TrialDesigner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial::class.java)) {
 
     protected val amountTrialsProperty = SimpleIntegerProperty(0)
     private var amountTrials by amountTrialsProperty
@@ -60,17 +60,17 @@ class TrialDesigner : AbstractTrialDesigner<TrialTemplate>(TrialsConfiguration(T
 
 
     private val trialsTable = tableview(trialsConfig.trials) {
-        column("Trial ID", TrialTemplate::idProperty).pctWidth(10)
-        column("Interruption Trial", TrialTemplate::interruptionTrialProperty).useCheckbox().pctWidth(10)
-        column("Visible Main Task", TrialTemplate::sichtbarkeitProperty).useCheckbox().pctWidth(10)
-        column("Patient ID", TrialTemplate::patientProperty).pctWidth(20)
-        column("Patient Information", TrialTemplate::patientInformationProperty).useComboBox(interruptionLengths)
+        column("Trial ID", Trial::idProperty).pctWidth(10)
+        column("Interruption Trial", Trial::interruptionTrialProperty).useCheckbox().pctWidth(10)
+        column("Visible Main Task", Trial::sichtbarkeitProperty).useCheckbox().pctWidth(10)
+        column("Patient ID", Trial::patientProperty).pctWidth(20)
+        column("Patient Information", Trial::patientInformationProperty).useComboBox(interruptionLengths)
             .pctWidth(20)
-        column("Medication", TrialTemplate::medicationProperty).useComboBox(interruptionLengths).pctWidth(20)
-        column("Respiratory", TrialTemplate::respiratoryProperty).useComboBox(interruptionLengths).pctWidth(20)
-        column("Catheter", TrialTemplate::catheterProperty).useComboBox(interruptionLengths).pctWidth(20)
-        column("Tube", TrialTemplate::tubeProperty).useComboBox(interruptionLengths).pctWidth(20)
-        column("Positioning", TrialTemplate::positioningProperty).useComboBox(interruptionLengths).pctWidth(20)
+        column("Medication", Trial::medicationProperty).useComboBox(interruptionLengths).pctWidth(20)
+        column("Respiratory", Trial::respiratoryProperty).useComboBox(interruptionLengths).pctWidth(20)
+        column("Catheter", Trial::catheterProperty).useComboBox(interruptionLengths).pctWidth(20)
+        column("Tube", Trial::tubeProperty).useComboBox(interruptionLengths).pctWidth(20)
+        column("Positioning", Trial::positioningProperty).useComboBox(interruptionLengths).pctWidth(20)
         prefHeight = 300.0
         prefWidth = 750.0
         vgrow = Priority.ALWAYS
@@ -80,7 +80,7 @@ class TrialDesigner : AbstractTrialDesigner<TrialTemplate>(TrialsConfiguration(T
 
     //add trials with +
     private val crudForTrialsTable = CustomUIComponents.getCrudUiForTable(trialsTable) {
-        TrialTemplate()
+        Trial()
     }
 
     override val root = borderpane() {
@@ -282,7 +282,7 @@ class TrialDesigner : AbstractTrialDesigner<TrialTemplate>(TrialsConfiguration(T
     }
 
     fun addTrainingsTrial() {
-        var trainingsTrial = TrialTemplate()
+        var trainingsTrial = Trial()
         trainingsTrial.id = 100
         trainingsTrial.interruptionTrial = true
         trainingsTrial.sichtbarkeit = true
