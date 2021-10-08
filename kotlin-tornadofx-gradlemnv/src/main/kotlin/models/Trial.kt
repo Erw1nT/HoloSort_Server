@@ -7,7 +7,7 @@ import javafx.beans.property.SimpleStringProperty
 import tornadofx.*
 import javax.json.JsonObject
 
-open class Trial(id: Int = 1, interruptionTrial: Boolean = false, sichtbarkeit: Boolean = false) : tornadofx.JsonModel {
+open class Trial(id: Int = 1, interruptionTrial: Boolean = false, sichtbarkeit: Boolean = false) : JsonModel {
 
     val idProperty = SimpleIntegerProperty(id)
     var id by idProperty
@@ -84,50 +84,8 @@ open class Trial(id: Int = 1, interruptionTrial: Boolean = false, sichtbarkeit: 
 
 }
 
-abstract class TrialJsonModel<T : Trial>(val raaClazz: Class<T>) : tornadofx.JsonModel {
+abstract class TrialJsonModel<T : Trial>(val raaClazz: Class<T>) : JsonModel {
     fun <T> getClassInstance(clazz: Class<T>): T {
         return clazz.getConstructor().newInstance()
     }
 }
-/*
-class TrialsConfiguration<T : Trial>(raaClazz: Class<T>) : TrialJsonModel<T>(raaClazz) {
-    val trials: ObservableList<T> = FXCollections.observableArrayList<T>()
-
-    val patientSeedProperty = SimpleIntegerProperty(0)
-    var patientSeed by patientSeedProperty
-
-    private val logDirProperty = SimpleStringProperty(".")
-    private var logDir by logDirProperty
-
-    fun clear() {
-        trials.clear()
-
-    }
-
-    override fun updateModel(json: JsonObject) {
-        with(json) {
-            val trialJson = getJsonArray("trials")
-            if (trialJson != null) {
-                trialJson.forEach {
-                    val modelObject = getClassInstance(raaClazz)
-                    modelObject.updateModel(it.asJsonObject())
-                    trials.add(modelObject)
-                }
-            } else trials.clear()
-            patientSeed = int("patientSeed")!!
-            logDir = string("logDir") ?: "."
-        }
-    }
-
-    override fun toJSON(json: JsonBuilder) {
-        with(json) {
-            add("trials", trials.toJSON())
-            add("patientSeed", patientSeed)
-            add("logDir", logDir)
-        }
-    }
-
-    override fun toString(): String = toJSON().toPrettyString()
-}
-
- */
