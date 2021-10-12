@@ -59,6 +59,8 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
                 caliField?.setDisable(false)
             }
         }
+
+        expConfiguration.interruptionTask = "arithmetic"
     }
 
     //Menu bar
@@ -144,23 +146,15 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
                         val devices = FXCollections.observableArrayList(
                             "AR Mode", "Glance Mode", "Opaque", "Tablet"
                         )
-                        val deviceCombobox = combobox(expConfiguration.deviceProperty, devices)
-
-
+                        combobox(expConfiguration.deviceProperty, devices)
                     }
 
                     field("Select Interruption Task"){
-                        val toggleGroup = ToggleGroup()
-                        vbox {
-                            radiobutton("Alarm", toggleGroup) {
-                                action {
-                                    expConfiguration.interruptionTask = "alarm"
-                                }
-                            }
-                            radiobutton("Arithmetic", toggleGroup) {
-                                action {
-                                    expConfiguration.interruptionTask = "arithmetic"
-                                }
+                        vbox{
+                            // to show that arithmetic is enabled by default it is not removed from the UI
+                            checkbox("Arithmetic") {
+                                isSelected = (expConfiguration.interruptionTask == "arithmetic")
+                                isDisable = true
                             }
                         }
                     }
@@ -200,7 +194,6 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
         }
     }
 
-
     fun createLogger() {
         GlobalLogger.resetExpLog()
         GlobalLogger.exp(File(expConfiguration.outputDirectory,
@@ -211,12 +204,6 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
         GlobalLogger.exp().addColumns(arrayOf("Participant Number", "Block", "Device", "Interruption Trial", "Trial", "First Click In Module", "INTEGER: First Click In Module", "Wrong Click In Module After Interruption", "Patient ID", "Module", "Error Wrong Module", "Error Input", "Error Empty Module", "Interruption Length", "Click on OK", "INTEGER: Click on OK", "Start Time Interruption", "INTEGER: Start Time Interruption", "End Time Interruption", "INTEGER: End Time Interruption"))
         GlobalLogger.exp().writerHeader()
 
-    }
-
-    fun comboAction(event: ActionEvent) {
-        if (expConfiguration.device == "Tablet"){
-
-        }
     }
 
     //functions

@@ -424,7 +424,7 @@ class NetworkingServiceMonitor : View() {
                 }
             }
 
-            val sendToLens = button("Send to Lens")
+            button("Send to Lens")
             {
                 enableWhen(isNetworkingActiveBinding.and(isStarted))
                 action {
