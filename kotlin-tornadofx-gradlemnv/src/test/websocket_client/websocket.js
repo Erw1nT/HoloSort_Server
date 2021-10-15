@@ -84,10 +84,12 @@ class WebSocketConnection {
         this.websocket.send('{"type": "broadcast", "content":' + message + '}');
     }
 
-    sendToFrontend(message) {
-        this.websocket.send('{"type": "frontend", "content":' + message + '}');
-    }
+    sendToLens(message)
+    {
+        console.log("sendToLens")
+        setTimeout(() => this.websocket.send('{"type": "backend", "content":' + message + ', "target": "lens"}'), 100)
 
+    }
 
     registerOnOpenHandler(handler) {
         this.onOpenHandler = handler.bind(this);
@@ -149,6 +151,7 @@ class WebSocketConnection {
 
     reportInterruptionPoint(interruptionLength) {
         this.websocket.send('{"type": "frontend", "content":' + interruptionLength + '}');
+
     }
 
     reportCalibration(){
@@ -157,7 +160,7 @@ class WebSocketConnection {
 
 
     endCalibrationHMD(isEnd) {
-            this.websocket.send('{"type": "frontend", "dataType": "calibrationStart", "content": '+ isEnd.toString() +'}');
+        this.websocket.send('{"type": "frontend", "dataType": "calibrationStart", "content": '+ isEnd.toString() +'}');
     }
 
 

@@ -191,17 +191,31 @@ class NetworkingServiceMonitor : View() {
             runLater {
                 messageList.items.add("Network: " + jsonObject.toString())
             }
+
+            // wenn die Nachricht vom Frontend kommt
             if (subscriber?.name == "frontend") {
                 Publisher.publish(jsonObject)
             }
+
             if (jsonObject.get("type") == "backend") {
-                if (jsonObject.get("content") is JSONObject) {
+                val target = jsonObject.get("target")
+                if (target is String)
+                {
+                    println("target is $target")
+                    val lens = subscriberTable.items.find{ it.name == "lens" } ?: return
+                    Publisher.sendMessage(JSONObject("{\"type\": \"message\", \"content\": {\"string1\": \"content1\"}}\""), lens)
+                }
+
+                if (jsonObject.get("content") is JSONObject)
+                {
                     var content = jsonObject.getJSONObject("content") as JSONObject
                     System.out.println("Interruption Times")
                     startTime = content.optString("startTime", " ")
                     endTime = content.optString("endTime", " ")
                     Publisher.publish(content)
-                } else if (jsonObject.get("content") is JSONArray) {
+                }
+                else if (jsonObject.get("content") is JSONArray)
+                {
                     var csvData = jsonObject.getJSONArray("content") as JSONArray
                     for (i in 0 until csvData.length()) {
                         convertToCSVFile(csvData.getJSONObject(i))
@@ -210,6 +224,7 @@ class NetworkingServiceMonitor : View() {
                     System.out.println("Close log files")
                     //GlobalLogger.closeAllLogFiles()
                 }
+
             }
         }
     }
@@ -528,6 +543,8 @@ class NetworkingServiceMonitor : View() {
 }
 
 class NetworkingMonitorApp : App(NetworkingServiceMonitor::class)
+
+data class JsonStuff(val type: String, val age: Int)
 
 fun main() {
     Application.launch(NetworkingMonitorApp::class.java, "isItsOwnApp")

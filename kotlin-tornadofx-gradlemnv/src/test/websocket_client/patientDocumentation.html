@@ -36,6 +36,7 @@
         <input id="message" type="text" value="Type a Message in Here" style="width: 600px">
         <button id="echo" disabled="disabled" onclick="WS.echo(document.getElementById('message').value)">Echo</button>
         <button id="send" disabled="disabled" onclick="WS.send(document.getElementById('message').value)">Send</button>
+        <button id="bernd" disabled="disabled" onclick="WS.sendToLens(document.getElementById('message').value)">Lens</button>
     </div>
 </div>
 <script type="text/javascript">
@@ -48,6 +49,7 @@
             document.getElementById('disconnect').disabled = "";
             document.getElementById('echo').disabled = "";
             document.getElementById('send').disabled = "";
+            document.getElementById('bernd').disabled = "";
 
         });
         WS.registerOnCloseHandler(function () {
@@ -56,6 +58,7 @@
             document.getElementById('disconnect').disabled = "disabled";
             document.getElementById('echo').disabled = "disabled";
             document.getElementById('send').disabled = "disabled";
+            document.getElementById('bernd').disabled = "disabled";
         });
         WS.registerOnMessageHandler(function (event) {
             let jsonMessage = JSON.parse(event.data);
