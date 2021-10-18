@@ -206,6 +206,7 @@ class NetworkingServiceMonitor : View() {
                     Publisher.sendMessage(JSONObject("{\"type\": \"message\", \"content\": {\"string1\": \"content1\"}}\""), lens)
                 }
 
+
                 if (jsonObject.get("content") is JSONObject)
                 {
                     var content = jsonObject.getJSONObject("content") as JSONObject

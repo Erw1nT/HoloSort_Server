@@ -219,12 +219,55 @@ $(document).ready(function () {
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
         console.log("Start Interruption Websocket:" + startInterruption);
         startInterruptionInteger = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
+
+        let previousModule = getPreviousModule()
+        let rect = previousModule.getBoundingClientRect()
+
+        WS.sendToLens(JSON.stringify(rect))
+
+        // let overlayRect = $("#overlayRect")
+        // if (overlayRect.length === 0)
+        // {
+        //     $('body').append('<div class="widget" id="overlayRect" style="top:' + rect.y + 'px; left: ' + rect.x + 'px; "></div>');
+        //     overlayRect = $("#overlayRect")
+        // }
+
+        // overlayRect.css("position", "absolute")
+        // overlayRect.bottom(rect.bottom);
+        // overlayRect.right(rect.right);
+        // overlayRect.width(rect.width);
+        // overlayRect.height(rect.height);
+        // overlayRect.css("border", "thick dashed red")
+
         /*if (sichtbarkeit == 0){
         unsichtbar();
         }
         if (currentsichtbarkeit == 0){
         unsichtbar();
         } */
+    }
+
+    function getPreviousModule()
+    {
+        //ButtonID 1 = Module 1, ButtonID 2 = Module 2...
+        // $()[0], because jQuery Syntax: https://stackoverflow.com/a/4070010
+        switch(buttonID) {
+            case 1:
+                return $("#patientInformation")[0]
+            case 2:
+                return $("#medication")[0]
+            case 3:
+                return $("#respiratoryTract")[0]
+            case 4:
+                return $("#catheter")[0]
+            case 5:
+                return $("#tube")[0]
+            case 6:
+                return $("#positioning")[0]
+            default:
+                console.log("unknown Button ID")
+                return null
+        }
     }
 
     function resetInterruptionInfo() {
