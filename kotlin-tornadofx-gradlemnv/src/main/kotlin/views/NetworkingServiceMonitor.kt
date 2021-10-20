@@ -545,8 +545,6 @@ class NetworkingServiceMonitor : View() {
 
 class NetworkingMonitorApp : App(NetworkingServiceMonitor::class)
 
-data class JsonStuff(val type: String, val age: Int)
-
 fun main() {
     Application.launch(NetworkingMonitorApp::class.java, "isItsOwnApp")
 }

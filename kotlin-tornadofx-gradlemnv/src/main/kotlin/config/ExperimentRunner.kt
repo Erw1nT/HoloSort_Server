@@ -61,6 +61,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
         }
 
         expConfiguration.interruptionTask = "arithmetic"
+        expConfiguration.deviceProperty.value = "Tablet"
     }
 
     //Menu bar
@@ -105,7 +106,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
             label("Experiment Runner") {
                 font = Font.font(20.0)
             }
-            label("HMDLag version: 2019-05-27-12-00") {
+            label("HMDLag version: 2021-10-20") {
                 font = Font.font(12.0)
             }
 
@@ -143,10 +144,12 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
                     }
 
                     field("Select Device") {
-                        val devices = FXCollections.observableArrayList(
-                            "AR Mode", "Glance Mode", "Opaque", "Tablet"
-                        )
-                        combobox(expConfiguration.deviceProperty, devices)
+
+                        // to show that the Tablet condition is enabled by default this checkbox is shown
+                        checkbox("Tablet") {
+                            isSelected = (expConfiguration.deviceProperty.value == "Tablet")
+                            isDisable = true
+                        }
                     }
 
                     field("Select Interruption Task"){
@@ -161,10 +164,17 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
 
                     field("Training") {
                         checkbox("Include Training", expConfiguration.trainingIncludedProperty)
+                        {
+                            isSelected = true
+                        }
                     }
 
                     caliField = field("Calibration") {
                         checkbox("Include Calibration", expConfiguration.calibrationIncludedProperty)
+                        {
+                            isSelected = false
+                            isDisable = true
+                        }
                     }
 
                 }
