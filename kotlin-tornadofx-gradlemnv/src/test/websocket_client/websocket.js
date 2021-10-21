@@ -86,8 +86,9 @@ class WebSocketConnection {
 
     sendToLens(message)
     {
-        console.log("sendToLens")
-        this.websocket.send('{"type": "backend", "content":' + message + ', "target": "lens"}')
+        let msg = '{"type": "backend", "content":' + message + ', "target": "lens"}'
+        console.log(msg)
+        this.websocket.send(msg)
     }
 
     registerOnOpenHandler(handler) {

@@ -9,31 +9,29 @@ import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.control.Alert
 import javafx.scene.input.Clipboard
+import javafx.scene.input.ClipboardContent
 import javafx.scene.layout.Priority
+import javafx.scene.media.Media
+import javafx.scene.media.MediaPlayer
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
+import javafx.util.Duration
+import logging.GlobalLogger
+import networking.Converter
 import networking.NetworkingChangeListener
 import networking.NetworkingState
 import networking.Server
-import logging.GlobalLogger
+import org.json.JSONArray
 import org.json.JSONObject
 import publisher.*
 import tornadofx.*
-import java.lang.StringBuilder
-import javafx.scene.input.ClipboardContent
-import javafx.scene.media.Media
-import javafx.scene.media.MediaPlayer
-import javafx.util.Duration
-import networking.Converter
-import org.json.JSONArray
 import utils.ValueChangeDialog
 import java.awt.Desktop
 import java.awt.MouseInfo
-import java.awt.Point
 import java.awt.Robot
+import java.awt.Toolkit
 import java.io.File
 import java.util.*
-import kotlin.Comparator
 
 class NetworkingServiceMonitor : View() {
     private var isItsOwnApp = app.parameters.unnamed.contains("isItsOwnApp")
@@ -169,6 +167,16 @@ class NetworkingServiceMonitor : View() {
         override fun onChange(subscriber: Subscriber) {
             subscriberTable.refresh()
 
+            // the name will be set in ConnectionHandler::processMessage and this triggers onChange
+            if (subscriber.name == "lens")
+            {
+                val screenSize: java.awt.Dimension = Toolkit.getDefaultToolkit().screenSize
+                val handshakeMessage = JSONObject()
+                handshakeMessage.put("screenWidth", screenSize.width)
+                handshakeMessage.put("screenHeight", screenSize.height)
+                Publisher.sendMessage(handshakeMessage, subscriber)
+            }
+
             // we send back the updated meta info entries for 'confirmation'
             val metaInfoEntries = subscriber.getMetaInfoEntries()
             if (metaInfoEntries.isEmpty()) return
@@ -197,15 +205,32 @@ class NetworkingServiceMonitor : View() {
                 Publisher.publish(jsonObject)
             }
 
+            // a message of type "backend" arrives, which has set the property "target"
+            // for instance: target is "lens" -> msg will be sent to HoloLens, when it's connected and named "lens"
             if (jsonObject.get("type") == "backend") {
+
                 val target = jsonObject.get("target")
-                if (target is String)
+                if (target is String && target == "lens")
                 {
                     println("target is $target")
-                    val lens = subscriberTable.items.find{ it.name == "lens" } ?: return
-                    Publisher.sendMessage(JSONObject("{\"type\": \"message\", \"content\": {\"string1\": \"content1\"}}\""), lens)
-                }
+                    val lens = subscriberTable.items.find{ it.name == target } ?: return
 
+                    //only transfer the Module Rectangle Information
+                    val holoLensMsg = JSONObject()
+
+                    val contentObject = jsonObject.get("content")
+                    if (contentObject is JSONObject)
+                    {
+                        val rect = contentObject.get("rect")
+                        val interruptionLength = contentObject.get("interruptionLength")
+
+                        holoLensMsg.put("prevModuleRect", rect)
+                        holoLensMsg.put("interruptionLength", interruptionLength)
+
+                        Publisher.sendMessage(holoLensMsg, lens)
+                    }
+                    return
+                }
 
                 if (jsonObject.get("content") is JSONObject)
                 {

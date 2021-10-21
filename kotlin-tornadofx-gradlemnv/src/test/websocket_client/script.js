@@ -212,8 +212,12 @@ $(document).ready(function () {
 
     }
 
-    function sendInterruption(interruption) {
-        WS.reportInterruptionPoint(interruption);
+
+    function sendInterruption(interruptionLength) {
+
+        //sends the interruption length to the frontend tablet
+        WS.reportInterruptionPoint(interruptionLength);
+
         var now = new Date();
         startInterruption = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
@@ -223,21 +227,10 @@ $(document).ready(function () {
         let previousModule = getPreviousModule()
         let rect = previousModule.getBoundingClientRect()
 
-        WS.sendToLens(JSON.stringify(rect))
+        let rectMsg = '{"rect":' + JSON.stringify(rect) + ''
+        let interruptionMsg = '"interruptionLength":"' + interruptionLength + '"}'
 
-        // let overlayRect = $("#overlayRect")
-        // if (overlayRect.length === 0)
-        // {
-        //     $('body').append('<div class="widget" id="overlayRect" style="top:' + rect.y + 'px; left: ' + rect.x + 'px; "></div>');
-        //     overlayRect = $("#overlayRect")
-        // }
-
-        // overlayRect.css("position", "absolute")
-        // overlayRect.bottom(rect.bottom);
-        // overlayRect.right(rect.right);
-        // overlayRect.width(rect.width);
-        // overlayRect.height(rect.height);
-        // overlayRect.css("border", "thick dashed red")
+        WS.sendToLens(rectMsg + ',' + interruptionMsg)
 
         /*if (sichtbarkeit == 0){
         unsichtbar();

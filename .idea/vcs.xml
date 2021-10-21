@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="VcsDirectoryMappings">
-    <mapping directory="$PROJECT_DIR$/androidnetworkingservicemnv" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/androidnetworkingservicemnv_expo" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/hmdlag" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/kotlin-tornadofx-gradlemnv" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/androidnetworkingservicemnv" vcs="" />
+    <mapping directory="$PROJECT_DIR$/androidnetworkingservicemnv_expo" vcs="" />
+    <mapping directory="$PROJECT_DIR$/hmdlag" vcs="" />
+    <mapping directory="$PROJECT_DIR$/kotlin-tornadofx-gradlemnv" vcs="" />
   </component>
 </project>
