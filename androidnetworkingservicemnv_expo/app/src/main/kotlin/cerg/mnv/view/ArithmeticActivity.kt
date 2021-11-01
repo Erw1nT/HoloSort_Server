@@ -1,37 +1,24 @@
 package cerg.mnv.view
 
 
-import android.app.ActionBar
 import android.content.Intent
 import android.content.res.Configuration
-import android.media.AudioManager
-import android.media.MediaPlayer
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.WindowManager
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import cerg.mnv.controller.AuditoryDisplayController
-import cerg.mnv.controller.VisualDisplayController
 import cerg.mnv.model.MultiPatientData
 import cerg.mnv.model.Patient
 import cerg.mnv.model.VitalSign
 import cerg.mnv.R
-import cerg.mnv.model.Context
-import mpmgame.*
 import networking.ClientListener
 import org.json.JSONException
 import org.json.JSONObject
 import java.sql.Timestamp
 import java.util.*
 import kotlin.concurrent.schedule
-import java.io.BufferedReader
-import java.io.FileReader
-import java.io.IOException
-import java.util.ArrayList
-
 
 class ArithmeticActivity : AbstractServiceView() {
     override fun onConfigurationChanged(newConfig: Configuration?) {
@@ -45,7 +32,16 @@ class ArithmeticActivity : AbstractServiceView() {
     private var flash: ImageView? = null
     private var background: ImageView? = null
 
-    private var mediaPlayer: MediaPlayer? = null
+    private var answerButton1: Button? = null
+    private var answerButton2: Button? = null
+    private var answerButton3: Button? = null
+    private var answerButton4: Button? = null
+
+    private var equationIndex: Int = 0
+    private var currentCorrectAnswer: Int = 0
+
+    private var wasEquationAnswered: Boolean? = null
+    private var errorCount: Int = 0
 
     private val defaultClientListener = object : ClientListener {
         override fun onClientMessage(message: String) {
@@ -71,18 +67,22 @@ class ArithmeticActivity : AbstractServiceView() {
 
             val json = JSONObject(message)
             if (json.get("type") == "frontend" && message.isNotEmpty()) {
+
                 if (json.has("dataType")) {
                     println(json.get("dataType"))
+
                     if (json.get("dataType") == "endTraining") {
                         this@ArithmeticActivity.setPreference("Training", "false")
                         equationList = equationsEasy2
-                    } else {
+                    }
+                    else {
                         this@ArithmeticActivity.setPreference("Training", "false")
                         this@ArithmeticActivity.startActivity(Intent(this@ArithmeticActivity, CalibrationActivity::class.java))
                     }
-                } else {
+                }
+                else {
                     val messageText = json.get("content").toString()
-                    var interruptionLength = messageText.toLong().times(1000)
+                    val interruptionLength = messageText.toLong().times(1000)
                     showFlash(true)
 
                     val timer = Timer()
@@ -93,12 +93,10 @@ class ArithmeticActivity : AbstractServiceView() {
                         timer.scheduleAtFixedRate(
                                 object : TimerTask() {
                                     override fun run() {
-                                        if (equationList.isNotEmpty()) {
-                                            showEquation(equationList.first())
-                                            equationList = this@ArithmeticActivity.equationList.drop(1)
-                                        } else {
-                                            Log.e("ArithmeticActivity", "Equation List is empty")
-                                        }
+
+                                        showEquation(equationList[equationIndex % equationList.count()])
+                                        equationIndex++
+
                                     }
                                 }, 10, 5000
                         )
@@ -142,15 +140,97 @@ class ArithmeticActivity : AbstractServiceView() {
         this.equation = this@ArithmeticActivity.findViewById(R.id.arithTextView) as TextView
         this.flash = this@ArithmeticActivity.findViewById(R.id.flashView) as ImageView
 
+        this.answerButton1 = this@ArithmeticActivity.findViewById(R.id.answerButton1) as Button
+        this.answerButton2 = this@ArithmeticActivity.findViewById(R.id.answerButton2) as Button
+        this.answerButton3 = this@ArithmeticActivity.findViewById(R.id.answerButton3) as Button
+        this.answerButton4 = this@ArithmeticActivity.findViewById(R.id.answerButton4) as Button
+
+        this.answerButton1?.setOnClickListener { buttonHandler(this.answerButton1!!) }
+        this.answerButton2?.setOnClickListener { buttonHandler(this.answerButton2!!) }
+        this.answerButton3?.setOnClickListener { buttonHandler(this.answerButton3!!) }
+        this.answerButton4?.setOnClickListener { buttonHandler(this.answerButton4!!) }
+
     }
 
+    private fun buttonHandler(button: Button)
+    {
+        val buttonText = button.text.toString().toInt()
+        if (buttonText != currentCorrectAnswer)
+        {
+            errorCount++
+            wasEquationAnswered = true
+        }
+    }
 
     fun showEquation(equationString: String) {
         runOnUiThread {
+
+            // if the previous equation has not been answered, an error was made
+            if (wasEquationAnswered != null || wasEquationAnswered == false) {
+                errorCount++
+            }
+
+            // the equation is parsed and the buttons texts are set
+            val result = parseEquation(equationString)
+            setAnswerButtonTexts(result)
+
+            currentCorrectAnswer = result
+            wasEquationAnswered = false
+
             if (this.equation != null) {
                 this.equation!!.text = equationString
             }
+
         }
+    }
+
+    /**
+     * Parses the equation string and return the result of the equation.
+     */
+    fun parseEquation(equationString: String) : Int {
+
+        val isAddition = equationString.contains("+")
+        val operator = if (isAddition) "+" else "-"
+
+        val first = equationString.split(operator)[0].toInt()
+        val second = equationString.split(operator)[1].toInt()
+
+        val result = if (isAddition) first + second else first - second
+        return result
+    }
+
+    /**
+     * Sets the text on the answer buttons to the correct answer and 3 additional, randomly generated numbers.
+     */
+    private fun setAnswerButtonTexts(correctResult: Int) {
+
+        val result = mutableListOf(correctResult)
+        generateUniqueRandomNumbers(result, 4)
+        result.shuffle()
+
+        this.answerButton1?.text = result[0].toString()
+        this.answerButton2?.text = result[1].toString()
+        this.answerButton3?.text = result[2].toString()
+        this.answerButton4?.text = result[3].toString()
+    }
+
+    /**
+     * Takes a list of integers and generates as many unique, random integers as specified by amount and adds them to the list.
+     * The random integers are in the range of [0, 30].
+     */
+    private fun generateUniqueRandomNumbers(result: MutableList<Int>, amount: Int) {
+
+        if (amount <= result.count()) return
+
+        while (true)
+        {
+            val randomNr = (0..30).random()
+            if (result.contains(randomNr)) continue
+
+            result.add(randomNr)
+            if (result.count() == amount) break
+        }
+
     }
 
     fun setTextVisible(shouldBeVisible: Boolean) {

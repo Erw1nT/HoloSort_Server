@@ -215,6 +215,10 @@ $(document).ready(function () {
 
     function sendInterruption(interruptionLength) {
 
+        /// clear selected text (only from labels, not from input fields)
+        let sel = document.getSelection();
+        sel.removeAllRanges();
+
         //sends the interruption length to the frontend tablet
         WS.reportInterruptionPoint(interruptionLength);
 
