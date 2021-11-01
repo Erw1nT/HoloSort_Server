@@ -38,7 +38,7 @@ class ArithmeticActivity : AbstractServiceView() {
     private var answerButton4: Button? = null
 
     private var equationIndex: Int = 0
-    private var currentCorrectAnswer: Int = 0
+    private var currentAnswer: Int = 0
 
     private var wasEquationAnswered: Boolean? = null
     private var errorCount: Int = 0
@@ -154,8 +154,12 @@ class ArithmeticActivity : AbstractServiceView() {
 
     private fun buttonHandler(button: Button)
     {
+        //prevent multiple presses
+        if (wasEquationAnswered == true) return
+
+        // if the button text does not match the currentAnswer, an error was made
         val buttonText = button.text.toString().toInt()
-        if (buttonText != currentCorrectAnswer)
+        if (buttonText != currentAnswer)
         {
             errorCount++
             wasEquationAnswered = true
@@ -166,7 +170,7 @@ class ArithmeticActivity : AbstractServiceView() {
         runOnUiThread {
 
             // if the previous equation has not been answered, an error was made
-            if (wasEquationAnswered != null || wasEquationAnswered == false) {
+            if (wasEquationAnswered == false) {
                 errorCount++
             }
 
@@ -174,7 +178,7 @@ class ArithmeticActivity : AbstractServiceView() {
             val result = parseEquation(equationString)
             setAnswerButtonTexts(result)
 
-            currentCorrectAnswer = result
+            currentAnswer = result
             wasEquationAnswered = false
 
             if (this.equation != null) {
