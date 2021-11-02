@@ -238,18 +238,16 @@ class NetworkingServiceMonitor : View() {
                 {
                     val content = jsonObject.getJSONObject("content") as JSONObject
 
-                    val target = jsonObject.opt("target")
                     if (target is String && target == "web client")
                     {
-                        // why ist timeStamp/errorCount of type Any! if it can be null?
-                        val timeStamp = content.get("time")
-                        val errorCount = content.get("errorCount")
+                        // why ist errorCountInterruption of type Any! if it can be null?
+                        val errorCountInterruption = content.get("errorCountInterruption")
 
                         val jsonObj = JSONObject()
                         jsonObj.put("type", "web client")
-                        jsonObj.put("errorCount", errorCount)
+                        jsonObj.put("errorCountInterruption", errorCountInterruption)
 
-                        // only relay the errorCount to the webClient, since the timestamp isnt needed
+                        // only relay the errorCountInterruption to the webClient, since the timestamp isnt needed
                         val webClient = subscriberTable.items.find{ it.name == "web client" } ?: return
                         Publisher.sendMessage(jsonObj, webClient)
                     }
@@ -374,8 +372,11 @@ class NetworkingServiceMonitor : View() {
         val startTimeInterruptionInt = csvData.optString("startTimeInteger", " ")
         val endTimeInterruption = csvData.optString("endTimeIT", " ")
         val endTimeInterruptionInt = csvData.optString("endTimeInteger", " ")
+        val errorCountInterruption = csvData.optString("errorCountInterruption", " ")
+
         System.out.println("StartTime:" + startTimeInterruption)
         System.out.println("EndTime:" + endTimeInterruption)
+
         val logEntry = GlobalLogger.exp().newLogEntry()
         logEntry.setValue("Participant Number", participantNumber)
         logEntry.setValue("Block", block)
@@ -397,7 +398,7 @@ class NetworkingServiceMonitor : View() {
         logEntry.setValue("INTEGER: Start Time Interruption", startTimeInterruptionInt)
         logEntry.setValue("End Time Interruption", endTimeInterruption)
         logEntry.setValue("INTEGER: End Time Interruption", endTimeInterruptionInt)
-
+        logEntry.setValue("Error Count Interruption", errorCountInterruption)
 
         GlobalLogger.exp().log(logEntry)
 

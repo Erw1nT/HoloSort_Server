@@ -43,7 +43,7 @@ class ArithmeticActivity : AbstractServiceView() {
     private var equationIndex: Int = 0
     private var currentAnswer: Int = 0
 
-    private var wasEquationAnswered: Boolean? = null
+    private var wasEquationAnswered: Boolean = false
     private var errorCount: Int = 0
 
     private val defaultClientListener = object : ClientListener {
@@ -119,7 +119,7 @@ class ArithmeticActivity : AbstractServiceView() {
                         val time = Timestamp(System.currentTimeMillis())
                         val jsonObj = JSONObject()
                         jsonObj.put("time", time.toString())
-                        jsonObj.put("errorCount", this@ArithmeticActivity.errorCount)
+                        jsonObj.put("errorCountInterruption", this@ArithmeticActivity.errorCount)
 
                         this@ArithmeticActivity.sendBackEndMessage(jsonObj, "web client")
 
@@ -179,7 +179,7 @@ class ArithmeticActivity : AbstractServiceView() {
     private fun buttonHandler(button: Button)
     {
         //prevent multiple presses
-        if (wasEquationAnswered == true) return
+        if (wasEquationAnswered) return
 
         // if the button text does not match the currentAnswer, an error was made
         val buttonText = button.text.toString().toInt()
@@ -194,7 +194,7 @@ class ArithmeticActivity : AbstractServiceView() {
         runOnUiThread {
 
             // if the previous equation has not been answered, an error was made
-            if (wasEquationAnswered == null || wasEquationAnswered == false) {
+            if (!wasEquationAnswered) {
                 errorCount++
             }
 

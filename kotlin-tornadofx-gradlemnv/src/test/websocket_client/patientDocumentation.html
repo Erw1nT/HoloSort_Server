@@ -85,10 +85,10 @@
             }
             else if (type === "web client")
             {
-                if('errorCount' in jsonMessage) {
+                if('errorCountInterruption' in jsonMessage) {
 
-                    localStorage["errorCountInterruption"] += Number(jsonMessage.errorCount);
-                    console.log(`added ${jsonMessage.errorCount} to localstorage. Total Errors = ${localStorage["errorCountInterruption"]}`)
+                    localStorage["errorCountInterruption"] += Number(jsonMessage.errorCountInterruption);
+                    console.log(`added ${jsonMessage.errorCountInterruption} to localstorage. Total Errors = ${localStorage["errorCountInterruption"]}`)
 
                 }
             }
