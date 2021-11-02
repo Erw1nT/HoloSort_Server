@@ -209,7 +209,7 @@ class NetworkingServiceMonitor : View() {
             // for instance: target is "lens" -> msg will be sent to HoloLens, when it's connected and named "lens"
             if (jsonObject.get("type") == "backend") {
 
-                val target = jsonObject.get("target")
+                val target = jsonObject.opt("target")
                 if (target is String && target == "lens")
                 {
                     println("target is $target")
@@ -231,6 +231,8 @@ class NetworkingServiceMonitor : View() {
                     }
                     return
                 }
+
+                //TODO Parsing von TimeStamp & ErrorCount
 
                 if (jsonObject.get("content") is JSONObject)
                 {
