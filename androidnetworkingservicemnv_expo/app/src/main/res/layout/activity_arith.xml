@@ -52,6 +52,8 @@
                     android:layout_weight=".25"
                     android:backgroundTint="@color/grey"
                     android:textColor="@color/white"
+                    android:textAlignment="center"
+                    android:textSize="48sp"
                     android:text="1"/>
 
             <Button android:id="@+id/answerButton2"
@@ -59,6 +61,8 @@
                     android:layout_weight=".25"
                     android:backgroundTint="@color/grey"
                     android:textColor="@color/white"
+                    android:textAlignment="center"
+                    android:textSize="48sp"
                     android:text="2"/>
 
             <Button android:id="@+id/answerButton3"
@@ -66,6 +70,8 @@
                     android:layout_weight=".25"
                     android:backgroundTint="@color/grey"
                     android:textColor="@color/white"
+                    android:textAlignment="center"
+                    android:textSize="48sp"
                     android:text="3"/>
 
             <Button android:id="@+id/answerButton4"
@@ -73,6 +79,8 @@
                     android:layout_weight=".25"
                     android:backgroundTint="@color/grey"
                     android:textColor="@color/white"
+                    android:textAlignment="center"
+                    android:textSize="48sp"
                     android:text="4"/>
 
         </TableRow>
