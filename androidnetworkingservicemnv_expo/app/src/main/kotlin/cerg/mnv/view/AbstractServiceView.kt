@@ -94,8 +94,9 @@ abstract class AbstractServiceView : Activity() {
     }
 
     fun sendBackEndMessage(string: String) {
-        networkingService?.sendMessage(
-                JSONObject(createJsonForGivenType(MESSAGE_TYPE.MNV_BACK_END_HANDLER, string)))
+        val jsonMsg = createJsonForGivenType(MESSAGE_TYPE.MNV_BACK_END_HANDLER, string)
+        println(jsonMsg)
+        networkingService?.sendMessage(JSONObject(jsonMsg))
     }
 
     fun sendBackEndMessage(jsonObject: JSONObject) {

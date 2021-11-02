@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TableRow
 import android.widget.TextView
 import cerg.mnv.model.MultiPatientData
 import cerg.mnv.model.Patient
@@ -32,6 +33,8 @@ class ArithmeticActivity : AbstractServiceView() {
     private var flash: ImageView? = null
     private var background: ImageView? = null
 
+    // the parent element of the buttons
+    private var tableRow: TableRow? = null
     private var answerButton1: Button? = null
     private var answerButton2: Button? = null
     private var answerButton3: Button? = null
@@ -85,13 +88,21 @@ class ArithmeticActivity : AbstractServiceView() {
                     val interruptionLength = messageText.toLong().times(1000)
                     showFlash(true)
 
+                    errorCount = 0
                     val timer = Timer()
+
+                    // Shows a new equation every 5 seconds
                     Timer().schedule(300) {
                         showFlash(false)
                         setTextVisible(true)
 
+                        runOnUiThread {
+                            this@ArithmeticActivity.tableRow?.visibility = View.VISIBLE
+                        }
+
                         timer.scheduleAtFixedRate(
                                 object : TimerTask() {
+
                                     override fun run() {
 
                                         showEquation(equationList[equationIndex % equationList.count()])
@@ -101,10 +112,23 @@ class ArithmeticActivity : AbstractServiceView() {
                                 }, 10, 5000
                         )
                     }
+
+                    // Task is done, send confirmation to backend
                     Timer().schedule(interruptionLength) {
                         timer.cancel()
                         val time = Timestamp(System.currentTimeMillis())
-                        this@ArithmeticActivity.sendBackEndMessage(time.toString())
+                        val jsonObj = JSONObject()
+                        jsonObj.put("time", time.toString())
+                        jsonObj.put("errorCount", this@ArithmeticActivity.errorCount)
+
+                        //TODO: extra Methode schreiben, die das senden korrekt macht?
+                        //this@ArithmeticActivity.sendBackEndMessage(time.toString())
+                        this@ArithmeticActivity.sendBackEndMessage(jsonObj.toString())
+
+                        runOnUiThread {
+                            this@ArithmeticActivity.tableRow?.visibility = View.INVISIBLE
+                        }
+
                         setTextVisible(false)
                         showFlash(true)
                         Timer().schedule(300) {
@@ -139,6 +163,8 @@ class ArithmeticActivity : AbstractServiceView() {
         this.background = this@ArithmeticActivity.findViewById(R.id.background) as ImageView
         this.equation = this@ArithmeticActivity.findViewById(R.id.arithTextView) as TextView
         this.flash = this@ArithmeticActivity.findViewById(R.id.flashView) as ImageView
+
+        this.tableRow = this@ArithmeticActivity.findViewById(R.id.tableRow1) as TableRow
 
         this.answerButton1 = this@ArithmeticActivity.findViewById(R.id.answerButton1) as Button
         this.answerButton2 = this@ArithmeticActivity.findViewById(R.id.answerButton2) as Button
