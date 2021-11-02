@@ -284,6 +284,7 @@ $(document).ready(function () {
         startInterruptionInteger = " ";
         localStorage["endTimeInt"] = " ";
         localStorage["endTimeInteger"] = " ";
+        localStorage["errorCountInterruption"] = " ";
         timestampResumption = " ";
         timestampResumptionInt = " ";
         allergieError = false;
@@ -745,6 +746,7 @@ $(document).ready(function () {
                         errorsModule: errorsModule,
                         errorsInput: errorsInputRT,
                         errorsEmptyModule: errorsEmptyModule,
+                        errorsInterruption: localStorage["errorCountInterruption"],
                         interruptionLength: interruptionLength,
                         clickOnOK: clickOKRT,
                         clickOnOKInt: clickOKRTInt,

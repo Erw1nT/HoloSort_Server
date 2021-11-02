@@ -57,12 +57,18 @@
             document.getElementById('echo').disabled = "disabled";
             document.getElementById('send').disabled = "disabled";
         });
+
         WS.registerOnMessageHandler(function (event) {
+
             let jsonMessage = JSON.parse(event.data);
             let type = jsonMessage.type;
+
             if (type === "expData") {
                 WS.loadExperimentData(event);
-            } else if (type === "backend") {
+            }
+            else if (type === "backend")
+            {
+
                 let time = jsonMessage.content;
                 var now = new Date();
                 var endInterruption = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
@@ -77,8 +83,15 @@
                 console.log(endInterruption);
 
             }
+            else if (type === "web client")
+            {
+                if('errorCount' in jsonMessage) {
 
+                    localStorage["errorCountInterruption"] += Number(jsonMessage.errorCount);
+                    console.log(`added ${jsonMessage.errorCount} to localstorage. Total Errors = ${localStorage["errorCountInterruption"]}`)
 
+                }
+            }
         });
         WS.registerOnErrorHandler(function (error) {
             //document.getElementById('log').append(error +
