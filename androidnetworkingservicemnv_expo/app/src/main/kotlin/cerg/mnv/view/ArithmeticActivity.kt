@@ -121,9 +121,7 @@ class ArithmeticActivity : AbstractServiceView() {
                         jsonObj.put("time", time.toString())
                         jsonObj.put("errorCount", this@ArithmeticActivity.errorCount)
 
-                        //TODO: extra Methode schreiben, die das senden korrekt macht?
-                        //this@ArithmeticActivity.sendBackEndMessage(time.toString())
-                        this@ArithmeticActivity.sendBackEndMessage(jsonObj.toString())
+                        this@ArithmeticActivity.sendBackEndMessage(jsonObj, "web client")
 
                         runOnUiThread {
                             this@ArithmeticActivity.tableRow?.visibility = View.INVISIBLE

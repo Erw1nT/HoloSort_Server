@@ -209,7 +209,9 @@ class NetworkingServiceMonitor : View() {
             // for instance: target is "lens" -> msg will be sent to HoloLens, when it's connected and named "lens"
             if (jsonObject.get("type") == "backend") {
 
+                // when a backend message has the "target" property, it is used to relay to a specific target
                 val target = jsonObject.opt("target")
+
                 if (target is String && target == "lens")
                 {
                     println("target is $target")
@@ -232,19 +234,42 @@ class NetworkingServiceMonitor : View() {
                     return
                 }
 
-                //TODO Parsing von TimeStamp & ErrorCount
-
                 if (jsonObject.get("content") is JSONObject)
                 {
-                    var content = jsonObject.getJSONObject("content") as JSONObject
-                    System.out.println("Interruption Times")
-                    startTime = content.optString("startTime", " ")
-                    endTime = content.optString("endTime", " ")
-                    Publisher.publish(content)
+                    val content = jsonObject.getJSONObject("content") as JSONObject
+
+                    val target = jsonObject.opt("target")
+                    if (target is String && target == "web client")
+                    {
+                        // why ist timeStamp/errorCount of type Any! if it can be null?
+                        val timeStamp = content.get("time")
+                        val errorCount = content.get("errorCount")
+
+                        val jsonObj = JSONObject()
+                        jsonObj.put("type", "web client")
+                        jsonObj.put("errorCount", errorCount)
+
+                        // only relay the errorCount to the webClient, since the timestamp isnt needed
+                        val webClient = subscriberTable.items.find{ it.name == "web client" } ?: return
+                        Publisher.sendMessage(jsonObj, webClient)
+                    }
+
+                    val startT = content.opt("startTime")
+                    val endT = content.opt("endTime")
+
+                    if (startT != null && endT != null)
+                    {
+                        System.out.println("Interruption Times")
+                        startTime = content.optString("startTime", " ")
+                        endTime = content.optString("endTime", " ")
+                        Publisher.publish(content)
+                    }
+
+
                 }
                 else if (jsonObject.get("content") is JSONArray)
                 {
-                    var csvData = jsonObject.getJSONArray("content") as JSONArray
+                    val csvData = jsonObject.getJSONArray("content") as JSONArray
                     for (i in 0 until csvData.length()) {
                         convertToCSVFile(csvData.getJSONObject(i))
                         System.out.println("Data: " + csvData.getJSONObject(i))
