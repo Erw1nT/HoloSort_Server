@@ -194,7 +194,7 @@ class ArithmeticActivity : AbstractServiceView() {
         runOnUiThread {
 
             // if the previous equation has not been answered, an error was made
-            if (wasEquationAnswered == false) {
+            if (wasEquationAnswered == null || wasEquationAnswered == false) {
                 errorCount++
             }
 
