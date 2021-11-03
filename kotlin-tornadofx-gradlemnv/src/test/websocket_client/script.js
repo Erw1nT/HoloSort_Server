@@ -231,17 +231,13 @@ $(document).ready(function () {
         let previousModule = getPreviousModule()
         let rect = previousModule.getBoundingClientRect()
 
+        // TODO: Is there no way to do this in a nice way instead of manually?
+        // idk why interruptionLength has to have additional "" and hololensCueType doesnt
         let rectMsg = '{"rect":' + JSON.stringify(rect) + ''
-        let interruptionMsg = '"interruptionLength":"' + interruptionLength + '"}'
+        let interruptionMsg = '"interruptionLength":"' + interruptionLength + '"'
+        let hololensCueType = '"hololensCueType":' + expConfig.hololensCueType + '}'
 
-        WS.sendToLens(rectMsg + ',' + interruptionMsg)
-
-        /*if (sichtbarkeit == 0){
-        unsichtbar();
-        }
-        if (currentsichtbarkeit == 0){
-        unsichtbar();
-        } */
+        WS.sendToLens(rectMsg + ',' + interruptionMsg + ',' + hololensCueType)
     }
 
     function getPreviousModule()
@@ -310,6 +306,7 @@ $(document).ready(function () {
             errorCountInterruption: localStorage["errorCountInterruption"],
             interruptionLength: 0,
             clickOnOK: " ",
+            hololensCueType: expConfig.hololensCueType
         });
     }
 
@@ -347,6 +344,7 @@ $(document).ready(function () {
                 errorCountInterruption: localStorage["errorCountInterruption"],
                 interruptionLength: 0,
                 clickOnOK: " ",
+                hololensCueType: expConfig.hololensCueType
             });
 
             timestampResumptionProcess = " ";
@@ -382,6 +380,7 @@ $(document).ready(function () {
             interruptionLength: 0,
             clickOnOK: timestampBaselineProcess,
             clickOnOKInt: timestampBaselineProcessInt,
+            hololensCueType: expConfig.hololensCueType
         });
 
         timestampBaselineProcess = " ";
@@ -567,6 +566,7 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
+                        hololensCueType: expConfig.hololensCueType
                     });
 
                     resetErrors();
@@ -670,6 +670,7 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
+                        hololensCueType: expConfig.hololensCueType
                     });
 
                     resetErrors();
@@ -759,6 +760,7 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
+                        hololensCueType: expConfig.hololensCueType
                     });
 
                     resetErrors();
@@ -927,6 +929,7 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
+                        hololensCueType: expConfig.hololensCueType
                     });
 
                     resetErrors();
@@ -1072,6 +1075,7 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
+                        hololensCueType: expConfig.hololensCueType
                     });
 
                     resetErrors();
@@ -1213,6 +1217,7 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
+                        hololensCueType: expConfig.hololensCueType
                     });
 
                     resetErrors();
@@ -1227,6 +1232,60 @@ $(document).ready(function () {
         });
     });
 
+    // [WIP] Desperate try to refactor
+    function setJsonObjValuesShort(time, timeInt, timeResumptionError, errorsInput, errorsEmptyModule, interruptionLength, clickOnOk, clickOnOkInt)
+    {
+        jsonObj.push({
+            participantNumber: metaInfo.ParticipantNumber,
+            block: block,
+            device: metaInfo.Device,
+            interruptionTrial: interruption,
+            sichtbarkeit: currentsichtbarkeit,
+            trial: trial,
+            time: time,
+            timeInt: timeInt,
+            timeResumptionError: timeResumptionError,
+            patientID: patientID,
+            module: module,
+            errorsInput: errorsInput,
+            errorsEmptyModule: errorsEmptyModule,
+            errorsModule: errorsModule,
+            errorCountInterruption: localStorage["errorCountInterruption"],
+            interruptionLength: interruptionLength,
+            clickOnOK: clickOnOk,
+            hololensCueType: expConfig.hololensCueType
+        })
+    }
+
+    // [WIP] Desperate try to refactor
+    function setJsonObjValues(time, timeInt, timeResumptionError, errorsInput, errorsEmptyModule, interruptionLength, clickOnOk, clickOnOkInt)
+    {
+        jsonObj.push({
+            participantNumber: metaInfo.ParticipantNumber,
+            block: block,
+            device: metaInfo.Device,
+            interruptionTrial: interruption,
+            sichtbarkeit: currentsichtbarkeit,
+            trial: trial,
+            time: time,
+            timeInt: timeInt,
+            timeResumptionError: timeResumptionError,
+            patientID: patientID,
+            module: module,
+            errorsInput: errorsInput,
+            errorsEmptyModule: errorsEmptyModule,
+            errorsModule: errorsModule,
+            errorCountInterruption: localStorage["errorCountInterruption"],
+            interruptionLength: interruptionLength,
+            clickOnOK: clickOnOk,
+            clickOnOKInt: clickOnOkInt,
+            startTimeIT: startInterruption,
+            endTimeIT: localStorage["endTimeInt"],
+            startTimeInteger: startInterruptionInteger,
+            endTimeInteger: localStorage["endTimeInteger"],
+            hololensCueType: expConfig.hololensCueType
+        })
+    }
 
     // Enables editing when edit button is clicked and shows error message
     $("#editPatientInformation").click(function () {

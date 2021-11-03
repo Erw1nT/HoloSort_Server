@@ -39,7 +39,8 @@ class ExperimentConfiguration : JsonModel {
     val interruptionTaskProperty = SimpleStringProperty(null)
     var interruptionTask: String? by interruptionTaskProperty
 
-
+    val hololensCueTypeProperty = SimpleStringProperty(null)
+    var hololensCueType: String? by hololensCueTypeProperty
 
     override fun updateModel(json: JsonObject) {
         with(json) {
@@ -49,6 +50,7 @@ class ExperimentConfiguration : JsonModel {
             interruptionTask = string("InterruptionTask")
             trainingIncluded = boolean("TrainingIncluded")!!
             calibrationIncluded = boolean("CalibrationIncluded")!!
+            hololensCueType = string("HoloLensCueType")
         }
     }
 
@@ -62,6 +64,7 @@ class ExperimentConfiguration : JsonModel {
             add("Device", device)
             add("TrainingIncluded", trainingIncluded)
             add("CalibrationIncluded", calibrationIncluded)
+            add("HoloLensCueType", hololensCueType)
         }
     }
 
@@ -76,6 +79,7 @@ class ExperimentConfiguration : JsonModel {
         device = null
         trainingIncluded = true
         calibrationIncluded = true
+        hololensCueType = null
     }
 
     override fun toString(): String = toJSON().toString()

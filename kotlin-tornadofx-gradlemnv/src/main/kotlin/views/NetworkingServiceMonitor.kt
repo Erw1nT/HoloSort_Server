@@ -217,6 +217,7 @@ class NetworkingServiceMonitor : View() {
                     println("target is $target")
                     val lens = subscriberTable.items.find{ it.name == target } ?: return
 
+                    //TODO: only transfer, if the hololensCueType is not none
                     //only transfer the Module Rectangle Information
                     val holoLensMsg = JSONObject()
 
@@ -225,9 +226,11 @@ class NetworkingServiceMonitor : View() {
                     {
                         val rect = contentObject.get("rect")
                         val interruptionLength = contentObject.get("interruptionLength")
+                        val hololensCueType = contentObject.get("hololensCueType")
 
                         holoLensMsg.put("prevModuleRect", rect)
                         holoLensMsg.put("interruptionLength", interruptionLength)
+                        holoLensMsg.put("hololensCueType", hololensCueType)
 
                         Publisher.sendMessage(holoLensMsg, lens)
                     }
@@ -327,7 +330,8 @@ class NetworkingServiceMonitor : View() {
                             timer.scheduleAtFixedRate(
                                 object : TimerTask() {
                                     override fun run(){
-                                        r.mouseMove(x, y)
+                                        //r.mouseMove(x, y)
+                                        //TODO: comment back in (or disable when in debug?)
                                     }
                                 },
                                 0, 1
@@ -373,6 +377,7 @@ class NetworkingServiceMonitor : View() {
         val endTimeInterruption = csvData.optString("endTimeIT", " ")
         val endTimeInterruptionInt = csvData.optString("endTimeInteger", " ")
         val errorCountInterruption = csvData.optString("errorCountInterruption", " ")
+        val hololensCueType = csvData.optString("hololensCueType", " ")
 
         System.out.println("StartTime:" + startTimeInterruption)
         System.out.println("EndTime:" + endTimeInterruption)
@@ -401,6 +406,7 @@ class NetworkingServiceMonitor : View() {
         logEntry.setValue("End Time Interruption", endTimeInterruption)
         logEntry.setValue("INTEGER: End Time Interruption", endTimeInterruptionInt)
         logEntry.setValue("Error Count Interruption", errorCountInterruption)
+        logEntry.setValue("Hololens Cue Type", hololensCueType)
 
         GlobalLogger.exp().log(logEntry)
 

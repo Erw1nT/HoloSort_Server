@@ -3,7 +3,6 @@ package config
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.*
 import javafx.collections.ObservableList
-import javafx.event.ActionEvent
 import javafx.scene.control.Button
 import javafx.scene.control.TextArea
 import javafx.scene.control.ToggleGroup
@@ -16,6 +15,7 @@ import javafx.stage.Stage
 import logging.GlobalLogger
 import logging.LogFormat
 import models.*
+import models.enums.HololensCueType
 import java.util.*
 import org.json.JSONObject
 import publisher.Publisher
@@ -162,6 +162,27 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
                         }
                     }
 
+                    field("Select HoloLens Cue Type"){
+                        val toggleGroup = ToggleGroup()
+                        vbox {
+                            radiobutton("None", toggleGroup) {
+                                action {
+                                    expConfiguration.hololensCueType = HololensCueType.NONE.identifier
+                                }
+                            }
+                            radiobutton("Automatic", toggleGroup) {
+                                action {
+                                    expConfiguration.hololensCueType = HololensCueType.AUTOMATIC.identifier
+                                }
+                            }
+                            radiobutton("Manual", toggleGroup) {
+                                action {
+                                    expConfiguration.hololensCueType = HololensCueType.MANUAL.identifier
+                                }
+                            }
+                        }
+                    }
+
                     field("Training") {
                         checkbox("Include Training", expConfiguration.trainingIncludedProperty)
                         {
@@ -211,19 +232,21 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
         absolutePath, LogFormat.CSV)
 
         GlobalLogger.exp().clearColumns()
-        GlobalLogger.exp().addColumns(arrayOf("Participant Number", "Block", "Device", "Interruption Trial", "Trial", "First Click In Module", "INTEGER: First Click In Module", "Wrong Click In Module After Interruption", "Patient ID", "Module", "Error Wrong Module", "Error Input", "Error Empty Module", "Error Count Interruption", "Interruption Length", "Click on OK", "INTEGER: Click on OK", "Start Time Interruption", "INTEGER: Start Time Interruption", "End Time Interruption", "INTEGER: End Time Interruption"))
+        GlobalLogger.exp().addColumns(arrayOf("Participant Number", "Block", "Device", "Hololens Cue Type", "Interruption Trial", "Trial", "First Click In Module", "INTEGER: First Click In Module", "Wrong Click In Module After Interruption", "Patient ID", "Module", "Error Wrong Module", "Error Input", "Error Empty Module", "Error Count Interruption", "Interruption Length", "Click on OK", "INTEGER: Click on OK", "Start Time Interruption", "INTEGER: Start Time Interruption", "End Time Interruption", "INTEGER: End Time Interruption"))
         GlobalLogger.exp().writerHeader()
 
     }
 
     //functions
-    fun sendPatientAndTrialInformation() {
+    private fun sendPatientAndTrialInformation() {
         //createPatients()
         createFixedPatients()
+
         if (trialsConfig.trials.size > patients.size) {
             statusArea.clear()
             statusArea.appendText("Please create more patients manually")
         }
+
         if (!Publisher.isNetworkingActiveAndRunning()) {
             statusArea.clear()
             statusArea.appendText("Network is not running")
@@ -236,12 +259,13 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
         } else {
             val obj = JSONObject()
             //TODO Publisher.sendMessage to subscriber
+
             val objFrontend = JSONObject()
             objFrontend.put("type", "expDataHMD")
             objFrontend.put("training", expConfiguration.trainingIncluded)
             objFrontend.put("calibration", expConfiguration.calibrationIncluded)
             objFrontend.put("interruptionTask", expConfiguration.interruptionTask)
-            //Publisher.publish(objFrontend)
+
             Publisher.getSubscribers().forEach {
                 if (it.value.name == "frontend"){
                     frontendSubs = it.value
@@ -249,14 +273,18 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
                     webClientSubs = it.value
                 }
             }
+
             if(frontendSubs !== null){
                 System.out.println("there is a frontend")
                 Publisher.sendMessage(objFrontend, frontendSubs!!)
             }
+
+            obj.put("type", "expData")
             obj.put("metaInfo", expConfiguration)
             obj.put("trialsConfig", trialsConfig)
             obj.put("list", patients)
-            obj.put("type", "expData")
+            obj.put("hololensCueType", expConfiguration.hololensCueType)
+
             if(webClientSubs !== null){
                 System.out.println("there is a webclient")
                 Publisher.sendMessage(obj, webClientSubs!!)
@@ -360,6 +388,10 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
         if (expConfiguration.trialsConfig == null) {
             enabled = false
             statusArea.text += "No Trials Config selected" + "\n"
+        }
+        if (expConfiguration.hololensCueType == null) {
+            enabled = false
+            statusArea.text += "No Hololens Cue Type selected" + "\n"
         }
         startExpButton.isDisable = !enabled
 
