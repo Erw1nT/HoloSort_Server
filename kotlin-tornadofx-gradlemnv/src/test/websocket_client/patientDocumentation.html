@@ -87,7 +87,7 @@
             {
                 if('errorCountInterruption' in jsonMessage) {
 
-                    localStorage["errorCountInterruption"] += Number(jsonMessage.errorCountInterruption);
+                    localStorage["errorCountInterruption"] = Number(localStorage["errorCountInterruption"]) + Number(jsonMessage.errorCountInterruption);
                     console.log(`added ${jsonMessage.errorCountInterruption} to localstorage. Total Errors = ${localStorage["errorCountInterruption"]}`)
 
                 }

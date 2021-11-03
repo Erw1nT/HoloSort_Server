@@ -211,7 +211,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
         absolutePath, LogFormat.CSV)
 
         GlobalLogger.exp().clearColumns()
-        GlobalLogger.exp().addColumns(arrayOf("Participant Number", "Block", "Device", "Interruption Trial", "Trial", "First Click In Module", "INTEGER: First Click In Module", "Wrong Click In Module After Interruption", "Patient ID", "Module", "Error Wrong Module", "Error Input", "Error Empty Module", "Interruption Length", "Click on OK", "INTEGER: Click on OK", "Start Time Interruption", "INTEGER: Start Time Interruption", "End Time Interruption", "INTEGER: End Time Interruption"))
+        GlobalLogger.exp().addColumns(arrayOf("Participant Number", "Block", "Device", "Interruption Trial", "Trial", "First Click In Module", "INTEGER: First Click In Module", "Wrong Click In Module After Interruption", "Patient ID", "Module", "Error Wrong Module", "Error Input", "Error Empty Module", "Error Count Interruption", "Interruption Length", "Click on OK", "INTEGER: Click on OK", "Start Time Interruption", "INTEGER: Start Time Interruption", "End Time Interruption", "INTEGER: End Time Interruption"))
         GlobalLogger.exp().writerHeader()
 
     }
@@ -229,7 +229,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
             statusArea.appendText("Network is not running")
         }
 
-        var subscriber = Publisher.getSubscribers()
+        val subscriber = Publisher.getSubscribers()
         if (subscriber.size == 1) {
             statusArea.clear()
             statusArea.appendText("No subscriber connected")

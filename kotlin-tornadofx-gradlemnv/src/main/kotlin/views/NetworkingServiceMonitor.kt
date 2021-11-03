@@ -377,6 +377,8 @@ class NetworkingServiceMonitor : View() {
         System.out.println("StartTime:" + startTimeInterruption)
         System.out.println("EndTime:" + endTimeInterruption)
 
+        // Note: The columns needs to be added beforehand,
+        // see: ExperimentRunner::createLogger
         val logEntry = GlobalLogger.exp().newLogEntry()
         logEntry.setValue("Participant Number", participantNumber)
         logEntry.setValue("Block", block)
