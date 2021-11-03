@@ -104,16 +104,25 @@ class ArithmeticActivity : AbstractServiceView() {
                                 object : TimerTask() {
                                     override fun run() {
 
+                                        // before every new equation, evaluate whether the input of the user was correct
+                                        evaluateUserInput()
                                         showEquation(equationList[equationIndex % equationList.count()])
                                         equationIndex++
 
+                                        wasEquationAnswered = false
+
                                     }
                                 }, 10, 5000)
+
                     }
 
-                    // Task is done, send confirmation to backend
+
+                    // Task is done, send confirmation to backend, cancel previous Timer
                     Timer().schedule(interruptionLength) {
                         timer.cancel()
+
+                        evaluateUserInput()
+
                         val time = Timestamp(System.currentTimeMillis())
                         val jsonObj = JSONObject()
                         jsonObj.put("time", time.toString())
@@ -198,31 +207,41 @@ class ArithmeticActivity : AbstractServiceView() {
     }
 
     fun showEquation(equationString: String) {
+
         runOnUiThread {
 
             //Buttons are hidden once a button is pressed,
             //therefore we show them again for every new equation
             this.tableRow!!.visibility = View.VISIBLE
 
-            // if wasEquation is null, there was no previous Equation
-            // if the previous equation has not been answered, an error was made
-            if (wasEquationAnswered != null && wasEquationAnswered == false) {
-                errorCount++
-                println("No Button was pressed. Errors = $errorCount")
-            }
-
             // the equation is parsed and the buttons texts are set
             val result = parseEquation(equationString)
             setAnswerButtonTexts(result)
 
             currentAnswer = result
-            wasEquationAnswered = false
 
             if (this.equation != null) {
                 this.equation!!.text = equationString
             }
 
         }
+    }
+
+    fun evaluateUserInput()
+    {
+
+        println("evaluateUserInput")
+        // if wasEquation is null, there was no previous Equation
+        // if the previous equation has not been answered, an error was made
+        if (wasEquationAnswered != null && wasEquationAnswered == false) {
+            errorCount++
+            println("No Button was pressed. Errors = $errorCount")
+        }
+        else if (wasEquationAnswered == null)
+        {
+            println("wasEquationAnswered is null.")
+        }
+
     }
 
     /**
