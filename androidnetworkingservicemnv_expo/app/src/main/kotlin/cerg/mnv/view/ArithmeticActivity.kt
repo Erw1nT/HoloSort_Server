@@ -43,7 +43,7 @@ class ArithmeticActivity : AbstractServiceView() {
     private var equationIndex: Int = 0
     private var currentAnswer: Int = 0
 
-    private var wasEquationAnswered: Boolean = false
+    private var wasEquationAnswered: Boolean? = null
     private var errorCount: Int = 0
 
     private val defaultClientListener = object : ClientListener {
@@ -51,6 +51,7 @@ class ArithmeticActivity : AbstractServiceView() {
             val jsonObject = JSONObject(message)
             val messageLevel by lazy {
                 try {
+
                     if (jsonObject.getString("type") == "error") MessageLevel.ERROR else MessageLevel.INFO
                 } catch (ex: JSONException) {
                     MessageLevel.INFO
@@ -88,7 +89,10 @@ class ArithmeticActivity : AbstractServiceView() {
                     val interruptionLength = messageText.toLong().times(1000)
                     showFlash(true)
 
+                    // Reset errors before every interruption
                     errorCount = 0
+                    wasEquationAnswered = null
+
                     val timer = Timer()
 
                     // Shows a new equation every 5 seconds
@@ -96,21 +100,15 @@ class ArithmeticActivity : AbstractServiceView() {
                         showFlash(false)
                         setTextVisible(true)
 
-                        runOnUiThread {
-                            this@ArithmeticActivity.tableRow?.visibility = View.VISIBLE
-                        }
-
                         timer.scheduleAtFixedRate(
                                 object : TimerTask() {
-
                                     override fun run() {
 
                                         showEquation(equationList[equationIndex % equationList.count()])
                                         equationIndex++
 
                                     }
-                                }, 10, 5000
-                        )
+                                }, 10, 5000)
                     }
 
                     // Task is done, send confirmation to backend
@@ -178,24 +176,39 @@ class ArithmeticActivity : AbstractServiceView() {
 
     private fun buttonHandler(button: Button)
     {
+
         //prevent multiple presses
-        if (wasEquationAnswered) return
+        if (wasEquationAnswered == true) return
 
         // if the button text does not match the currentAnswer, an error was made
-        val buttonText = button.text.toString().toInt()
-        if (buttonText != currentAnswer)
+        val buttonValue = button.text.toString().toInt()
+        if (buttonValue != currentAnswer)
         {
             errorCount++
-            wasEquationAnswered = true
+            println("Wrong Button pressed. Errors = $errorCount")
+            println("Expected: $currentAnswer, Actual: $buttonValue")
         }
+        else
+        {
+            println("Correct Button pressed. Errors = $errorCount")
+        }
+
+        wasEquationAnswered = true
+        this.tableRow!!.visibility = View.INVISIBLE
     }
 
     fun showEquation(equationString: String) {
         runOnUiThread {
 
+            //Buttons are hidden once a button is pressed,
+            //therefore we show them again for every new equation
+            this.tableRow!!.visibility = View.VISIBLE
+
+            // if wasEquation is null, there was no previous Equation
             // if the previous equation has not been answered, an error was made
-            if (!wasEquationAnswered) {
+            if (wasEquationAnswered != null && wasEquationAnswered == false) {
                 errorCount++
+                println("No Button was pressed. Errors = $errorCount")
             }
 
             // the equation is parsed and the buttons texts are set
@@ -233,6 +246,7 @@ class ArithmeticActivity : AbstractServiceView() {
     private fun setAnswerButtonTexts(correctResult: Int) {
 
         val result = mutableListOf(correctResult)
+
         generateUniqueRandomNumbers(result, 4)
         result.shuffle()
 
@@ -247,6 +261,7 @@ class ArithmeticActivity : AbstractServiceView() {
      * The random integers are in the range of [0, 30].
      */
     private fun generateUniqueRandomNumbers(result: MutableList<Int>, amount: Int) {
+        //TODO: Instead of Random, use the next closest 3 numbers?
 
         if (amount <= result.count()) return
 
