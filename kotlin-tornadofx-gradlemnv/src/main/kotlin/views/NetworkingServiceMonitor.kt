@@ -17,6 +17,7 @@ import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.util.Duration
 import logging.GlobalLogger
+import models.enums.HololensCueType
 import networking.Converter
 import networking.NetworkingChangeListener
 import networking.NetworkingState
@@ -197,91 +198,99 @@ class NetworkingServiceMonitor : View() {
 
         override fun onMessage(subscriber: Subscriber?, jsonObject: JSONObject) {
             runLater {
-                messageList.items.add("Network: " + jsonObject.toString())
+                messageList.items.add("Network: $jsonObject")
             }
 
-            // wenn die Nachricht vom Frontend kommt
+            // wenn die Nachricht vom Frontend kommt, dann immer publishen?
+            // TODO: Hier kommt vermutlich der Fehler her, dass Dinge mehrfach im Monitor geloggt werden
             if (subscriber?.name == "frontend") {
                 Publisher.publish(jsonObject)
             }
 
-            // a message of type "backend" arrives, which has set the property "target"
-            // for instance: target is "lens" -> msg will be sent to HoloLens, when it's connected and named "lens"
-            if (jsonObject.get("type") == "backend") {
+            if (jsonObject.isDedicatedTo("lens"))
+            {
+                val lens = subscriberTable.items.find{ it.name == "lens" } ?: return
 
-                // when a backend message has the "target" property, it is used to relay to a specific target
-                val target = jsonObject.opt("target")
+                val contentObject = jsonObject.get("content") as JSONObject
 
-                if (target is String && target == "lens")
+                val rect = contentObject.get("rect")
+                val interruptionLength = contentObject.get("interruptionLength")
+                val hololensCueType = contentObject.get("hololensCueType")
+
+                if (hololensCueType.toString() != HololensCueType.NONE.identifier)
                 {
-                    println("target is $target")
-                    val lens = subscriberTable.items.find{ it.name == target } ?: return
-
-                    //TODO: only transfer, if the hololensCueType is not none
-                    //only transfer the Module Rectangle Information
                     val holoLensMsg = JSONObject()
+                    holoLensMsg.put("prevModuleRect", rect)
+                    holoLensMsg.put("interruptionLength", interruptionLength)
+                    holoLensMsg.put("hololensCueType", hololensCueType)
 
-                    val contentObject = jsonObject.get("content")
-                    if (contentObject is JSONObject)
-                    {
-                        val rect = contentObject.get("rect")
-                        val interruptionLength = contentObject.get("interruptionLength")
-                        val hololensCueType = contentObject.get("hololensCueType")
-
-                        holoLensMsg.put("prevModuleRect", rect)
-                        holoLensMsg.put("interruptionLength", interruptionLength)
-                        holoLensMsg.put("hololensCueType", hololensCueType)
-
-                        Publisher.sendMessage(holoLensMsg, lens)
-                    }
-                    return
+                    Publisher.sendMessage(holoLensMsg, lens)
                 }
 
-                if (jsonObject.get("content") is JSONObject)
-                {
-                    val content = jsonObject.getJSONObject("content") as JSONObject
-
-                    if (target is String && target == "web client")
-                    {
-                        // why ist errorCountInterruption of type Any! if it can be null?
-                        val errorCountInterruption = content.get("errorCountInterruption")
-
-                        val jsonObj = JSONObject()
-                        jsonObj.put("type", "web client")
-                        jsonObj.put("errorCountInterruption", errorCountInterruption)
-
-                        // only relay the errorCountInterruption to the webClient, since the timestamp isnt needed
-                        val webClient = subscriberTable.items.find{ it.name == "web client" } ?: return
-                        Publisher.sendMessage(jsonObj, webClient)
-                    }
-
-                    val startT = content.opt("startTime")
-                    val endT = content.opt("endTime")
-
-                    if (startT != null && endT != null)
-                    {
-                        System.out.println("Interruption Times")
-                        startTime = content.optString("startTime", " ")
-                        endTime = content.optString("endTime", " ")
-                        Publisher.publish(content)
-                    }
-
-
-                }
-                else if (jsonObject.get("content") is JSONArray)
-                {
-                    val csvData = jsonObject.getJSONArray("content") as JSONArray
-                    for (i in 0 until csvData.length()) {
-                        convertToCSVFile(csvData.getJSONObject(i))
-                        System.out.println("Data: " + csvData.getJSONObject(i))
-                    }
-                    System.out.println("Close log files")
-                    //GlobalLogger.closeAllLogFiles()
-                }
-
+                return
             }
+
+            if (jsonObject.isDedicatedTo("web client"))
+            {
+                val webClient = subscriberTable.items.find{ it.name == "web client" } ?: return
+                val content = jsonObject.getJSONObject("content") as JSONObject
+
+                // why ist errorCountInterruption of type Any! if it can be null?
+                val errorCountInterruption = content.get("errorCountInterruption")
+
+                val jsonObj = JSONObject()
+                jsonObj.put("type", "web client")
+                jsonObj.put("errorCountInterruption", errorCountInterruption)
+
+                // only relay the errorCountInterruption to the webClient, since the timestamp isnt needed
+                Publisher.sendMessage(jsonObj, webClient)
+                return
+            }
+
+
+            if (jsonObject.containsCSVData())
+            {
+                val csvData = jsonObject.getJSONArray("content") as JSONArray
+
+                for (i in 0 until csvData.length()) {
+                    convertToCSVFile(csvData.getJSONObject(i))
+                    println("Data: " + csvData.getJSONObject(i))
+                }
+
+                return
+                //println("Close log files")
+                //GlobalLogger.closeAllLogFiles()
+            }
+
         }
     }
+
+    private fun JSONObject.isDedicatedTo(identifier: String):Boolean {
+        if (this.get("type") == "backend")
+        {
+            val target = this.opt("target")
+            val content = this.get("content")
+
+            if (content is JSONObject && target is String && target == identifier)
+            {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    private fun JSONObject.containsCSVData():Boolean {
+
+            if (this.get("type") == "backend") {
+
+                if (this.get("content") is JSONArray)
+                {
+                    return true
+                }
+            }
+            return false
+        }
 
     private val messageList = listview<String> {
         items.add("No Messages")
