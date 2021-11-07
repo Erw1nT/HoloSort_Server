@@ -89,10 +89,6 @@ abstract class AbstractServiceView : Activity() {
         networkingService?.sendMpmGameMessageRequest(mpmGameMessageType)
     }
 
-    fun sendMessageOfType(messageType: MESSAGE_TYPE, jsonObject: JSONObject) {
-        networkingService?.sendMessageOfType(messageType, jsonObject)
-    }
-
     fun sendBackEndMessage(string: String) {
         val jsonMsg = createJsonForGivenType(MESSAGE_TYPE.MNV_BACK_END_HANDLER, string)
         networkingService?.sendMessage(JSONObject(jsonMsg))
