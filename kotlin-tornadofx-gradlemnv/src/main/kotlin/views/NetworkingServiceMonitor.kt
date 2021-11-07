@@ -44,8 +44,6 @@ class NetworkingServiceMonitor : View() {
 
     private var localIps = SimpleStringProperty("N/A")
 
-    var startTime = ""
-    var endTime = ""
     private val monitorNotRunningDummySubscriber = LocalSubscriber("Monitor not Running")
 
     var file = File("src/main/resources/wavs/alerttone2.wav")
@@ -53,7 +51,7 @@ class NetworkingServiceMonitor : View() {
     val alerttone = Media(File(path).toURI().toURL().toString())
     val mediaPlayer = MediaPlayer(alerttone)
 
-
+    private var isPollLoggingEnabled = true
 
     private val subscriberTable = tableview<Subscriber> {
         readonlyColumn("ID", Subscriber::key).pctWidth(40)
@@ -198,13 +196,27 @@ class NetworkingServiceMonitor : View() {
 
         override fun onMessage(subscriber: Subscriber?, jsonObject: JSONObject) {
             runLater {
+                // do not add poll messages, if polling is disabled
+                if (!isPollLoggingEnabled and (jsonObject.isHololensPoll()))
+                {
+                    return@runLater
+                }
+
                 messageList.items.add("Network: $jsonObject")
             }
 
-            // wenn die Nachricht vom Frontend kommt, dann immer publishen?
-            // TODO: Hier kommt vermutlich der Fehler her, dass Dinge mehrfach im Monitor geloggt werden
-            if (subscriber?.name == "frontend") {
-                Publisher.publish(jsonObject)
+            if (jsonObject.isHololensPoll())
+            {
+                val lens = subscriberTable.items.find{ it.name == "lens" } ?: return
+
+                val timeSent = (jsonObject.get("content") as JSONObject).get("timeSent") as String
+
+                val pollMsg = JSONObject()
+                pollMsg.put("pollBack", "true")
+                pollMsg.put("timeSent", timeSent)
+
+                Publisher.sendMessage(pollMsg, lens)
+                return
             }
 
             if (jsonObject.isDedicatedTo("lens"))
@@ -246,7 +258,6 @@ class NetworkingServiceMonitor : View() {
                 Publisher.sendMessage(jsonObj, webClient)
                 return
             }
-
 
             if (jsonObject.containsCSVData())
             {
@@ -292,6 +303,24 @@ class NetworkingServiceMonitor : View() {
             return false
         }
 
+    private fun JSONObject.isHololensPoll():Boolean {
+
+        if (this.get("type") == "backend")
+        {
+            val target = this.opt("target")
+            val content = this.get("content") as JSONObject
+
+            val poll = content.opt("poll")
+
+            if (poll is String && poll == "true" && target is String && target == "lens")
+            {
+                return true
+            }
+        }
+
+        return false
+    }
+
     private val messageList = listview<String> {
         items.add("No Messages")
 
@@ -316,7 +345,13 @@ class NetworkingServiceMonitor : View() {
 
         override fun onMessage(message: String) {
             runLater {
-                messageList.items.add("Network: " + message)
+
+                if (!isPollLoggingEnabled and message.contains("pollBack"))
+                {
+                    return@runLater
+                }
+
+                messageList.items.add("Network: $message")
             }
             val jsonMessage = JSONObject(message)
             if (jsonMessage.get("type") == "frontend") {
@@ -503,19 +538,22 @@ class NetworkingServiceMonitor : View() {
             val startWebsocket = button("Start Websocket") {
                 enableWhen(isNetworkingActiveBinding.and(isStarted))
                 action {
-                    var file = File("src/test/websocket_client/patientDocumentation.html")
-                    var pathToWebsocket = file.absolutePath
+
+                    // Resolves the path to the patientDocumentation (web client) and launches it
+                    // I don't know why someone put it in the test-directory, but that's where it stays for now
+                    val file = File("src/test/websocket_client/patientDocumentation.html")
+                    val pathToWebsocket = file.absolutePath
                     Desktop.getDesktop().browse(File(pathToWebsocket).toURI())
 
                 }
             }
 
-            button("Send to Lens")
+            checkbox("Log Polling Messages")
             {
-                enableWhen(isNetworkingActiveBinding.and(isStarted))
+                this.isSelected = isPollLoggingEnabled
+
                 action {
-                    val lens = subscriberTable.items.find{ it.name == "lens" } ?: return@action
-                    Publisher.sendMessage(JSONObject("{\"type\": \"message\", \"content\": {\"string1\": \"content1\"}}\""), lens)
+                    isPollLoggingEnabled = this.isSelected
                 }
             }
 
@@ -595,6 +633,18 @@ class NetworkingServiceMonitor : View() {
         this.messageList.items.clear()
         this.messageList.items.add("No Messages")
         this.isStarted.set(false)
+
+        sendEndMessageToHololens()
+    }
+
+    private fun sendEndMessageToHololens()
+    {
+        val lens = subscriberTable.items.find{ it.name == "lens" } ?: return
+
+        val jsonObj = JSONObject()
+        jsonObj.put("ServerStatus", "Closed")
+
+        Publisher.sendMessage(jsonObj, lens)
     }
 
     override fun onUndock() {
