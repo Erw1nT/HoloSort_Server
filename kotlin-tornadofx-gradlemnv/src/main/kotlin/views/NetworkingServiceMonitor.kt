@@ -32,6 +32,7 @@ import java.awt.MouseInfo
 import java.awt.Robot
 import java.awt.Toolkit
 import java.io.File
+import java.net.URL
 import java.util.*
 
 class NetworkingServiceMonitor : View() {
@@ -46,10 +47,10 @@ class NetworkingServiceMonitor : View() {
 
     private val monitorNotRunningDummySubscriber = LocalSubscriber("Monitor not Running")
 
-    var file = File("src/main/resources/wavs/alerttone2.wav")
-    var path = file.absolutePath
-    val alerttone = Media(File(path).toURI().toURL().toString())
+    val alertPath: URL? = NetworkingServiceMonitor::class.java.classLoader.getResource("wavs/alerttone2.wav")
+    val alerttone = Media(alertPath.toString())
     val mediaPlayer = MediaPlayer(alerttone)
+
 
     private var isPollLoggingEnabled = true
 
@@ -540,10 +541,13 @@ class NetworkingServiceMonitor : View() {
                 action {
 
                     // Resolves the path to the patientDocumentation (web client) and launches it
-                    // I don't know why someone put it in the test-directory, but that's where it stays for now
-                    val file = File("src/test/websocket_client/patientDocumentation.html")
-                    val pathToWebsocket = file.absolutePath
-                    Desktop.getDesktop().browse(File(pathToWebsocket).toURI())
+                    // These files need to be copied to the build directory -> use GradleTask copyWebsocketClient
+                    var location = javaClass.protectionDomain.codeSource.location.toExternalForm()
+                    location = location.substring(0, location.lastIndexOf("/"));
+                    location = "$location/websocket_client/patientDocumentation.html"
+                    val uri = java.net.URI(location)
+
+                    Desktop.getDesktop().browse(uri)
 
                 }
             }
@@ -610,7 +614,6 @@ class NetworkingServiceMonitor : View() {
     }
 
     private fun start() {
-        System.out.println(path +  mediaPlayer.error+ mediaPlayer.status)
         mediaPlayer.play()
         mediaPlayer.seek(Duration(0.0))
         this.monitor.addMonitorListener(this.monitorListener)

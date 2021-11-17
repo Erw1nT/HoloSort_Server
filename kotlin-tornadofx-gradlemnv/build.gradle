@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.3.31'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.0'
     // uncomment for javafx for versions higher than 8
     // tested only for java 11
     id 'org.openjfx.javafxplugin' version '0.0.9'
@@ -37,23 +37,22 @@ repositories {
 
 dependencies {
 	// compile time dependencies
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.6.0'
     implementation group: 'com.1stleg', name: 'jnativehook', version: '2.0.3'
-    implementation "no.tornado:tornadofx:1.7.18"
+    implementation 'no.tornado:tornadofx:1.7.20'
     implementation "cerg.networking:NetworkingService:mnv-version-7"
     implementation "cerg.mpmgame:addons:0.4.8"
-    implementation "org.json:json:20180813"
+    implementation 'org.json:json:20210307'
     implementation "cerg.logging:Logging:0.3.2"
     implementation group: 'io.netty', name: 'netty-all', version: '4.1.34.Final'
     implementation fileTree(dir: 'libs', include: ['jfxchartext-1.1.jar'])
     // uncomment for javafx for versions higher than 8
     implementation "org.openjfx:javafx-plugin:0.0.9"
-    implementation('org.apache.commons:commons-csv:1.5')
+    implementation('org.apache.commons:commons-csv:1.8')
     implementation "cerg:tinysound:1.1.7"
 
 	// test dependencies
-    testCompile('org.junit.jupiter:junit-jupiter-api:5.1.0')
-    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.1.0')
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.8.1')
 }
 
 compileKotlin {
@@ -94,6 +93,7 @@ task menu(type: Jar, dependsOn: jar) {
         attributes 'Implementation-Version': version
         attributes 'Implementation-Title': getDate()
     }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveName = "${artifactName}-menu-${version}.${extension}"
     from { configurations.compileClasspath.findAll().collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
@@ -113,6 +113,7 @@ jar {
         attributes 'Implementation-Version': version
         attributes 'Implementation-Title': getDate()
     }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from { configurations.compileClasspath.filter{ !it.isDirectory() && it.name.startsWith('jfxchartext-') }.collect {zipTree(it)} }
     archiveName = "${artifactName}-${version}.${extension}"
 }
@@ -126,4 +127,9 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     extension = 'zip'
     from javadoc.destinationDir
+}
+
+task copyWebsocketClient(type: Copy) {
+    from 'src/main/websocket_client'
+    into 'build/libs/websocket_client'
 }
