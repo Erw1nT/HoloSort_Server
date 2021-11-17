@@ -228,8 +228,8 @@ $(document).ready(function () {
         console.log("Start Interruption Websocket:" + startInterruption);
         startInterruptionInteger = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
 
-        let previousModule = getPreviousModule()
-        let rect = previousModule.getBoundingClientRect()
+        let nextModule = getNextModule()
+        let rect = nextModule.getBoundingClientRect()
 
         // TODO: Is there no way to do this in a nice way instead of manually?
         // idk why interruptionLength has to have additional "" and hololensCueType doesnt
@@ -257,6 +257,29 @@ $(document).ready(function () {
                 return $("#tube")[0]
             case 6:
                 return $("#positioning")[0]
+            default:
+                console.log("unknown Button ID")
+                return null
+        }
+    }
+
+    function getNextModule()
+    {
+        //ButtonID 1 = Module 1, ButtonID 2 = Module 2...
+        // $()[0], because jQuery Syntax: https://stackoverflow.com/a/4070010
+        switch(buttonID) {
+            case 1:
+                return $("#medication")[0]
+            case 2:
+                return $("#respiratoryTract")[0]
+            case 3:
+                return $("#catheter")[0]
+            case 4:
+                return $("#tube")[0]
+            case 5:
+                return $("#positioning")[0]
+            case 6:
+                return $("#processButton")[0]
             default:
                 console.log("unknown Button ID")
                 return null

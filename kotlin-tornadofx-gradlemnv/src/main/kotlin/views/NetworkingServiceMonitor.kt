@@ -553,6 +553,7 @@ class NetworkingServiceMonitor : View() {
                 this.isSelected = isPollLoggingEnabled
 
                 action {
+                    // TODO: Alternatively filter all messages? https://code.makery.ch/blog/javafx-8-tableview-sorting-filtering/
                     isPollLoggingEnabled = this.isSelected
                 }
             }
@@ -625,6 +626,9 @@ class NetworkingServiceMonitor : View() {
     }
 
     private fun stop() {
+
+        sendEndMessageToHololens()
+
         this.monitor.removeMonitorListener()
         Publisher.unsubscribe(this.monitor)
         Publisher.removeSubscribeListener(this.subscriberChangeListener)
@@ -633,8 +637,6 @@ class NetworkingServiceMonitor : View() {
         this.messageList.items.clear()
         this.messageList.items.add("No Messages")
         this.isStarted.set(false)
-
-        sendEndMessageToHololens()
     }
 
     private fun sendEndMessageToHololens()
