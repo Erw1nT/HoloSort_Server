@@ -29,5 +29,5 @@ The build description:
 - Entry point: kotlin-tornadofx-gradlemnv\src\main\kotlin\config\MenuScreen.kt
 
 - TODO: Control Flow Diagram
-- [UML class diagram](kotlin-tornadofx-gradlemnv/misc/HMDLag-UML.drawio.pdf)
-- [Test procedure](kotlin-tornadofx-gradlemnv/misc/HMDLag_Interaction.drawio.pdf)
+- [UML class diagram](kotlin-tornadofx-gradlemnv/docs/HMDLag-UML.drawio.pdf)
+- [Test procedure](kotlin-tornadofx-gradlemnv/docs/HMDLag_Interaction.drawio.pdf)
