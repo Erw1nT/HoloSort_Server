@@ -150,6 +150,8 @@ class WebSocketConnection {
 
 
     reportInterruptionPoint(interruptionLength) {
+        // TODO: Add duration for setting cue
+        // TODO: Add target "PC"?
         this.websocket.send('{"type": "frontend", "content":' + interruptionLength + '}');
 
     }

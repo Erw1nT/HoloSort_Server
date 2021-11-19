@@ -233,9 +233,15 @@ class NetworkingServiceMonitor : View() {
                 if (hololensCueType.toString() != HololensCueType.NONE.identifier)
                 {
                     val holoLensMsg = JSONObject()
-                    holoLensMsg.put("prevModuleRect", rect)
+                    holoLensMsg.put("nextModuleRect", rect)
                     holoLensMsg.put("interruptionLength", interruptionLength)
                     holoLensMsg.put("hololensCueType", hololensCueType)
+
+                    if (hololensCueType == HololensCueType.MANUAL)
+                    {
+                        val cueSettingDuration = 5
+                        holoLensMsg.put("hololensCueType", cueSettingDuration)
+                    }
 
                     Publisher.sendMessage(holoLensMsg, lens)
                 }
@@ -355,12 +361,17 @@ class NetworkingServiceMonitor : View() {
                 messageList.items.add("Network: $message")
             }
             val jsonMessage = JSONObject(message)
+
+            // TODO: Hier die Cue Duration einbringen
+            // TODO: Wieso ist das hier im OnMessage und nicht im SubscriberChangeListener?
+            // Message is sent to the frontend
             if (jsonMessage.get("type") == "frontend") {
                 if (!jsonMessage.has("dataType")) {
                     mediaPlayer.play()
                     mediaPlayer.seek(Duration(0.0))
                     var interruptionLength = jsonMessage.get("content")
                     interruptionLength = interruptionLength.toString().toLong()
+
                     var delayLength = (interruptionLength * 1000) + 600
                     val timer = Timer()
                     var x = 960
