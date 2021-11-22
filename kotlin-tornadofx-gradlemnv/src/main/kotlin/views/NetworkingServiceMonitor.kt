@@ -211,10 +211,12 @@ class NetworkingServiceMonitor : View() {
                 val lens = subscriberTable.items.find{ it.name == "lens" } ?: return
 
                 val timeSent = (jsonObject.get("content") as JSONObject).get("timeSent") as String
+                val guid = (jsonObject.get("content") as JSONObject).get("id") as String
 
                 val pollMsg = JSONObject()
                 pollMsg.put("pollBack", "true")
                 pollMsg.put("timeSent", timeSent)
+                pollMsg.put("guid", guid)
 
                 Publisher.sendMessage(pollMsg, lens)
                 return
@@ -315,7 +317,13 @@ class NetworkingServiceMonitor : View() {
         if (this.get("type") == "backend")
         {
             val target = this.opt("target")
-            val content = this.get("content") as JSONObject
+            val content = this.get("content")
+
+            // CSV is of type JSONArray
+            if (content !is JSONObject)
+            {
+                return false
+            }
 
             val poll = content.opt("poll")
 
