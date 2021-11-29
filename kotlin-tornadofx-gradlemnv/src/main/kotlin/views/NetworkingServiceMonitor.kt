@@ -239,7 +239,7 @@ class NetworkingServiceMonitor : View() {
                     holoLensMsg.put("interruptionLength", interruptionLength)
                     holoLensMsg.put("hololensCueType", hololensCueType)
 
-                    if (hololensCueType == HololensCueType.MANUAL)
+                    if (hololensCueType.toString() == HololensCueType.MANUAL.identifier)
                     {
                         val cueSettingDuration = 5
                         holoLensMsg.put("hololensCueType", cueSettingDuration)
@@ -337,6 +337,7 @@ class NetworkingServiceMonitor : View() {
     }
 
     private val messageList = listview<String> {
+
         items.add("No Messages")
 
         contextmenu {
