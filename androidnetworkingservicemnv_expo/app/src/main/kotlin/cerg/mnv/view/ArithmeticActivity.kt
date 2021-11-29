@@ -20,6 +20,8 @@ import org.json.JSONObject
 import java.sql.Timestamp
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlin.math.max
+import kotlin.math.min
 
 class ArithmeticActivity : AbstractServiceView() {
     override fun onConfigurationChanged(newConfig: Configuration?) {
@@ -215,10 +217,12 @@ class ArithmeticActivity : AbstractServiceView() {
             this.tableRow!!.visibility = View.VISIBLE
 
             // the equation is parsed and the buttons texts are set
+            // result contains 4 answers already
             val result = parseEquation(equationString)
-            setAnswerButtonTexts(result)
+            currentAnswer = result.first
 
-            currentAnswer = result
+            setAnswerButtonTexts(result.second)
+
 
             if (this.equation != null) {
                 this.equation!!.text = equationString
@@ -246,8 +250,10 @@ class ArithmeticActivity : AbstractServiceView() {
 
     /**
      * Parses the equation string and return the result of the equation.
+     * Because one of the most common mistakes of the participants was mixing up + and -
+     * we create both result. As well as +- 1 of the high/low solution.
      */
-    fun parseEquation(equationString: String) : Int {
+    private fun parseEquation(equationString: String) : Pair<Int, MutableList<Int>> {
 
         val isAddition = equationString.contains("+")
         val operator = if (isAddition) "+" else "-"
@@ -256,43 +262,25 @@ class ArithmeticActivity : AbstractServiceView() {
         val second = equationString.split(operator)[1].toInt()
 
         val result = if (isAddition) first + second else first - second
-        return result
+        val wrongResult = if (isAddition) first - second else first + second
+
+        val highPlusOne = max(result, wrongResult) + 1
+        val lowMinusOne = min(result, wrongResult) - 1
+
+        return Pair(result, mutableListOf(result, wrongResult, highPlusOne, lowMinusOne))
     }
 
     /**
-     * Sets the text on the answer buttons to the correct answer and 3 additional, randomly generated numbers.
+     * Sets the text on the answer buttons to the correct answer.
      */
-    private fun setAnswerButtonTexts(correctResult: Int) {
+    private fun setAnswerButtonTexts(solutions: MutableList<Int>) {
 
-        val result = mutableListOf(correctResult)
+        solutions.shuffle(Random(12)) // same seed, same random order every time
 
-        generateUniqueRandomNumbers(result, 4)
-        result.shuffle()
-
-        this.answerButton1?.text = result[0].toString()
-        this.answerButton2?.text = result[1].toString()
-        this.answerButton3?.text = result[2].toString()
-        this.answerButton4?.text = result[3].toString()
-    }
-
-    /**
-     * Takes a list of integers and generates as many unique, random integers as specified by amount and adds them to the list.
-     * The random integers are in the range of [0, 30].
-     */
-    private fun generateUniqueRandomNumbers(result: MutableList<Int>, amount: Int) {
-        //TODO: Instead of Random, use the next closest 3 numbers?
-
-        if (amount <= result.count()) return
-
-        while (true)
-        {
-            val randomNr = (0..30).random()
-            if (result.contains(randomNr)) continue
-
-            result.add(randomNr)
-            if (result.count() == amount) break
-        }
-
+        this.answerButton1?.text = solutions[0].toString()
+        this.answerButton2?.text = solutions[1].toString()
+        this.answerButton3?.text = solutions[2].toString()
+        this.answerButton4?.text = solutions[3].toString()
     }
 
     fun setTextVisible(shouldBeVisible: Boolean) {
@@ -989,7 +977,6 @@ class ArithmeticActivity : AbstractServiceView() {
             "11-9",
             "8-2",
             "14+15"
-
         )
     //200-300
     val equationsEasy3 = listOf<String>("11+7",
