@@ -371,27 +371,33 @@ class NetworkingServiceMonitor : View() {
             }
             val jsonMessage = JSONObject(message)
 
-            // TODO: Hier die Cue Duration einbringen
             // TODO: Wieso ist das hier im OnMessage und nicht im SubscriberChangeListener?
+
             // Message is sent to the frontend
             if (jsonMessage.get("type") == "frontend") {
                 if (!jsonMessage.has("dataType")) {
                     mediaPlayer.play()
                     mediaPlayer.seek(Duration(0.0))
-                    var interruptionLength = jsonMessage.get("content")
-                    interruptionLength = interruptionLength.toString().toLong()
 
-                    var delayLength = (interruptionLength * 1000) + 600
+                    val content = jsonMessage.get("content") as JSONObject
+                    val cueType = content.get("hololensCueType").toString()
+                    val cueSettingDuration =  content.get("hololensCueSettingDuration").toString().toLong()
+                    val interruptionLength = content.get("interruptionLength").toString().toLong()
+
+                    val duration = if (cueType != "Manual") 0 else cueSettingDuration
+
+                    // woher kommen die 600ms?
+                    val constDelay = 600
+                    val delayLength = constDelay + (interruptionLength * 1000) + duration
+
                     val timer = Timer()
                     var x = 960
                     var y = 600
                     val r = Robot()
+
                     timer.schedule(object : TimerTask() {
                         override fun run() {
-                            var a = MouseInfo.getPointerInfo()
-                            var point = a.getLocation()
-                            //x =  point.getX().toInt()
-                            //y =  point.getY().toInt()
+
                             timer.scheduleAtFixedRate(
                                 object : TimerTask() {
                                     override fun run(){
@@ -399,8 +405,7 @@ class NetworkingServiceMonitor : View() {
                                         //TODO: comment back in (or disable when in debug?)
                                     }
                                 },
-                                0, 1
-                            )
+                                0, 1)
                         }
                     }, 300)
                     //Set the schedule function
@@ -412,13 +417,13 @@ class NetworkingServiceMonitor : View() {
                             timer.cancel()
                         }
                     }, delayLength)
+
                 } else {
                     println(jsonMessage.toString())
                 }
             }
         }
     }
-
 
     fun convertToCSVFile(csvData: JSONObject) {
         val participantNumber = csvData.optString("participantNumber", " ")
@@ -443,12 +448,12 @@ class NetworkingServiceMonitor : View() {
         val endTimeInterruptionInt = csvData.optString("endTimeInteger", " ")
         val errorCountInterruption = csvData.optString("errorCountInterruption", " ")
         val hololensCueType = csvData.optString("hololensCueType", " ")
+        val hololensCueSettingDuration = csvData.optString("hololensCueSettingDuration", " ")
 
-        System.out.println("StartTime:" + startTimeInterruption)
-        System.out.println("EndTime:" + endTimeInterruption)
+        println("StartTime:$startTimeInterruption")
+        println("EndTime:$endTimeInterruption")
 
-        // Note: The columns needs to be added beforehand,
-        // see: ExperimentRunner::createLogger
+        // Note: The columns needs to be added beforehand, see: ExperimentRunner::createLogger
         val logEntry = GlobalLogger.exp().newLogEntry()
         logEntry.setValue("Participant Number", participantNumber)
         logEntry.setValue("Block", block)
@@ -472,9 +477,9 @@ class NetworkingServiceMonitor : View() {
         logEntry.setValue("INTEGER: End Time Interruption", endTimeInterruptionInt)
         logEntry.setValue("Error Count Interruption", errorCountInterruption)
         logEntry.setValue("Hololens Cue Type", hololensCueType)
+        logEntry.setValue("Hololens Cue Setting Duration", hololensCueSettingDuration)
 
         GlobalLogger.exp().log(logEntry)
-
     }
 
     override val root = vbox(20) {
