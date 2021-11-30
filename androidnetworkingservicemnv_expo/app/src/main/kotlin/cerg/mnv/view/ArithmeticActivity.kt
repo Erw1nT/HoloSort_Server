@@ -87,8 +87,14 @@ class ArithmeticActivity : AbstractServiceView() {
                     }
                 }
                 else {
-                    val messageText = json.get("content").toString()
-                    val interruptionLength = messageText.toLong().times(1000)
+                    val content = json.get("content") as JSONObject
+
+                    val interruptionLength = content.get("interruptionLength").toString().toLong().times(1000)
+                    val cueType = content.get("hololensCueType").toString()
+                    val cueSettingDuration = content.get("hololensCueSettingDuration").toString().toLong().times(1000)
+
+                    val delay = if (cueType == "Manual") 0 else cueSettingDuration
+
                     showFlash(true)
 
                     // Reset errors before every interruption
@@ -98,7 +104,7 @@ class ArithmeticActivity : AbstractServiceView() {
                     val timer = Timer()
 
                     // Shows a new equation every 5 seconds
-                    Timer().schedule(300) {
+                    Timer().schedule(300 + delay) {
                         showFlash(false)
                         setTextVisible(true)
 
@@ -120,7 +126,7 @@ class ArithmeticActivity : AbstractServiceView() {
 
 
                     // Task is done, send confirmation to backend, cancel previous Timer
-                    Timer().schedule(interruptionLength) {
+                    Timer().schedule(interruptionLength + delay) {
                         timer.cancel()
 
                         evaluateUserInput()
