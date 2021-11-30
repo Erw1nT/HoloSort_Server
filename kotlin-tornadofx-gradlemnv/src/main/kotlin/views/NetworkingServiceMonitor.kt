@@ -242,7 +242,7 @@ class NetworkingServiceMonitor : View() {
                     if (hololensCueType.toString() == HololensCueType.MANUAL.identifier)
                     {
                         val cueSettingDuration = 5
-                        holoLensMsg.put("hololensCueType", cueSettingDuration)
+                        holoLensMsg.put("hololensCueSettingDuration", cueSettingDuration)
                     }
 
                     Publisher.sendMessage(holoLensMsg, lens)
@@ -667,7 +667,9 @@ class NetworkingServiceMonitor : View() {
         val lens = subscriberTable.items.find{ it.name == "lens" } ?: return
 
         val jsonObj = JSONObject()
+        jsonObj.put("type", "backend")
         jsonObj.put("ServerStatus", "Closed")
+        jsonObj.put("target", "lens")
 
         Publisher.sendMessage(jsonObj, lens)
     }

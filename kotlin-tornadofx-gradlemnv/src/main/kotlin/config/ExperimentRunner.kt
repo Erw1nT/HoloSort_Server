@@ -162,7 +162,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
                         }
                     }
 
-                    field("Select HoloLens Cue Type"){
+                    field("Select Hololens Cue Type"){
                         val toggleGroup = ToggleGroup()
                         vbox {
                             radiobutton("None", toggleGroup) {
@@ -181,6 +181,11 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
                                 }
                             }
                         }
+                    }
+
+                    field("Hololens Cue Setting Duration")
+                    {
+                            spinner(0, 10, 5, 1, true, expConfiguration.hololensCueSettingDurationProperty, true)
                     }
 
                     field("Training") {
@@ -284,6 +289,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
             obj.put("trialsConfig", trialsConfig)
             obj.put("list", patients)
             obj.put("hololensCueType", expConfiguration.hololensCueType)
+            obj.put("hololensCueSettingDuration", expConfiguration.hololensCueSettingDuration)
 
             if(webClientSubs !== null){
                 System.out.println("there is a webclient")

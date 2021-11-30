@@ -150,9 +150,20 @@ class WebSocketConnection {
 
 
     reportInterruptionPoint(interruptionLength) {
-        // TODO: Add duration for setting cue
-        // TODO: Add target "PC"?
-        this.websocket.send('{"type": "frontend", "content":' + interruptionLength + '}');
+
+        let cont = {};
+        cont.interruptionLength = interruptionLength
+        cont.hololensCueType = expConfig.hololensCueType
+        cont.hololensCueSettingDuration = expConfig.hololensCueSettingDuration
+
+        let obj = {};
+        obj.type = "frontend"
+        obj.content = cont;
+        obj.target = "frontend";
+        let jsonString= JSON.stringify(obj);
+
+        this.websocket.send(jsonString)
+        // this.websocket.send('{"type": "frontend", "content":' + interruptionLength + '}');
 
     }
 
