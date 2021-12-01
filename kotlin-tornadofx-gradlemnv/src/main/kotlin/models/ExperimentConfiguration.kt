@@ -85,7 +85,7 @@ class ExperimentConfiguration : JsonModel {
         trainingIncluded = true
         calibrationIncluded = true
         hololensCueType = null
-        hololensCueSettingDuration = 5
+        hololensCueSettingDuration = 0
     }
 
     override fun toString(): String = toJSON().toString()

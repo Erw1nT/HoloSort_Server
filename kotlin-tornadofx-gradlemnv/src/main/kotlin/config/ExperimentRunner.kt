@@ -3,9 +3,7 @@ package config
 import javafx.beans.property.SimpleObjectProperty
 import javafx.collections.*
 import javafx.collections.ObservableList
-import javafx.scene.control.Button
-import javafx.scene.control.TextArea
-import javafx.scene.control.ToggleGroup
+import javafx.scene.control.*
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import javafx.scene.input.KeyCombination
@@ -29,7 +27,6 @@ import java.util.stream.Collectors
 import publisher.Subscriber
 import java.io.File
 import java.text.SimpleDateFormat
-
 
 class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial::class.java)) {
 
@@ -162,30 +159,46 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
                         }
                     }
 
+                    var txtfield: TextField? = null
+
                     field("Select Hololens Cue Type"){
                         val toggleGroup = ToggleGroup()
                         vbox {
                             radiobutton("None", toggleGroup) {
                                 action {
                                     expConfiguration.hololensCueType = HololensCueType.NONE.identifier
+                                    txtfield?.text = "0"
+                                    txtfield?.isEditable = false
+
                                 }
                             }
                             radiobutton("Automatic", toggleGroup) {
                                 action {
                                     expConfiguration.hololensCueType = HololensCueType.AUTOMATIC.identifier
+                                    txtfield?.text = "0"
+                                    txtfield?.isEditable = false
                                 }
                             }
                             radiobutton("Manual", toggleGroup) {
                                 action {
                                     expConfiguration.hololensCueType = HololensCueType.MANUAL.identifier
+                                    txtfield?.text = "5"
+                                    txtfield?.isEditable = true
                                 }
                             }
                         }
                     }
 
+
                     field("Hololens Cue Setting Duration")
                     {
-                            spinner(0, 10, 5, 1, true, expConfiguration.hololensCueSettingDurationProperty, true)
+                        txtfield = textfield(expConfiguration.hololensCueSettingDurationProperty)
+                        {
+                            text = 0.toString()
+                            isEditable = false
+
+                        }
+
                     }
 
                     field("Training") {
@@ -398,6 +411,11 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
         if (expConfiguration.hololensCueType == null) {
             enabled = false
             statusArea.text += "No Hololens Cue Type selected" + "\n"
+        }
+        if (expConfiguration.hololensCueSettingDuration < 0)
+        {
+            enabled = false
+            statusArea.text += "Negative cue setting duration" + "\n"
         }
         startExpButton.isDisable = !enabled
 

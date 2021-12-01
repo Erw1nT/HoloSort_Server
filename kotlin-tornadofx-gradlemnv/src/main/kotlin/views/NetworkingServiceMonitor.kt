@@ -380,15 +380,13 @@ class NetworkingServiceMonitor : View() {
                     mediaPlayer.seek(Duration(0.0))
 
                     val content = jsonMessage.get("content") as JSONObject
-                    val cueType = content.get("hololensCueType").toString()
                     val cueSettingDuration =  content.get("hololensCueSettingDuration").toString().toLong()
                     val interruptionLength = content.get("interruptionLength").toString().toLong()
 
-                    val duration = if (cueType != "Manual") 0 else cueSettingDuration
-
+                    // cueSettingDuration is 0 when "None" or "Automatic" CueType is chosen.
                     // woher kommen die 600ms?
                     val constDelay = 600
-                    val delayLength = constDelay + (interruptionLength * 1000) + duration
+                    val delayLength = constDelay + (interruptionLength * 1000) + cueSettingDuration
 
                     val timer = Timer()
                     var x = 960
