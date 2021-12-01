@@ -225,27 +225,40 @@ class NetworkingServiceMonitor : View() {
             if (jsonObject.isDedicatedTo("lens"))
             {
                 val lens = subscriberTable.items.find{ it.name == "lens" } ?: return
-
+                
+                // content either has "rect" or "correctModuleEnabled"
                 val contentObject = jsonObject.get("content") as JSONObject
-
-                val rect = contentObject.get("rect")
-                val interruptionLength = contentObject.get("interruptionLength")
-                val hololensCueType = contentObject.get("hololensCueType")
-
-                if (hololensCueType.toString() != HololensCueType.NONE.identifier)
+                
+                if (contentObject.has("rect"))
                 {
-                    val holoLensMsg = JSONObject()
-                    holoLensMsg.put("nextModuleRect", rect)
-                    holoLensMsg.put("interruptionLength", interruptionLength)
-                    holoLensMsg.put("hololensCueType", hololensCueType)
+                    val rect = contentObject.get("rect")
+                    val interruptionLength = contentObject.get("interruptionLength")
+                    val hololensCueType = contentObject.get("hololensCueType")
 
-                    if (hololensCueType.toString() == HololensCueType.MANUAL.identifier)
+                    if (hololensCueType.toString() != HololensCueType.NONE.identifier)
                     {
-                        val cueSettingDuration = 5
-                        holoLensMsg.put("hololensCueSettingDuration", cueSettingDuration)
-                    }
+                        val holoLensMsg = JSONObject()
+                        holoLensMsg.put("nextModuleRect", rect)
+                        holoLensMsg.put("interruptionLength", interruptionLength)
+                        holoLensMsg.put("hololensCueType", hololensCueType)
 
-                    Publisher.sendMessage(holoLensMsg, lens)
+                        if (hololensCueType.toString() == HololensCueType.MANUAL.identifier)
+                        {
+                            val cueSettingDuration = 5
+                            holoLensMsg.put("hololensCueSettingDuration", cueSettingDuration)
+                        }
+
+                        Publisher.sendMessage(holoLensMsg, lens)
+                    } 
+                }
+
+                if (contentObject.has("correctModuleEnabled"))
+                {
+                    val hololensMsg = JSONObject()
+                    hololensMsg.put("correctModuleEnabled", true)
+                    
+                    Publisher.sendMessage(hololensMsg, lens)
+
                 }
 
                 return

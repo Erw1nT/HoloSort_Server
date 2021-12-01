@@ -412,6 +412,9 @@ $(document).ready(function () {
 
         timestampBaselineProcess = " ";
         timestampBaselineProcessInt = 0;
+
+        // TODO: only if previous interruption was
+        hideCueOnHololens()
     }
 
     checkMetaInfo();
@@ -1322,6 +1325,15 @@ $(document).ready(function () {
         })
     }
 
+    function hideCueOnHololens() {
+
+        // send Message to hololens, that the correct module was enabled and the cue shall be disabled
+        let cont = {}
+        cont.correctModuleEnabled = "true"
+
+        WS.sendToLens(JSON.stringify(cont))
+    }
+
     // Enables editing when edit button is clicked and shows error message
     $("#editPatientInformation").click(function () {
         if (buttonID !== 0) {
@@ -1353,7 +1365,6 @@ $(document).ready(function () {
             resetErrors();
 
             return;
-
         }
         $("#patientTop, #okPatientInformation").css("background-color", "var(--main-color");
         $("#height, #weight, #checkAllergies1, #checkAllergies2, #checkAllergies3, #checkAllergiesInput, #allergiesInput").prop("disabled", false);
@@ -1363,6 +1374,7 @@ $(document).ready(function () {
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
         timestampBaselinePatientInfoInt = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
 
+        hideCueOnHololens()
     });
 
     $("#editMedication").click(function () {
@@ -1403,7 +1415,7 @@ $(document).ready(function () {
         timestampBaselineMedication = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
         timestampBaselineMedicationInt = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
-
+        hideCueOnHololens()
     });
 
     $("#editRT").click(function () {
@@ -1446,6 +1458,8 @@ $(document).ready(function () {
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
         timestampBaselineRTInt = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
 
+        // if patientInfoInterrupted
+        hideCueOnHololens()
     });
 
     $("#editCatheter").click(function () {
@@ -1488,6 +1502,7 @@ $(document).ready(function () {
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
         timestampBaselineCatheterInt = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
 
+        hideCueOnHololens()
     });
 
     $("#editTube").click(function () {
@@ -1530,6 +1545,7 @@ $(document).ready(function () {
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
         timestampBaselineTubeInt = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
 
+        hideCueOnHololens()
     });
 
     $("#editPositioning").click(function () {
@@ -1572,6 +1588,8 @@ $(document).ready(function () {
         timestampBaselinePositioning = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
         timestampBaselinePositioningInt = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
+
+        hideCueOnHololens()
     });
 
     // Creates and saves JSON object
