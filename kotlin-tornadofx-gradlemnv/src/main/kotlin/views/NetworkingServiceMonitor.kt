@@ -234,6 +234,7 @@ class NetworkingServiceMonitor : View() {
                     val rect = contentObject.get("rect")
                     val interruptionLength = contentObject.get("interruptionLength")
                     val hololensCueType = contentObject.get("hololensCueType")
+                    val cueSettingDuration = contentObject.get("hololensCueSettingDuration")
 
                     if (hololensCueType.toString() != HololensCueType.NONE.identifier)
                     {
@@ -241,12 +242,7 @@ class NetworkingServiceMonitor : View() {
                         holoLensMsg.put("nextModuleRect", rect)
                         holoLensMsg.put("interruptionLength", interruptionLength)
                         holoLensMsg.put("hololensCueType", hololensCueType)
-
-                        if (hololensCueType.toString() == HololensCueType.MANUAL.identifier)
-                        {
-                            val cueSettingDuration = 5
-                            holoLensMsg.put("hololensCueSettingDuration", cueSettingDuration)
-                        }
+                        holoLensMsg.put("hololensCueSettingDuration", cueSettingDuration)
 
                         Publisher.sendMessage(holoLensMsg, lens)
                     } 
