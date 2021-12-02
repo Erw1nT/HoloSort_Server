@@ -413,8 +413,9 @@ $(document).ready(function () {
         timestampBaselineProcess = " ";
         timestampBaselineProcessInt = 0;
 
-        // TODO: only if previous interruption was
-        hideCueOnHololens()
+        if (positioningInterrupted) {
+            hideCueOnHololens()
+        }
     }
 
     checkMetaInfo();
@@ -1374,7 +1375,8 @@ $(document).ready(function () {
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
         timestampBaselinePatientInfoInt = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
 
-        hideCueOnHololens()
+        // Since there cannot be an interruption after clicking "process", no cue can be present here
+        // hideCueOnHololens()
     });
 
     $("#editMedication").click(function () {
@@ -1415,7 +1417,11 @@ $(document).ready(function () {
         timestampBaselineMedication = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
         timestampBaselineMedicationInt = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
-        hideCueOnHololens()
+
+        if (patientInfoInterrupted) {
+            hideCueOnHololens()
+        }
+
     });
 
     $("#editRT").click(function () {
@@ -1458,8 +1464,10 @@ $(document).ready(function () {
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
         timestampBaselineRTInt = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
 
-        // if patientInfoInterrupted
-        hideCueOnHololens()
+        if (medicationInterrupted) {
+            hideCueOnHololens()
+        }
+
     });
 
     $("#editCatheter").click(function () {
@@ -1502,7 +1510,9 @@ $(document).ready(function () {
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
         timestampBaselineCatheterInt = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
 
-        hideCueOnHololens()
+        if (RTInterrupted) {
+            hideCueOnHololens()
+        }
     });
 
     $("#editTube").click(function () {
@@ -1545,7 +1555,9 @@ $(document).ready(function () {
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
         timestampBaselineTubeInt = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
 
-        hideCueOnHololens()
+        if (catheterInterrupted) {
+            hideCueOnHololens()
+        }
     });
 
     $("#editPositioning").click(function () {
@@ -1589,7 +1601,9 @@ $(document).ready(function () {
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
         timestampBaselinePositioningInt = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
 
-        hideCueOnHololens()
+        if (tubeInterrupted) {
+            hideCueOnHololens()
+        }
     });
 
     // Creates and saves JSON object
