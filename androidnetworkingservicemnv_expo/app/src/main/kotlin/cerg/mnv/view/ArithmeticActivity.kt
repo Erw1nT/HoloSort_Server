@@ -279,7 +279,7 @@ class ArithmeticActivity : AbstractServiceView() {
      */
     private fun setAnswerButtonTexts(solutions: MutableList<Int>) {
 
-        solutions.shuffle(Random(12)) // same seed, same random order every time
+        solutions.shuffle(Random())
 
         this.answerButton1?.text = solutions[0].toString()
         this.answerButton2?.text = solutions[1].toString()
