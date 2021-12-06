@@ -89,6 +89,11 @@
 
                 }
             }
+            else if (type === "frontend")
+            {
+                //TODO: parseMSG and send interruption
+                sendInterruption(15)
+            }
         });
         WS.registerOnErrorHandler(function (error) {
             //document.getElementById('log').append(error +

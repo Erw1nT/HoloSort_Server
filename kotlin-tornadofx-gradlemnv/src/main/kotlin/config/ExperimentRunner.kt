@@ -284,16 +284,18 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
             objFrontend.put("calibration", expConfiguration.calibrationIncluded)
             objFrontend.put("interruptionTask", expConfiguration.interruptionTask)
 
+            // who did that? why? just why?
             Publisher.getSubscribers().forEach {
-                if (it.value.name == "frontend"){
+                if (it.value.name == "frontend") {
                     frontendSubs = it.value
-                } else if(it.value.name == "web client"){
+                }
+                else if(it.value.name == "web client") {
                     webClientSubs = it.value
                 }
             }
 
             if(frontendSubs !== null){
-                System.out.println("there is a frontend")
+                println("there is a frontend")
                 Publisher.sendMessage(objFrontend, frontendSubs!!)
             }
 
@@ -305,8 +307,20 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
             obj.put("hololensCueSettingDuration", expConfiguration.hololensCueSettingDuration)
 
             if(webClientSubs !== null){
-                System.out.println("there is a webclient")
+                print("there is a webclient")
                 Publisher.sendMessage(obj, webClientSubs!!)
+            }
+
+            val lens = Publisher.getSubscribers()["lens"]
+            if (lens !== null)
+            {
+                // More information are not needed on the lens' side
+                val jsonObj = JSONObject()
+                jsonObj.put("type", "expData")
+                jsonObj.put("hololensCueType", expConfiguration.hololensCueType)
+                jsonObj.put("hololensCueSettingDuration", expConfiguration.hololensCueSettingDuration)
+
+                Publisher.sendMessage(jsonObj, lens)
             }
 
             //Publisher.publish(obj)

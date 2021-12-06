@@ -170,10 +170,8 @@ class NetworkingServiceMonitor : View() {
             // the name will be set in ConnectionHandler::processMessage and this triggers onChange
             if (subscriber.name == "lens")
             {
-                val screenSize: java.awt.Dimension = Toolkit.getDefaultToolkit().screenSize
                 val handshakeMessage = JSONObject()
-                handshakeMessage.put("screenWidth", screenSize.width)
-                handshakeMessage.put("screenHeight", screenSize.height)
+                handshakeMessage.put("handshake", true)
                 Publisher.sendMessage(handshakeMessage, subscriber)
             }
 
@@ -274,6 +272,21 @@ class NetworkingServiceMonitor : View() {
 
                 // only relay the errorCountInterruption to the webClient, since the timestamp isnt needed
                 Publisher.sendMessage(jsonObj, webClient)
+                return
+            }
+
+            if (jsonObject.isDedicatedTo("frontend"))
+            {
+                val frontend = subscriberTable.items.find{ it.name == "frontend" } ?: return
+
+                val content = jsonObject.opt("content")
+                if (content != "cueWasSent") {
+                    return
+                }
+
+                val jsonObj = JSONObject()
+
+                Publisher.sendMessage(jsonObj, frontend)
                 return
             }
 
@@ -395,7 +408,7 @@ class NetworkingServiceMonitor : View() {
                     // cueSettingDuration is 0 when "None" or "Automatic" CueType is chosen.
                     // woher kommen die 600ms?
                     val constDelay = 600
-                    val delayLength = constDelay + (interruptionLength * 1000) + cueSettingDuration
+                    val delayLength = constDelay + (interruptionLength * 1000) + (cueSettingDuration * 1000)
 
                     val timer = Timer()
                     var x = 960

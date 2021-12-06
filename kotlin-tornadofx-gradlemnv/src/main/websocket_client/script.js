@@ -219,8 +219,13 @@ $(document).ready(function () {
         let sel = document.getSelection();
         sel.removeAllRanges();
 
-        //sends the interruption length to the frontend tablet
-        WS.reportInterruptionPoint(interruptionLength);
+        // the interruption is started immediatle, if the user does not have to set a cue manually.
+        // Otherwise, this is sent from the hololens, when the user placed a cue.
+        if (expConfig.hololensCueType !== "Manual")
+        {
+            //sends the interruption length to the frontend tablet
+            WS.reportInterruptionPoint(interruptionLength);
+        }
 
         var now = new Date();
         startInterruption = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
@@ -228,14 +233,19 @@ $(document).ready(function () {
         console.log("Start Interruption Websocket:" + startInterruption);
         startInterruptionInteger = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
 
-        let nextModule = getNextModule()
+        let nextModule = getNextModulesEditButton()
         let rect = nextModule.getBoundingClientRect()
+
+        let width = window.screen.width;
+        let height = window.screen.height;
 
         let obj = {}
         obj.rect = rect
         obj.interruptionLength = interruptionLength
         obj.hololensCueType = expConfig.hololensCueType
         obj.hololensCueSettingDuration = expConfig.hololensCueSettingDuration
+        obj.screenWidth = width
+        obj.screenHeight = height
         let msg = JSON.stringify(obj)
 
         WS.sendToLens(msg)
@@ -279,6 +289,29 @@ $(document).ready(function () {
                 return $("#tube")[0]
             case 5:
                 return $("#positioning")[0]
+            case 6:
+                return $("#processButton")[0]
+            default:
+                console.log("unknown Button ID")
+                return null
+        }
+    }
+
+    function getNextModulesEditButton()
+    {
+        //ButtonID 1 = Module 1, ButtonID 2 = Module 2...
+        // $()[0], because jQuery Syntax: https://stackoverflow.com/a/4070010
+        switch(buttonID) {
+            case 1:
+                return $("#editMedication")[0]
+            case 2:
+                return $("#editRT")[0]
+            case 3:
+                return $("#editCatheter")[0]
+            case 4:
+                return $("#editTube")[0]
+            case 5:
+                return $("#editPositioning")[0]
             case 6:
                 return $("#processButton")[0]
             default:
