@@ -87,9 +87,8 @@ class ArithmeticActivity : AbstractServiceView() {
                     }
                 }
                 else {
-                    val content = json.get("content") as JSONObject
 
-                    val interruptionLength = content.get("interruptionLength").toString().toLong().times(1000)
+                    val interruptionLength = (json.get("content") as Number).toLong().times(1000)
 
                     showFlash(true)
 

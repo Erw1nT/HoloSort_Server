@@ -259,7 +259,7 @@ $(document).ready(function () {
         WS.sendToLens(msg)
     }
 
-    // TODO: Sichtbarkeit der Hauptaufgabe ausschalten, sobald die Unterbrechung beginnt
+    // TODO: Sichtbarkeit der Hauptaufgabe ausschalten, sobald die Unterbrechung beginntuch als off
     function hide()
     {
         if (sichtbarkeit === 0){
