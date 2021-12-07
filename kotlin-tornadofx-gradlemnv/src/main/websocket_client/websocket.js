@@ -148,21 +148,16 @@ class WebSocketConnection {
         document.getElementById('Connection').style.display = 'none';
     }
 
-
     reportInterruptionPoint(interruptionLength) {
-
-        let cont = {};
-        cont.interruptionLength = interruptionLength
-        cont.hololensCueType = expConfig.hololensCueType
-        cont.hololensCueSettingDuration = expConfig.hololensCueSettingDuration
 
         let obj = {};
         obj.type = "frontend"
-        obj.content = cont;
-        obj.target = "frontend";
+        obj.content = interruptionLength;
+        //obj.target = "frontend";
         let jsonString= JSON.stringify(obj);
 
         this.websocket.send(jsonString)
+        // eq. to:
         // this.websocket.send('{"type": "frontend", "content":' + interruptionLength + '}');
 
     }

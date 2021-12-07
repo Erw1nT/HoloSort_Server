@@ -13,7 +13,7 @@ javafx {
     modules = [ 'javafx.controls', 'javafx.web', 'javafx.media']
 }
 
-def artifactName = 'MpmGame'
+def artifactName = 'Hololag'
 group 'cerg.mpmgame'
 version '0.5.5'
 
@@ -94,7 +94,7 @@ task menu(type: Jar, dependsOn: jar) {
         attributes 'Implementation-Title': getDate()
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    archiveName = "${artifactName}-menu-${version}.${extension}"
+    archiveName = "${artifactName}-Server-${version}.${extension}"
     from { configurations.compileClasspath.findAll().collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }

@@ -227,21 +227,18 @@ class NetworkingServiceMonitor : View() {
                 // content either has "rect" or "correctModuleEnabled"
                 val contentObject = jsonObject.get("content") as JSONObject
                 
-                if (contentObject.has("rect"))
+                if (contentObject.has("relativeCenter"))
                 {
-                    val rect = contentObject.get("rect")
+                    val rect = contentObject.get("relativeCenter")
                     val interruptionLength = contentObject.get("interruptionLength")
                     val hololensCueType = contentObject.get("hololensCueType")
-                    val cueSettingDuration = contentObject.get("hololensCueSettingDuration")
 
                     if (hololensCueType.toString() != HololensCueType.NONE.identifier)
                     {
                         val holoLensMsg = JSONObject()
-                        holoLensMsg.put("nextModuleRect", rect)
+                        holoLensMsg.put("relativeCenter", rect)
                         holoLensMsg.put("interruptionLength", interruptionLength)
                         holoLensMsg.put("hololensCueType", hololensCueType)
-                        holoLensMsg.put("hololensCueSettingDuration", cueSettingDuration)
-
                         Publisher.sendMessage(holoLensMsg, lens)
                     } 
                 }
@@ -252,7 +249,6 @@ class NetworkingServiceMonitor : View() {
                     hololensMsg.put("correctModuleEnabled", true)
                     
                     Publisher.sendMessage(hololensMsg, lens)
-
                 }
 
                 return
@@ -263,7 +259,6 @@ class NetworkingServiceMonitor : View() {
                 val webClient = subscriberTable.items.find{ it.name == "web client" } ?: return
                 val content = jsonObject.getJSONObject("content") as JSONObject
 
-                // why ist errorCountInterruption of type Any! if it can be null?
                 val errorCountInterruption = content.get("errorCountInterruption")
 
                 val jsonObj = JSONObject()
@@ -272,21 +267,6 @@ class NetworkingServiceMonitor : View() {
 
                 // only relay the errorCountInterruption to the webClient, since the timestamp isnt needed
                 Publisher.sendMessage(jsonObj, webClient)
-                return
-            }
-
-            if (jsonObject.isDedicatedTo("frontend"))
-            {
-                val frontend = subscriberTable.items.find{ it.name == "frontend" } ?: return
-
-                val content = jsonObject.opt("content")
-                if (content != "cueWasSent") {
-                    return
-                }
-
-                val jsonObj = JSONObject()
-
-                Publisher.sendMessage(jsonObj, frontend)
                 return
             }
 
@@ -300,6 +280,8 @@ class NetworkingServiceMonitor : View() {
                 }
 
                 return
+
+                //These lines break the logging?
                 //println("Close log files")
                 //GlobalLogger.closeAllLogFiles()
             }
@@ -394,6 +376,7 @@ class NetworkingServiceMonitor : View() {
             val jsonMessage = JSONObject(message)
 
             // TODO: Wieso ist das hier im OnMessage und nicht im SubscriberChangeListener?
+            // weil alle Nachrichten, die ans frontend gesendet werden im Publisher::publish auch an den Monitor gesendet werden
 
             // Message is sent to the frontend
             if (jsonMessage.get("type") == "frontend") {
@@ -401,14 +384,12 @@ class NetworkingServiceMonitor : View() {
                     mediaPlayer.play()
                     mediaPlayer.seek(Duration(0.0))
 
-                    val content = jsonMessage.get("content") as JSONObject
-                    val cueSettingDuration =  content.get("hololensCueSettingDuration").toString().toLong()
-                    val interruptionLength = content.get("interruptionLength").toString().toLong()
+                    val content = jsonMessage.get("content") as Number
+                    val interruptionLength = content.toLong()
 
-                    // cueSettingDuration is 0 when "None" or "Automatic" CueType is chosen.
                     // woher kommen die 600ms?
                     val constDelay = 600
-                    val delayLength = constDelay + (interruptionLength * 1000) + (cueSettingDuration * 1000)
+                    val delayLength = constDelay + (interruptionLength * 1000)
 
                     val timer = Timer()
                     var x = 960
@@ -468,7 +449,6 @@ class NetworkingServiceMonitor : View() {
         val endTimeInterruptionInt = csvData.optString("endTimeInteger", " ")
         val errorCountInterruption = csvData.optString("errorCountInterruption", " ")
         val hololensCueType = csvData.optString("hololensCueType", " ")
-        val hololensCueSettingDuration = csvData.optString("hololensCueSettingDuration", " ")
 
         println("StartTime:$startTimeInterruption")
         println("EndTime:$endTimeInterruption")
@@ -497,7 +477,6 @@ class NetworkingServiceMonitor : View() {
         logEntry.setValue("INTEGER: End Time Interruption", endTimeInterruptionInt)
         logEntry.setValue("Error Count Interruption", errorCountInterruption)
         logEntry.setValue("Hololens Cue Type", hololensCueType)
-        logEntry.setValue("Hololens Cue Setting Duration", hololensCueSettingDuration)
 
         GlobalLogger.exp().log(logEntry)
     }

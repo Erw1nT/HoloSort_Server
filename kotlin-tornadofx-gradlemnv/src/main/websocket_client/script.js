@@ -219,14 +219,15 @@ $(document).ready(function () {
         let sel = document.getSelection();
         sel.removeAllRanges();
 
-        // the interruption is started immediatle, if the user does not have to set a cue manually.
-        // Otherwise, this is sent from the hololens, when the user placed a cue.
-        if (expConfig.hololensCueType !== "Manual")
+        // the interruption is started immediately, if the user does not have to set a cue manually.
+        // Otherwise, this is sent from the hololens, when the user places a cue.
+        if (expConfig.hololensCueType !== "manual")
         {
             //sends the interruption length to the frontend tablet
             WS.reportInterruptionPoint(interruptionLength);
         }
 
+        // TODO: Track, how long the user took to place the cue. This duration has to be added to startInterruption
         var now = new Date();
         startInterruption = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
@@ -236,19 +237,37 @@ $(document).ready(function () {
         let nextModule = getNextModulesEditButton()
         let rect = nextModule.getBoundingClientRect()
 
-        let width = window.screen.width;
-        let height = window.screen.height;
+        // Application shall be run in fullscreen!
+        // availWidth/Height exclude the taskbar width/height
+        let screenWidth = window.screen.availWidth;
+        let screenHeight = window.screen.availHeight;
+
+        // center position relative to screen
+        let relativeX = (rect.x + (rect.width  /2)) / screenWidth
+        let relativeY = (rect.y + (rect.height /2)) / screenHeight
+
+        let relCenter = {}
+        relCenter.x = relativeX
+        relCenter.y = relativeY
 
         let obj = {}
-        obj.rect = rect
+        obj.relativeCenter = relCenter
         obj.interruptionLength = interruptionLength
         obj.hololensCueType = expConfig.hololensCueType
-        obj.hololensCueSettingDuration = expConfig.hololensCueSettingDuration
-        obj.screenWidth = width
-        obj.screenHeight = height
         let msg = JSON.stringify(obj)
 
         WS.sendToLens(msg)
+    }
+
+    // TODO: Sichtbarkeit der Hauptaufgabe ausschalten, sobald die Unterbrechung beginnt
+    function hide()
+    {
+        if (sichtbarkeit === 0){
+            unsichtbar();
+        }
+        if (currentsichtbarkeit === 0){
+            unsichtbar();
+        }
     }
 
     function getPreviousModule()
@@ -363,8 +382,7 @@ $(document).ready(function () {
             errorCountInterruption: localStorage["errorCountInterruption"],
             interruptionLength: 0,
             clickOnOK: " ",
-            hololensCueType: expConfig.hololensCueType,
-            hololensCueSettingDuration: expConfig.hololensCueSettingDuration
+            hololensCueType: expConfig.hololensCueType
         });
     }
 
@@ -402,8 +420,7 @@ $(document).ready(function () {
                 errorCountInterruption: localStorage["errorCountInterruption"],
                 interruptionLength: 0,
                 clickOnOK: " ",
-                hololensCueType: expConfig.hololensCueType,
-                hololensCueSettingDuration: expConfig.hololensCueSettingDuration
+                hololensCueType: expConfig.hololensCueType
             });
 
             timestampResumptionProcess = " ";
@@ -439,8 +456,7 @@ $(document).ready(function () {
             interruptionLength: 0,
             clickOnOK: timestampBaselineProcess,
             clickOnOKInt: timestampBaselineProcessInt,
-            hololensCueType: expConfig.hololensCueType,
-            hololensCueSettingDuration: expConfig.hololensCueSettingDuration
+            hololensCueType: expConfig.hololensCueType
         });
 
         timestampBaselineProcess = " ";
@@ -630,8 +646,7 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
-                        hololensCueType: expConfig.hololensCueType,
-                        hololensCueSettingDuration: expConfig.hololensCueSettingDuration
+                        hololensCueType: expConfig.hololensCueType
                     });
 
                     resetErrors();
@@ -735,8 +750,7 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
-                        hololensCueType: expConfig.hololensCueType,
-                        hololensCueSettingDuration: expConfig.hololensCueSettingDuration
+                        hololensCueType: expConfig.hololensCueType
                     });
 
                     resetErrors();
@@ -826,8 +840,7 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
-                        hololensCueType: expConfig.hololensCueType,
-                        hololensCueSettingDuration: expConfig.hololensCueSettingDuration
+                        hololensCueType: expConfig.hololensCueType
                     });
 
                     resetErrors();
@@ -996,8 +1009,7 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
-                        hololensCueType: expConfig.hololensCueType,
-                        hololensCueSettingDuration: expConfig.hololensCueSettingDuration
+                        hololensCueType: expConfig.hololensCueType
                     });
 
                     resetErrors();
@@ -1143,8 +1155,7 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
-                        hololensCueType: expConfig.hololensCueType,
-                        hololensCueSettingDuration: expConfig.hololensCueSettingDuration
+                        hololensCueType: expConfig.hololensCueType
                     });
 
                     resetErrors();
@@ -1286,8 +1297,7 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
-                        hololensCueType: expConfig.hololensCueType,
-                        hololensCueSettingDuration: expConfig.hololensCueSettingDuration
+                        hololensCueType: expConfig.hololensCueType
                     });
 
                     resetErrors();
@@ -1323,8 +1333,7 @@ $(document).ready(function () {
             errorCountInterruption: localStorage["errorCountInterruption"],
             interruptionLength: interruptionLength,
             clickOnOK: clickOnOk,
-            hololensCueType: expConfig.hololensCueType,
-            hololensCueSettingDuration: expConfig.hololensCueSettingDuration
+            hololensCueType: expConfig.hololensCueType
         })
     }
 
@@ -1354,8 +1363,7 @@ $(document).ready(function () {
             endTimeIT: localStorage["endTimeInt"],
             startTimeInteger: startInterruptionInteger,
             endTimeInteger: localStorage["endTimeInteger"],
-            hololensCueType: expConfig.hololensCueType,
-            hololensCueSettingDuration: expConfig.hololensCueSettingDuration
+            hololensCueType: expConfig.hololensCueType
         })
     }
 

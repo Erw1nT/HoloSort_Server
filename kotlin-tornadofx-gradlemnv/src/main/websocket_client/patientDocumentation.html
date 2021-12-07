@@ -84,16 +84,13 @@
             {
                 if('errorCountInterruption' in jsonMessage) {
 
+                    //TODO: wird eine Zeile zu spät geloggt
                     localStorage["errorCountInterruption"] = Number(localStorage["errorCountInterruption"]) + Number(jsonMessage.errorCountInterruption);
                     console.log(`added ${jsonMessage.errorCountInterruption} to localstorage. Total Errors = ${localStorage["errorCountInterruption"]}`)
 
                 }
             }
-            else if (type === "frontend")
-            {
-                //TODO: parseMSG and send interruption
-                sendInterruption(15)
-            }
+
         });
         WS.registerOnErrorHandler(function (error) {
             //document.getElementById('log').append(error +

@@ -190,17 +190,6 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
                     }
 
 
-                    field("Hololens Cue Setting Duration")
-                    {
-                        txtfield = textfield(expConfiguration.hololensCueSettingDurationProperty)
-                        {
-                            text = 0.toString()
-                            isEditable = false
-
-                        }
-
-                    }
-
                     field("Training") {
                         checkbox("Include Training", expConfiguration.trainingIncludedProperty)
                         {
@@ -250,7 +239,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
         absolutePath, LogFormat.CSV)
 
         GlobalLogger.exp().clearColumns()
-        GlobalLogger.exp().addColumns(arrayOf("Participant Number", "Block", "Device", "Hololens Cue Type", "Hololens Cue Setting Duration", "Interruption Trial", "Trial", "First Click In Module", "INTEGER: First Click In Module", "Wrong Click In Module After Interruption", "Patient ID", "Module", "Error Wrong Module", "Error Input", "Error Empty Module", "Error Count Interruption", "Interruption Length", "Click on OK", "INTEGER: Click on OK", "Start Time Interruption", "INTEGER: Start Time Interruption", "End Time Interruption", "INTEGER: End Time Interruption"))
+        GlobalLogger.exp().addColumns(arrayOf("Participant Number", "Block", "Device", "Hololens Cue Type", "Interruption Trial", "Trial", "First Click In Module", "INTEGER: First Click In Module", "Wrong Click In Module After Interruption", "Patient ID", "Module", "Error Wrong Module", "Error Input", "Error Empty Module", "Error Count Interruption", "Interruption Length", "Click on OK", "INTEGER: Click on OK", "Start Time Interruption", "INTEGER: Start Time Interruption", "End Time Interruption", "INTEGER: End Time Interruption"))
         GlobalLogger.exp().writerHeader()
 
     }
@@ -304,21 +293,19 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
             obj.put("trialsConfig", trialsConfig)
             obj.put("list", patients)
             obj.put("hololensCueType", expConfiguration.hololensCueType)
-            obj.put("hololensCueSettingDuration", expConfiguration.hololensCueSettingDuration)
 
             if(webClientSubs !== null){
                 print("there is a webclient")
                 Publisher.sendMessage(obj, webClientSubs!!)
             }
 
-            val lens = Publisher.getSubscribers()["lens"]
+            val lens = Publisher.getSubscribers().values.singleOrNull { it.name == "lens" }
             if (lens !== null)
             {
                 // More information are not needed on the lens' side
                 val jsonObj = JSONObject()
                 jsonObj.put("type", "expData")
                 jsonObj.put("hololensCueType", expConfiguration.hololensCueType)
-                jsonObj.put("hololensCueSettingDuration", expConfiguration.hololensCueSettingDuration)
 
                 Publisher.sendMessage(jsonObj, lens)
             }
@@ -426,42 +413,10 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
             enabled = false
             statusArea.text += "No Hololens Cue Type selected" + "\n"
         }
-        if (expConfiguration.hololensCueSettingDuration < 0)
-        {
-            enabled = false
-            statusArea.text += "Negative cue setting duration" + "\n"
-        }
+
         startExpButton.isDisable = !enabled
 
     }
-
-    fun verifyTrialConfigurations(
-        trailConfig: TrialsConfiguration<Trial>,
-        filePath: String
-    ): Pair<Boolean, String> {
-        try {
-            val f = File(filePath)
-            if (!f.exists()) return Pair(false, "File missing")
-            val reader = BufferedReader(FileReader(f))
-            val jsonString = reader.lines().collect(Collectors.joining())
-
-            var testTrialConfig = trailConfig
-
-            testTrialConfig.updateModel(loadJsonObject(jsonString))
-            if (testTrialConfig.toString() != trailConfig.toString()) {
-                GlobalLogger.app().logError(testTrialConfig.toString())
-                GlobalLogger.app().logError(trailConfig.toString())
-                return Pair(false, "Configs do not match")
-            }
-
-        } catch (fileNotFoundException: FileNotFoundException) {
-            return Pair(false, "File missing")
-        } catch (otherException: Exception) {
-            return Pair(false, "Other exception: ${otherException.message}")
-        }
-        return Pair(true, "Passed!")
-    }
-
 
     override fun onUndock() {
         //this.blockRunner?.stop()
