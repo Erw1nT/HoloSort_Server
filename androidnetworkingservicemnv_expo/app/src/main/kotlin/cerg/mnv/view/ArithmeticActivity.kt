@@ -90,8 +90,6 @@ class ArithmeticActivity : AbstractServiceView() {
                     val content = json.get("content") as JSONObject
 
                     val interruptionLength = content.get("interruptionLength").toString().toLong().times(1000)
-                    val cueType = content.get("hololensCueType").toString()
-                    val cueSettingDuration = content.get("hololensCueSettingDuration").toString().toLong().times(1000)
 
                     showFlash(true)
 
@@ -102,7 +100,7 @@ class ArithmeticActivity : AbstractServiceView() {
                     val timer = Timer()
 
                     // Shows a new equation every 5 seconds
-                    Timer().schedule(300 + cueSettingDuration) {
+                    Timer().schedule(300) {
                         showFlash(false)
                         setTextVisible(true)
 
@@ -124,7 +122,7 @@ class ArithmeticActivity : AbstractServiceView() {
 
 
                     // Task is done, send confirmation to backend, cancel previous Timer
-                    Timer().schedule(interruptionLength + cueSettingDuration) {
+                    Timer().schedule(interruptionLength) {
                         timer.cancel()
 
                         evaluateUserInput()
