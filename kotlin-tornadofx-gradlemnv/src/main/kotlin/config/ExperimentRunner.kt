@@ -302,7 +302,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
             val lens = Publisher.getSubscribers().values.singleOrNull { it.name == "lens" }
             if (lens !== null)
             {
-                // More information are not needed on the lens' side
+                // More information are not needed on the lens' side as of now
                 val jsonObj = JSONObject()
                 jsonObj.put("type", "expData")
                 jsonObj.put("hololensCueType", expConfiguration.hololensCueType)

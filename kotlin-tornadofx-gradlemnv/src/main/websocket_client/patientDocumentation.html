@@ -82,12 +82,23 @@
             }
             else if (type === "web client")
             {
-                if('errorCountInterruption' in jsonMessage) {
-
-                    //TODO: wird eine Zeile zu spät geloggt
+                if('errorCountInterruption' in jsonMessage)
+                {
+                    //TODO: wird eine Zeile zu spät geloggt?
                     localStorage["errorCountInterruption"] = Number(localStorage["errorCountInterruption"]) + Number(jsonMessage.errorCountInterruption);
                     console.log(`added ${jsonMessage.errorCountInterruption} to localstorage. Total Errors = ${localStorage["errorCountInterruption"]}`)
+                }
 
+                if('content' in jsonMessage)
+                {
+                    let interruptionLength = jsonMessage['content']['interruptionLength']
+                    let cueSetDuration = jsonMessage['content']['cueSetDurationMilliseconds']
+
+                    localStorage["cueSetDuration"] = Number(cueSetDuration)
+                    console.log(`cueSetDuration was ${cueSetDuration}ms.`)
+
+                    unsichtbar()
+                    window.setTimeout(sichtbar, interruptionLength);
                 }
             }
 

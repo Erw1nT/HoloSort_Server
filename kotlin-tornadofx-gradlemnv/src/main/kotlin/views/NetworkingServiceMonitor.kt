@@ -270,6 +270,32 @@ class NetworkingServiceMonitor : View() {
                 return
             }
 
+            if (jsonObject.isDedicatedTo("frontend"))
+            {
+                val frontend = subscriberTable.items.find{ it.name == "frontend" } ?: return
+                val webClient = subscriberTable.items.find{ it.name == "web client" } ?: return
+
+                val content = (jsonObject.get("content") as JSONObject)
+                val interruptionLength = content.get("interruptionLength") as Number
+                val cueSetDurationMilliseconds = content.get("cueSetDurationMilliseconds") as Number
+
+                val jsonMsg = JSONObject()
+                jsonMsg.put("type", "frontend")
+                jsonMsg.put("content", interruptionLength)
+
+                Publisher.sendMessage(jsonMsg, frontend)
+
+                val cont = JSONObject()
+                cont.put("interruptionLength", interruptionLength)
+                cont.put("cueSetDurationMilliseconds", cueSetDurationMilliseconds)
+
+                val webclientMsg = JSONObject()
+                webclientMsg.put("type", "web client")
+                webclientMsg.put("content", cont)
+
+                Publisher.sendMessage(webclientMsg, webClient)
+            }
+
             if (jsonObject.containsCSVData())
             {
                 val csvData = jsonObject.getJSONArray("content") as JSONArray
@@ -289,6 +315,10 @@ class NetworkingServiceMonitor : View() {
         }
     }
 
+    /**
+    Checks, if a JSONObjects ["type"] is backend, if ["content"] is a JSONObject and ["target"] is the same as
+     the specified identifier.
+     */
     private fun JSONObject.isDedicatedTo(identifier: String):Boolean {
         if (this.get("type") == "backend")
         {
@@ -380,6 +410,7 @@ class NetworkingServiceMonitor : View() {
 
             // Message is sent to the frontend
             if (jsonMessage.get("type") == "frontend") {
+
                 if (!jsonMessage.has("dataType")) {
                     mediaPlayer.play()
                     mediaPlayer.seek(Duration(0.0))

@@ -259,17 +259,6 @@ $(document).ready(function () {
         WS.sendToLens(msg)
     }
 
-    // TODO: Sichtbarkeit der Hauptaufgabe ausschalten, sobald die Unterbrechung beginntuch als off
-    function hide()
-    {
-        if (sichtbarkeit === 0){
-            unsichtbar();
-        }
-        if (currentsichtbarkeit === 0){
-            unsichtbar();
-        }
-    }
-
     function getPreviousModule()
     {
         //ButtonID 1 = Module 1, ButtonID 2 = Module 2...
@@ -382,7 +371,8 @@ $(document).ready(function () {
             errorCountInterruption: localStorage["errorCountInterruption"],
             interruptionLength: 0,
             clickOnOK: " ",
-            hololensCueType: expConfig.hololensCueType
+            hololensCueType: expConfig.hololensCueType,
+            cueSetDuration: localStorage["cueSetDuration"]
         });
     }
 
@@ -420,7 +410,8 @@ $(document).ready(function () {
                 errorCountInterruption: localStorage["errorCountInterruption"],
                 interruptionLength: 0,
                 clickOnOK: " ",
-                hololensCueType: expConfig.hololensCueType
+                hololensCueType: expConfig.hololensCueType,
+                cueSetDuration: localStorage["cueSetDuration"]
             });
 
             timestampResumptionProcess = " ";
@@ -456,7 +447,8 @@ $(document).ready(function () {
             interruptionLength: 0,
             clickOnOK: timestampBaselineProcess,
             clickOnOKInt: timestampBaselineProcessInt,
-            hololensCueType: expConfig.hololensCueType
+            hololensCueType: expConfig.hololensCueType,
+            cueSetDuration: localStorage["cueSetDuration"]
         });
 
         timestampBaselineProcess = " ";
@@ -646,7 +638,8 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
-                        hololensCueType: expConfig.hololensCueType
+                        hololensCueType: expConfig.hololensCueType,
+                        cueSetDuration: localStorage["cueSetDuration"]
                     });
 
                     resetErrors();
@@ -750,7 +743,8 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
-                        hololensCueType: expConfig.hololensCueType
+                        hololensCueType: expConfig.hololensCueType,
+                        cueSetDuration: localStorage["cueSetDuration"]
                     });
 
                     resetErrors();
@@ -840,7 +834,8 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
-                        hololensCueType: expConfig.hololensCueType
+                        hololensCueType: expConfig.hololensCueType,
+                        cueSetDuration: localStorage["cueSetDuration"]
                     });
 
                     resetErrors();
@@ -1009,7 +1004,8 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
-                        hololensCueType: expConfig.hololensCueType
+                        hololensCueType: expConfig.hololensCueType,
+                        cueSetDuration: localStorage["cueSetDuration"]
                     });
 
                     resetErrors();
@@ -1155,7 +1151,8 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
-                        hololensCueType: expConfig.hololensCueType
+                        hololensCueType: expConfig.hololensCueType,
+                        cueSetDuration: localStorage["cueSetDuration"]
                     });
 
                     resetErrors();
@@ -1297,7 +1294,8 @@ $(document).ready(function () {
                         endTimeIT: localStorage["endTimeInt"],
                         startTimeInteger: startInterruptionInteger,
                         endTimeInteger: localStorage["endTimeInteger"],
-                        hololensCueType: expConfig.hololensCueType
+                        hololensCueType: expConfig.hololensCueType,
+                        cueSetDuration: localStorage["cueSetDuration"]
                     });
 
                     resetErrors();
@@ -1333,7 +1331,8 @@ $(document).ready(function () {
             errorCountInterruption: localStorage["errorCountInterruption"],
             interruptionLength: interruptionLength,
             clickOnOK: clickOnOk,
-            hololensCueType: expConfig.hololensCueType
+            hololensCueType: expConfig.hololensCueType,
+            cueSetDuration: localStorage["cueSetDuration"]
         })
     }
 
@@ -1363,7 +1362,8 @@ $(document).ready(function () {
             endTimeIT: localStorage["endTimeInt"],
             startTimeInteger: startInterruptionInteger,
             endTimeInteger: localStorage["endTimeInteger"],
-            hololensCueType: expConfig.hololensCueType
+            hololensCueType: expConfig.hololensCueType,
+            cueSetDuration: localStorage["cueSetDuration"]
         })
     }
 

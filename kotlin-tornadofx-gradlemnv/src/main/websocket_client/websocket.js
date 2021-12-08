@@ -149,16 +149,18 @@ class WebSocketConnection {
     }
 
     reportInterruptionPoint(interruptionLength) {
+        // send interruption trigger to backend so it can be relayed to the frontend and also trigger the main task overlay
+
+        let content = {}
+        content.interruptionLength = interruptionLength
 
         let obj = {};
-        obj.type = "frontend"
-        obj.content = interruptionLength;
-        //obj.target = "frontend";
+        obj.type = "backend"
+        obj.content = content;
+        obj.target = "frontend";
         let jsonString= JSON.stringify(obj);
 
         this.websocket.send(jsonString)
-        // eq. to:
-        // this.websocket.send('{"type": "frontend", "content":' + interruptionLength + '}');
 
     }
 
