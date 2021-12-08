@@ -272,12 +272,22 @@ class NetworkingServiceMonitor : View() {
 
             if (jsonObject.isDedicatedTo("frontend"))
             {
+                // relay the interruption to the frontend and at the same time to the web client
+                // so the main task may be hidden
                 val frontend = subscriberTable.items.find{ it.name == "frontend" } ?: return
                 val webClient = subscriberTable.items.find{ it.name == "web client" } ?: return
 
+                // if this msg is sent from web client, there is no cueSetDuration
+                // cueSetDuration comes from the hololens, manual condition
+
                 val content = (jsonObject.get("content") as JSONObject)
                 val interruptionLength = content.get("interruptionLength") as Number
-                val cueSetDurationMilliseconds = content.get("cueSetDurationMilliseconds") as Number
+
+                var cueSetDurationMilliseconds: Number = 0
+                if (content.has("cueSetDurationMilliseconds"))
+                {
+                    cueSetDurationMilliseconds = content.get("cueSetDurationMilliseconds") as Number
+                }
 
                 val jsonMsg = JSONObject()
                 jsonMsg.put("type", "frontend")
