@@ -433,6 +433,7 @@ class NetworkingServiceMonitor : View() {
                     val delayLength = constDelay + (interruptionLength * 1000)
 
                     val timer = Timer()
+
                     var x = 960
                     var y = 600
                     val r = Robot()
@@ -443,8 +444,8 @@ class NetworkingServiceMonitor : View() {
                             timer.scheduleAtFixedRate(
                                 object : TimerTask() {
                                     override fun run(){
-                                        //r.mouseMove(x, y)
-                                        //TODO: comment back in (or disable when in debug?)
+                                        r.mouseMove(x, y)
+                                        // TODO: comment back in (or disable when in debug?)
                                     }
                                 },
                                 0, 1)
@@ -490,6 +491,7 @@ class NetworkingServiceMonitor : View() {
         val endTimeInterruptionInt = csvData.optString("endTimeInteger", " ")
         val errorCountInterruption = csvData.optString("errorCountInterruption", " ")
         val hololensCueType = csvData.optString("hololensCueType", " ")
+        val cueSetDuration = csvData.optString("cueSetDuration", " ")
 
         println("StartTime:$startTimeInterruption")
         println("EndTime:$endTimeInterruption")
@@ -518,6 +520,7 @@ class NetworkingServiceMonitor : View() {
         logEntry.setValue("INTEGER: End Time Interruption", endTimeInterruptionInt)
         logEntry.setValue("Error Count Interruption", errorCountInterruption)
         logEntry.setValue("Hololens Cue Type", hololensCueType)
+        logEntry.setValue("Cue Set Duration", cueSetDuration)
 
         GlobalLogger.exp().log(logEntry)
     }

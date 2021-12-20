@@ -239,7 +239,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
         absolutePath, LogFormat.CSV)
 
         GlobalLogger.exp().clearColumns()
-        GlobalLogger.exp().addColumns(arrayOf("Participant Number", "Block", "Device", "Hololens Cue Type", "Interruption Trial", "Trial", "First Click In Module", "INTEGER: First Click In Module", "Wrong Click In Module After Interruption", "Patient ID", "Module", "Error Wrong Module", "Error Input", "Error Empty Module", "Error Count Interruption", "Interruption Length", "Click on OK", "INTEGER: Click on OK", "Start Time Interruption", "INTEGER: Start Time Interruption", "End Time Interruption", "INTEGER: End Time Interruption"))
+        GlobalLogger.exp().addColumns(arrayOf("Participant Number", "Block", "Device", "Hololens Cue Type", "Interruption Trial", "Trial", "First Click In Module", "INTEGER: First Click In Module", "Wrong Click In Module After Interruption", "Patient ID", "Module", "Error Wrong Module", "Error Input", "Error Empty Module", "Error Count Interruption", "Interruption Length", "Click on OK", "INTEGER: Click on OK", "Start Time Interruption", "INTEGER: Start Time Interruption", "End Time Interruption", "INTEGER: End Time Interruption", "Cue Set Duration"))
         GlobalLogger.exp().writerHeader()
 
     }
@@ -263,9 +263,8 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
         if (subscriber.size == 1) {
             statusArea.clear()
             statusArea.appendText("No subscriber connected")
-        } else {
-            val obj = JSONObject()
-            //TODO Publisher.sendMessage to subscriber
+        } else
+        {
 
             val objFrontend = JSONObject()
             objFrontend.put("type", "expDataHMD")
@@ -288,6 +287,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
                 Publisher.sendMessage(objFrontend, frontendSubs!!)
             }
 
+            val obj = JSONObject()
             obj.put("type", "expData")
             obj.put("metaInfo", expConfiguration)
             obj.put("trialsConfig", trialsConfig)

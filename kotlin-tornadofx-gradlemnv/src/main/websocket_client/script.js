@@ -2,7 +2,6 @@ let expConfig, metaInfo;
 let nextTrial = 0;
 let trialsConfig, trials, currentTrial, interruption, currentsichtbarkeit, patientID, nextPatient, block, patient;
 
-
 //Overlay "verdeckung" an und ausschalten
 function unsichtbar() {
   document.getElementById("verdeckung").style.display = "block";
@@ -148,8 +147,6 @@ $(document).ready(function () {
     var positioningInterrupted = false;
     var module;
     var interruptionLength;
-    var startInterruption;
-    var startInterruptionInteger;
     var timeout;
     var allergieError = false;
     var wrongClickAfterInterruption = 0;
@@ -161,8 +158,7 @@ $(document).ready(function () {
 
     var todaysDate = now.getDate() + "/" + ((now.getMonth() < 10) ? "0" + now.getMonth() : now.getMonth()) + "/" + now.getFullYear();
     $("#todaysDate").text(todaysDate);
-
-
+    
     function disableInputFields() {
         // Patient Information disabled
         $("#height, #weight, #checkAllergies1, #checkAllergies2, #checkAllergies3, #checkAllergiesInput, #allergiesInput").prop("disabled", true);
@@ -223,16 +219,11 @@ $(document).ready(function () {
         // Otherwise, this is sent from the hololens, when the user places a cue.
         if (expConfig.hololensCueType !== "manual")
         {
+            logStartTime()
+
             //sends the interruption length to the frontend tablet
             WS.reportInterruptionPoint(interruptionLength);
         }
-
-        // TODO: Track, how long the user took to place the cue. This duration has to be added to startInterruption
-        var now = new Date();
-        startInterruption = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
-            .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
-        console.log("Start Interruption Websocket:" + startInterruption);
-        startInterruptionInteger = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
 
         let nextModule = getNextModulesEditButton()
         let rect = nextModule.getBoundingClientRect()
@@ -341,8 +332,8 @@ $(document).ready(function () {
     function resetErrors() {
         errorsEmptyModule = 0;
         errorsModule = 0;
-        startInterruption = " ";
-        startInterruptionInteger = " ";
+        localStorage["startInterruption"] = " ";
+        localStorage["startInterruptionInteger"] = " ";
         localStorage["endTimeInt"] = " ";
         localStorage["endTimeInteger"] = " ";
         localStorage["errorCountInterruption"] = " ";
@@ -634,9 +625,9 @@ $(document).ready(function () {
                         interruptionLength: interruptionLength,
                         clickOnOK: clickOKPatientInfo,
                         clickOnOKInt: clickOKPatientInfoInt,
-                        startTimeIT: startInterruption,
+                        startTimeIT: localStorage["startInterruption"],
                         endTimeIT: localStorage["endTimeInt"],
-                        startTimeInteger: startInterruptionInteger,
+                        startTimeInteger: localStorage["startInterruptionInteger"],
                         endTimeInteger: localStorage["endTimeInteger"],
                         hololensCueType: expConfig.hololensCueType,
                         cueSetDuration: localStorage["cueSetDuration"]
@@ -739,9 +730,9 @@ $(document).ready(function () {
                         interruptionLength: interruptionLength,
                         clickOnOK: clickOKMedication,
                         clickOnOKInt: clickOKMedicationInt,
-                        startTimeIT: startInterruption,
+                        startTimeIT: localStorage["startInterruption"],
                         endTimeIT: localStorage["endTimeInt"],
-                        startTimeInteger: startInterruptionInteger,
+                        startTimeInteger: localStorage["startInterruptionInteger"],
                         endTimeInteger: localStorage["endTimeInteger"],
                         hololensCueType: expConfig.hololensCueType,
                         cueSetDuration: localStorage["cueSetDuration"]
@@ -830,9 +821,9 @@ $(document).ready(function () {
                         interruptionLength: interruptionLength,
                         clickOnOK: clickOKRT,
                         clickOnOKInt: clickOKRTInt,
-                        startTimeIT: startInterruption,
+                        startTimeIT: localStorage["startInterruption"],
                         endTimeIT: localStorage["endTimeInt"],
-                        startTimeInteger: startInterruptionInteger,
+                        startTimeInteger: localStorage["startInterruptionInteger"],
                         endTimeInteger: localStorage["endTimeInteger"],
                         hololensCueType: expConfig.hololensCueType,
                         cueSetDuration: localStorage["cueSetDuration"]
@@ -1000,9 +991,9 @@ $(document).ready(function () {
                         interruptionLength: interruptionLength,
                         clickOnOK: clickOKCatheter,
                         clickOnOKInt: clickOKCatheterInt,
-                        startTimeIT: startInterruption,
+                        startTimeIT: localStorage["startInterruption"],
                         endTimeIT: localStorage["endTimeInt"],
-                        startTimeInteger: startInterruptionInteger,
+                        startTimeInteger: localStorage["startInterruptionInteger"],
                         endTimeInteger: localStorage["endTimeInteger"],
                         hololensCueType: expConfig.hololensCueType,
                         cueSetDuration: localStorage["cueSetDuration"]
@@ -1147,9 +1138,9 @@ $(document).ready(function () {
                         interruptionLength: interruptionLength,
                         clickOnOK: clickOKTube,
                         clickOnOKInt: clickOKTubeInt,
-                        startTimeIT: startInterruption,
+                        startTimeIT: localStorage["startInterruption"],
                         endTimeIT: localStorage["endTimeInt"],
-                        startTimeInteger: startInterruptionInteger,
+                        startTimeInteger: localStorage["startInterruptionInteger"],
                         endTimeInteger: localStorage["endTimeInteger"],
                         hololensCueType: expConfig.hololensCueType,
                         cueSetDuration: localStorage["cueSetDuration"]
@@ -1290,9 +1281,9 @@ $(document).ready(function () {
                         interruptionLength: interruptionLength,
                         clickOnOK: clickOKPositioning,
                         clickOnOKInt: clickOKPositioningInt,
-                        startTimeIT: startInterruption,
+                        startTimeIT: localStorage["startInterruption"],
                         endTimeIT: localStorage["endTimeInt"],
-                        startTimeInteger: startInterruptionInteger,
+                        startTimeInteger: localStorage["startInterruptionInteger"],
                         endTimeInteger: localStorage["endTimeInteger"],
                         hololensCueType: expConfig.hololensCueType,
                         cueSetDuration: localStorage["cueSetDuration"]
@@ -1358,9 +1349,9 @@ $(document).ready(function () {
             interruptionLength: interruptionLength,
             clickOnOK: clickOnOk,
             clickOnOKInt: clickOnOkInt,
-            startTimeIT: startInterruption,
+            startTimeIT: localStorage["startInterruption"],
             endTimeIT: localStorage["endTimeInt"],
-            startTimeInteger: startInterruptionInteger,
+            startTimeInteger: localStorage["startInterruptionInteger"],
             endTimeInteger: localStorage["endTimeInteger"],
             hololensCueType: expConfig.hololensCueType,
             cueSetDuration: localStorage["cueSetDuration"]
@@ -1660,11 +1651,15 @@ $(document).ready(function () {
                 console.log(JSON.stringify(jsonObjCopy));
                 jsonObj = [];
                 jsonString = "";
-                showTrainingOverlay(allErrors.toString());
+
+                let totalErrors = allErrors + localStorage["errorCountInterruption"]
+                showTrainingOverlay(totalErrors.toString());
                 buttonID = 0;
                 resetInterruptionInfo();
                 $("#processButton").prop("disabled", true);
-            } else if (trial < trials.length) {
+            }
+            else if (trial < trials.length)
+            {
                 processButton();
                 jsonString = JSON.stringify(jsonObj);
                 console.log(jsonObj);
@@ -1709,4 +1704,6 @@ $(document).ready(function () {
     });
 
 
+
 });
+

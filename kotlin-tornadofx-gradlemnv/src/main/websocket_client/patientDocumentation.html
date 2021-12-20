@@ -63,39 +63,28 @@
             if (type === "expData") {
                 WS.loadExperimentData(event);
             }
-            else if (type === "backend")
-            {
 
-                let time = jsonMessage.content;
-                var now = new Date();
-                var endInterruption = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
-                    .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
-                var endInterruptionInteger = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - localStorage["fixedDate"]).toFixed(3);
-
-                localStorage["endTimeInteger"] = endInterruptionInteger;
-                console.log(endInterruptionInteger);
-                console.log("fixed Date: " + localStorage["fixedDate"]);
-
-                localStorage["endTimeInt"] = endInterruption;
-                console.log(endInterruption);
-
-            }
             else if (type === "web client")
             {
                 if('errorCountInterruption' in jsonMessage)
                 {
-                    //TODO: wird eine Zeile zu spät geloggt?
                     localStorage["errorCountInterruption"] = Number(localStorage["errorCountInterruption"]) + Number(jsonMessage.errorCountInterruption);
                     console.log(`added ${jsonMessage.errorCountInterruption} to localstorage. Total Errors = ${localStorage["errorCountInterruption"]}`)
+
+                    logEndTime()
                 }
 
+                // The hololens sent the message, that the cue was placed
                 if('content' in jsonMessage)
                 {
+
                     let interruptionLength = jsonMessage['content']['interruptionLength']
                     let cueSetDuration = jsonMessage['content']['cueSetDurationMilliseconds']
 
                     localStorage["cueSetDuration"] = Number(cueSetDuration)
                     console.log(`cueSetDuration was ${cueSetDuration}ms.`)
+
+                    logStartTime()
 
                     unsichtbar()
                     window.setTimeout(sichtbar, interruptionLength * 1000);
@@ -110,6 +99,30 @@
         });
     }
 
+    function logStartTime()
+    {
+        var now = new Date();
+
+        localStorage["startInterruption"] = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
+            .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
+        localStorage["startInterruptionInteger"] = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
+
+        console.log("Start times logged.")
+    }
+
+    function logEndTime()
+    {
+        let now = new Date();
+        let endInterruption = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
+            .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
+        let endInterruptionInteger = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - localStorage["fixedDate"]).toFixed(3);
+
+        localStorage["endTimeInteger"] = endInterruptionInteger;
+        localStorage["endTimeInt"] = endInterruption;
+
+        console.log("End times logged.")
+
+    }
 
     function afterCalibration() {
         WS.endCalibrationHMD(true);
