@@ -22,9 +22,6 @@ import java.util.*
 import kotlin.concurrent.schedule
 import kotlin.math.max
 import kotlin.math.min
-import android.os.CountDownTimer
-
-import android.widget.ProgressBar
 
 class ArithmeticActivity : AbstractServiceView() {
     override fun onConfigurationChanged(newConfig: Configuration?) {
@@ -38,7 +35,6 @@ class ArithmeticActivity : AbstractServiceView() {
     private var flash: ImageView? = null
     private var background: ImageView? = null
 
-    private var progressBar: ProgressBar? = null
     // the parent element of the buttons
     private var tableRow: TableRow? = null
     private var answerButton1: Button? = null
@@ -114,7 +110,6 @@ class ArithmeticActivity : AbstractServiceView() {
                                         // before every new equation, evaluate whether the input of the user was correct
                                         evaluateUserInput()
                                         showEquation(equationList[equationIndex % equationList.count()])
-                                        runProgressBar()
                                         equationIndex++
 
                                         wasEquationAnswered = false
@@ -155,7 +150,6 @@ class ArithmeticActivity : AbstractServiceView() {
         override fun onServerConnect() {
             Log.i("ArithmeticActivity", "Connected to Server")
         }
-
     }
 
 
@@ -179,8 +173,6 @@ class ArithmeticActivity : AbstractServiceView() {
         this.flash = this@ArithmeticActivity.findViewById(R.id.flashView) as ImageView
 
         this.tableRow = this@ArithmeticActivity.findViewById(R.id.tableRow1) as TableRow
-
-        this.progressBar = this@ArithmeticActivity.findViewById(R.id.progressbar) as ProgressBar
 
         this.answerButton1 = this@ArithmeticActivity.findViewById(R.id.answerButton1) as Button
         this.answerButton2 = this@ArithmeticActivity.findViewById(R.id.answerButton2) as Button
@@ -215,8 +207,6 @@ class ArithmeticActivity : AbstractServiceView() {
 
         wasEquationAnswered = true
         this.tableRow!!.visibility = View.INVISIBLE
-        this.progressBar!!.visibility = View.INVISIBLE
-        this.progressBar
     }
 
     fun showEquation(equationString: String) {
@@ -311,32 +301,6 @@ class ArithmeticActivity : AbstractServiceView() {
             } else {
                 this.flash!!.visibility = View.INVISIBLE
             }
-        }
-    }
-
-    private fun runProgressBar()
-    {
-        runOnUiThread {
-
-            this@ArithmeticActivity.progressBar?.visibility = View.VISIBLE
-
-            var mCountDownTimer: CountDownTimer
-            val duration = 5000f
-
-            this.progressBar?.progress = 100
-
-            mCountDownTimer = object : CountDownTimer(duration.toLong(), 10) {
-
-                override fun onTick(millisUntilFinished: Long) {
-                    this@ArithmeticActivity.progressBar?.progress =  (100 * (millisUntilFinished / duration)).toInt()
-                }
-
-                override fun onFinish() {
-                    this@ArithmeticActivity.progressBar?.progress = 0
-                }
-
-            }
-            mCountDownTimer.start()
         }
     }
 
