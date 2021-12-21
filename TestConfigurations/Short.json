@@ -2,6 +2,6 @@
   {"id":1,"interruptionTrial":false,"sichtbarkeit":true,"patient":1,"patientInformation":0,"medication":0,"respiratory":0,"catheter":0,"tube":0,"positioning":0},
   {"id":2,"interruptionTrial":true,"sichtbarkeit":true,"patient":3,"patientInformation":0,"medication":15,"respiratory":0,"catheter":0,"tube":30,"positioning":15},
   {"id":3,"interruptionTrial":true,"sichtbarkeit":true,"patient":13,"patientInformation":0,"medication":15,"respiratory":0,"catheter":15,"tube":0,"positioning":15}],
-  "trainingsTrial":{"id":100,"interruptionTrial":true,"sichtbarkeit":true,"patient":100,"patientInformation":0,"medication":5,"respiratory":0,"catheter":15,"tube":0,"positioning":30},
+  "trainingsTrial":{"id":100,"interruptionTrial":true,"sichtbarkeit":false,"patient":100,"patientInformation":15,"medication":15,"respiratory":0,"catheter":45,"tube":0,"positioning":30},
   "patientSeed":526,
   "logDir":"D:\\Projekte\\MA\\ResumptionLag_AR\\TestConfigurations\\Short.json"}
