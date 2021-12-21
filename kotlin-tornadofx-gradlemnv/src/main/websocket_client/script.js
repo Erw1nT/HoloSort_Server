@@ -1707,3 +1707,44 @@ $(document).ready(function () {
 
 });
 
+// document.addEventListener('fullscreenchange', (event) => {
+//     // document.fullscreenElement will point to the element that
+//     // is in fullscreen mode if there is one. If there isn't one,
+//     // the value of the property is null.
+//     if (document.fullscreenElement) {
+//         console.log(`Element: ${document.fullscreenElement.id} entered full-screen mode.`);
+//     } else {
+//         console.log('Leaving full-screen mode.');
+//     }
+// });
+
+$(document).keydown(function(e){
+    if(e.which === 119){
+
+        if (document.fullscreenElement) {
+            exitFullscreen(document.documentElement)
+        } else {
+            enterFullscreen(document.documentElement)
+        }
+
+    }
+});
+
+function enterFullscreen(element) {
+    if(element.requestFullscreen) {
+        element.requestFullscreen();
+    } else if(element.msRequestFullscreen) {      // for IE11 (remove June 15, 2022)
+        element.msRequestFullscreen();
+    } else if(element.webkitRequestFullscreen) {  // iOS Safari
+        element.webkitRequestFullscreen();
+    }
+}
+
+function exitFullscreen() {
+    if(document.exitFullscreen) {
+        document.exitFullscreen();
+    } else if(document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+    }
+}
+

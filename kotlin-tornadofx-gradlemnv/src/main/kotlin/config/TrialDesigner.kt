@@ -285,11 +285,13 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial::cl
         var trainingsTrial = Trial()
         trainingsTrial.id = 100
         trainingsTrial.interruptionTrial = true
-        trainingsTrial.sichtbarkeit = true
+        trainingsTrial.sichtbarkeit = false
         trainingsTrial.patient = 100
-        trainingsTrial.catheter = 15
-        trainingsTrial.medication = 5
+        trainingsTrial.patientInformation = 15
+        trainingsTrial.catheter = 45
+        trainingsTrial.medication = 15
         trainingsTrial.positioning = 30
+
         trialsConfig.trainingsTrial = trainingsTrial
     }
 
