@@ -103,7 +103,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
             label("Experiment Runner") {
                 font = Font.font(20.0)
             }
-            label("HMDLag version: 2021-10-20") {
+            label("HoloLag version: 2021-12-21") {
                 font = Font.font(12.0)
             }
 
@@ -128,8 +128,11 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
                             isEditable = false
                         }
                         button("Select Output Directory").action {
-                            val file =
-                                chooseDirectory("Choose output directory", File(expConfiguration.outputDirectory))
+
+                            val previousFile = File(expConfiguration.outputDirectory)
+                            val initialDir = if (previousFile.exists()) previousFile else null
+
+                            val file = chooseDirectory("Choose output directory", initialDirectory = initialDir)
                             expConfiguration.outputDirectory = file?.absolutePath ?: expConfiguration.outputDirectory
                             HMDLagUserPrefsManager.savePrefs(
                                 HMDLagUserPrefsManager.OUTPUT_DIRECTORY_KEY,
@@ -239,7 +242,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(TrialsConfiguration(Trial:
         absolutePath, LogFormat.CSV)
 
         GlobalLogger.exp().clearColumns()
-        GlobalLogger.exp().addColumns(arrayOf("Participant Number", "Block", "Device", "Hololens Cue Type", "Interruption Trial", "Trial", "First Click In Module", "INTEGER: First Click In Module", "Wrong Click In Module After Interruption", "Patient ID", "Module", "Error Wrong Module", "Error Input", "Error Empty Module", "Error Count Interruption", "Interruption Length", "Click on OK", "INTEGER: Click on OK", "Start Time Interruption", "INTEGER: Start Time Interruption", "End Time Interruption", "INTEGER: End Time Interruption", "Cue Set Duration"))
+        GlobalLogger.exp().addColumns(arrayOf("Participant Number", "Block", "Device", "Hololens Cue Type", "Interruption Trial", "Trial", "First Click In Module", "INTEGER: First Click In Module", "Wrong Click In Module After Interruption", "Patient ID", "Module", "Error Wrong Module", "Error Input", "Error Empty Module", "Error Count Interruption", "Interruption Length", "Click on OK", "INTEGER: Click on OK", "Start Time Interruption", "INTEGER: Start Time Interruption", "End Time Interruption", "INTEGER: End Time Interruption", "Cue Set Duration", "First Focus", "First Focus Int"))
         GlobalLogger.exp().writerHeader()
 
     }

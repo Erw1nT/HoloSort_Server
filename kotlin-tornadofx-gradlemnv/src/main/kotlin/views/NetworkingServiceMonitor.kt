@@ -492,6 +492,8 @@ class NetworkingServiceMonitor : View() {
         val errorCountInterruption = csvData.optString("errorCountInterruption", " ")
         val hololensCueType = csvData.optString("hololensCueType", " ")
         val cueSetDuration = csvData.optString("cueSetDuration", " ")
+        val firstFocus = csvData.optString("firstFocus", " ")
+        val firstFocusInt = csvData.optString("firstFocusInt", " ")
 
         println("StartTime:$startTimeInterruption")
         println("EndTime:$endTimeInterruption")
@@ -521,6 +523,8 @@ class NetworkingServiceMonitor : View() {
         logEntry.setValue("Error Count Interruption", errorCountInterruption)
         logEntry.setValue("Hololens Cue Type", hololensCueType)
         logEntry.setValue("Cue Set Duration", cueSetDuration)
+        logEntry.setValue("First Focus", firstFocus)
+        logEntry.setValue("First Focus Int", firstFocusInt)
 
         GlobalLogger.exp().log(logEntry)
     }

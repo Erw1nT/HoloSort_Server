@@ -363,7 +363,9 @@ $(document).ready(function () {
             interruptionLength: 0,
             clickOnOK: " ",
             hololensCueType: expConfig.hololensCueType,
-            cueSetDuration: localStorage["cueSetDuration"]
+            cueSetDuration: localStorage["cueSetDuration"],
+            firstFocus: localStorage["firstFocusAfterEnableModule"],
+            firstFocusInt: localStorage["firstFocusAfterEnableModuleInt"]
         });
     }
 
@@ -402,7 +404,9 @@ $(document).ready(function () {
                 interruptionLength: 0,
                 clickOnOK: " ",
                 hololensCueType: expConfig.hololensCueType,
-                cueSetDuration: localStorage["cueSetDuration"]
+                cueSetDuration: localStorage["cueSetDuration"],
+                firstFocus: localStorage["firstFocusAfterEnableModule"],
+                firstFocusInt: localStorage["firstFocusAfterEnableModuleInt"]
             });
 
             timestampResumptionProcess = " ";
@@ -439,7 +443,9 @@ $(document).ready(function () {
             clickOnOK: timestampBaselineProcess,
             clickOnOKInt: timestampBaselineProcessInt,
             hololensCueType: expConfig.hololensCueType,
-            cueSetDuration: localStorage["cueSetDuration"]
+            cueSetDuration: localStorage["cueSetDuration"],
+            firstFocus: localStorage["firstFocusAfterEnableModule"],
+            firstFocusInt: localStorage["firstFocusAfterEnableModuleInt"]
         });
 
         timestampBaselineProcess = " ";
@@ -630,7 +636,9 @@ $(document).ready(function () {
                         startTimeInteger: localStorage["startInterruptionInteger"],
                         endTimeInteger: localStorage["endTimeInteger"],
                         hololensCueType: expConfig.hololensCueType,
-                        cueSetDuration: localStorage["cueSetDuration"]
+                        cueSetDuration: localStorage["cueSetDuration"],
+                        firstFocus: localStorage["firstFocusAfterEnableModule"],
+                        firstFocusInt: localStorage["firstFocusAfterEnableModuleInt"]
                     });
 
                     resetErrors();
@@ -735,7 +743,9 @@ $(document).ready(function () {
                         startTimeInteger: localStorage["startInterruptionInteger"],
                         endTimeInteger: localStorage["endTimeInteger"],
                         hololensCueType: expConfig.hololensCueType,
-                        cueSetDuration: localStorage["cueSetDuration"]
+                        cueSetDuration: localStorage["cueSetDuration"],
+                        firstFocus: localStorage["firstFocusAfterEnableModule"],
+                        firstFocusInt: localStorage["firstFocusAfterEnableModuleInt"]
                     });
 
                     resetErrors();
@@ -826,7 +836,9 @@ $(document).ready(function () {
                         startTimeInteger: localStorage["startInterruptionInteger"],
                         endTimeInteger: localStorage["endTimeInteger"],
                         hololensCueType: expConfig.hololensCueType,
-                        cueSetDuration: localStorage["cueSetDuration"]
+                        cueSetDuration: localStorage["cueSetDuration"],
+                        firstFocus: localStorage["firstFocusAfterEnableModule"],
+                        firstFocusInt: localStorage["firstFocusAfterEnableModuleInt"]
                     });
 
                     resetErrors();
@@ -996,7 +1008,9 @@ $(document).ready(function () {
                         startTimeInteger: localStorage["startInterruptionInteger"],
                         endTimeInteger: localStorage["endTimeInteger"],
                         hololensCueType: expConfig.hololensCueType,
-                        cueSetDuration: localStorage["cueSetDuration"]
+                        cueSetDuration: localStorage["cueSetDuration"],
+                        firstFocus: localStorage["firstFocusAfterEnableModule"],
+                        firstFocusInt: localStorage["firstFocusAfterEnableModuleInt"]
                     });
 
                     resetErrors();
@@ -1143,7 +1157,9 @@ $(document).ready(function () {
                         startTimeInteger: localStorage["startInterruptionInteger"],
                         endTimeInteger: localStorage["endTimeInteger"],
                         hololensCueType: expConfig.hololensCueType,
-                        cueSetDuration: localStorage["cueSetDuration"]
+                        cueSetDuration: localStorage["cueSetDuration"],
+                        firstFocus: localStorage["firstFocusAfterEnableModule"],
+                        firstFocusInt: localStorage["firstFocusAfterEnableModuleInt"]
                     });
 
                     resetErrors();
@@ -1286,7 +1302,9 @@ $(document).ready(function () {
                         startTimeInteger: localStorage["startInterruptionInteger"],
                         endTimeInteger: localStorage["endTimeInteger"],
                         hololensCueType: expConfig.hololensCueType,
-                        cueSetDuration: localStorage["cueSetDuration"]
+                        cueSetDuration: localStorage["cueSetDuration"],
+                        firstFocus: localStorage["firstFocusAfterEnableModule"],
+                        firstFocusInt: localStorage["firstFocusAfterEnableModuleInt"]
                     });
 
                     resetErrors();
@@ -1323,7 +1341,9 @@ $(document).ready(function () {
             interruptionLength: interruptionLength,
             clickOnOK: clickOnOk,
             hololensCueType: expConfig.hololensCueType,
-            cueSetDuration: localStorage["cueSetDuration"]
+            cueSetDuration: localStorage["cueSetDuration"],
+            firstFocus: localStorage["firstFocusAfterEnableModule"],
+            firstFocusInt: localStorage["firstFocusAfterEnableModuleInt"]
         })
     }
 
@@ -1354,7 +1374,9 @@ $(document).ready(function () {
             startTimeInteger: localStorage["startInterruptionInteger"],
             endTimeInteger: localStorage["endTimeInteger"],
             hololensCueType: expConfig.hololensCueType,
-            cueSetDuration: localStorage["cueSetDuration"]
+            cueSetDuration: localStorage["cueSetDuration"],
+            firstFocus: localStorage["firstFocusAfterEnableModule"],
+            firstFocusInt: localStorage["firstFocusAfterEnableModuleInt"]
         })
     }
 
@@ -1704,19 +1726,42 @@ $(document).ready(function () {
     });
 
 
+    // Clicked an EditButton sets firstFocus to true.
+    // When firstFocus is true, then the first focus-Event of an input-module element is logged.
+    let firstFocus = true
+
+    $(".editButton").click(function()
+    {
+        firstFocus = true
+        console.log("edit was clicked")
+        return
+    })
+
+    $(".input-module").focus(function ()
+    {
+        if (firstFocus === false) {
+            return
+        }
+
+        console.log("first Focus after edit was made.")
+        firstFocus = false
+
+        //let module = $(this).closest(".module")
+        //wenn firstFocus after editButtonClick, dann speicher die Zeit weg als "firstFocusAfterEnableModule"
+
+        var now = new Date()
+
+        let timestampFirstFocus = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
+            .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
+        let timestampFirstFocusInt = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
+
+        localStorage["firstFocusAfterEnableModule"] = timestampFirstFocus
+        localStorage["firstFocusAfterEnableModuleInt"] = timestampFirstFocusInt
+        return
+    })
+
 
 });
-
-// document.addEventListener('fullscreenchange', (event) => {
-//     // document.fullscreenElement will point to the element that
-//     // is in fullscreen mode if there is one. If there isn't one,
-//     // the value of the property is null.
-//     if (document.fullscreenElement) {
-//         console.log(`Element: ${document.fullscreenElement.id} entered full-screen mode.`);
-//     } else {
-//         console.log('Leaving full-screen mode.');
-//     }
-// });
 
 $(document).keydown(function(e){
     if(e.which === 119){
@@ -1747,4 +1792,3 @@ function exitFullscreen() {
         document.webkitExitFullscreen();
     }
 }
-

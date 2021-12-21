@@ -73,7 +73,7 @@ class MenuScreen : View() {
             vbox(10) {
                 hgrow = Priority.ALWAYS
                 alignment = Pos.CENTER_LEFT
-                label("HDMLag2 2021") { font = Font.font(30.0) }
+                label("HoloLag 2022") { font = Font.font(30.0) }
                 label("Version $versionId") { font = Font.font(12.0) }
                 label("Build Date $buildDate") { font = Font.font(12.0) }
             }

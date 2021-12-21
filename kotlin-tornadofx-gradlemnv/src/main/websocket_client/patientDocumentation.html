@@ -13,7 +13,6 @@
     <script src="script.js"></script>
     <script src="calculations.js"></script>
 
-
     <meta charset="UTF-8">
     <title>Patient Documentation</title>
 </head>
@@ -105,7 +104,7 @@
 
         localStorage["startInterruption"] = (now.getHours() + ':' + ((now.getMinutes() < 10) ? ("0" + now.getMinutes()) : (now.getMinutes())) + ':' + ((now.getSeconds() < 10) ? ("0" + now
             .getSeconds()) : (now.getSeconds())) + ',' + now.getMilliseconds());
-        localStorage["startInterruptionInteger"] = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - fixedDate).toFixed(3);
+        localStorage["startInterruptionInteger"] = (parseFloat((now.getHours() * 3600) + (now.getMinutes() * 60) + (now.getSeconds()) + "." + now.getMilliseconds()).toFixed(3) - localStorage["fixedDate"]).toFixed(3);
 
         console.log("Start times logged.")
     }
@@ -257,11 +256,11 @@
                         <div class="col-sm-6" id="body">
                             <div class="form-group">
                                 <label class="subheading">Height in cm</label>
-                                <input class="form-control" id="height">
+                                <input class="form-control input-module" id="height">
                             </div>
                             <div class="form-group">
                                 <label class="subheading">Weight in kg</label>
-                                <input class="form-control" id="weight">
+                                <input class="form-control input-module" id="weight">
                             </div>
                             <label class="subheading">Ideal body weight</label>
                             <p id="bodyWeight">--</p>
@@ -270,26 +269,25 @@
                         <div class="col-sm-6" id="allergies">
                             <label class="subheading">Allergies</label>
                             <div class="checkbox allergies">
-                                <label><input type="checkbox" value="No allergies" id="checkAllergies1">No
+                                <label><input type="checkbox" class="input-module" value="No allergies" id="checkAllergies1">No
                                     allergies</label>
                             </div>
                             <div class="checkbox allergies">
-                                <label><input type="checkbox" value="Pollen" id="checkAllergies2">Pollen</label>
+                                <label><input type="checkbox" class="input-module"value="Pollen" id="checkAllergies2">Pollen</label>
                             </div>
                             <div class="checkbox allergies">
-                                <label><input type="checkbox" value="Latex" id="checkAllergies3">Latex</label>
+                                <label><input type="checkbox" class="input-module" value="Latex" id="checkAllergies3">Latex</label>
                             </div>
                             <div class="form-inline allergies">
                                 <label>
-                                    <input type="checkbox" value="" id="checkAllergiesInput"><input class="form-control"
-                                                                                                    id="allergiesInput">
+                                    <input type="checkbox" class="input-module" value="" id="checkAllergiesInput">
+                                    <input class="form-control input-module" id="allergiesInput">
                                 </label>
                             </div>
 
                         </div>
-                        <button class="okButton" id="okPatientInformation">OK</button>
+                        <button class="okButton input-module" id="okPatientInformation">OK</button>
                     </div>
-
 
                     <div id="error1">Wrong Module</div>
 
@@ -327,7 +325,7 @@
                             <label>Sterofundin</label>
                         </div>
                         <div class="col-sm-3">
-                            <select id="dropDownMedication1">
+                            <select id="dropDownMedication1" class="input-module">
                                 <option value=""></option>
                                 <option value="300">300 ml</option>
                                 <option value="350">350 ml</option>
@@ -347,7 +345,7 @@
                             <p class="actual">actual: <span id="actualStero">---</span> ml/kg</p>
                         </div>
                         <div class="col-sm-3">
-                            <input type="time" id="timeMedication1"> (hh:mm)
+                            <input type="time" class="input-module" id="timeMedication1"> (hh:mm)
                         </div>
                     </div>
 
@@ -356,7 +354,7 @@
                             <label>Fentanyl</label>
                         </div>
                         <div class="col-sm-3">
-                            <select id="dropDownMedication2">
+                            <select id="dropDownMedication2" class="input-module">
                                 <option value=""></option>
                                 <option value="0.1">0.1 mg</option>
                                 <option value="0.15">0.15 mg</option>
@@ -372,7 +370,7 @@
                             <p class="actual">actual: <span id="actualFena">---</span> µg/kg</p>
                         </div>
                         <div class="col-sm-3">
-                            <input type="time" id="timeMedication2"> (hh:mm)
+                            <input type="time" class="input-module" id="timeMedication2"> (hh:mm)
                         </div>
                     </div>
 
@@ -381,7 +379,7 @@
                             <label>Propofol 1%</label>
                         </div>
                         <div class="col-sm-3">
-                            <select id="dropDownMedication3">
+                            <select id="dropDownMedication3" class="input-module">
                                 <option value=""></option>
                                 <option value="100">100 mg</option>
                                 <option value="120">120 mg</option>
@@ -397,7 +395,7 @@
                             <p class="actual">actual: <span id="actualProp">---</span> mg/kg</p>
                         </div>
                         <div class="col-sm-3">
-                            <input type="time" id="timeMedication3"> (hh:mm)
+                            <input type="time" id="timeMedication3" class="input-module"> (hh:mm)
                         </div>
                     </div>
 
@@ -590,7 +588,7 @@
                     <div class="col-sm-12">
                         <div class="row inModule">
                             <label class="textRT">Name</label>
-                            <select id="dropDownRT1">
+                            <select id="dropDownRT1" class="input-module">
                                 <option value=""></option>
                                 <option value="Endotracheal tube">Endotracheal tube</option>
                                 <option value="Tracheostomy tube">Tracheostomy tube</option>
@@ -599,7 +597,7 @@
 
                         <div class="row inModule">
                             <label class="textRT">Type</label>
-                            <select id="dropDownRT2">
+                            <select id="dropDownRT2" class="input-module">
                                 <option value=""></option>
                                 <option value="cuffed">cuffed</option>
                                 <option value="uncuffed">uncuffed</option>
@@ -611,7 +609,7 @@
                             <label class="textRT">Size</label>
 
 
-                            <select id="dropDownRT3">
+                            <select id="dropDownRT3" class="input-module">
                                 <option value=""></option>
                                 <option value="7 mm">7 mm</option>
                                 <option value="8 mm">8 mm</option>
@@ -654,16 +652,16 @@
                     </div>
                     <div class="row inModule">
                         <div class="col-sm-4 form-inline">
-                            <input type="radio" name="catheterRadio" value="arterial"
+                            <input type="radio" class="input-module" name="catheterRadio" value="arterial"
                                    id="checkArterial">Arterial</input>
                         </div>
 
                         <div class="col-sm-4 catheterDesCol">
-                            <input class="form-control" id="arterialInput">
+                            <input class="form-control input-module" id="arterialInput">
                         </div>
 
                         <div class="col-sm-4 catheterDesCol">
-                            <select id="dropDownArterial">
+                            <select id="dropDownArterial" class="input-module">
                                 <option value=""></option>
                                 <option value="left">left</option>
                                 <option value="right">right</option>
@@ -675,15 +673,15 @@
 
                     <div class="row inModule">
                         <div class="col-sm-4">
-                            <input type="radio" name="catheterRadio" value="CVC" id="checkCVC">CVC</input>
+                            <input type="radio" class="input-module" name="catheterRadio" value="CVC" id="checkCVC">CVC</input>
                         </div>
 
                         <div class="col-sm-4 catheterDesCol">
-                            <input class="form-control" id="CVCInput">
+                            <input class="form-control input-module" id="CVCInput">
                         </div>
 
                         <div class="col-sm-4 catheterDesCol">
-                            <select id="dropDownCVC">
+                            <select id="dropDownCVC" class="input-module">
                                 <option value=""></option>
                                 <option value="left">left</option>
                                 <option value="right">right</option>
@@ -695,15 +693,15 @@
                     <p>
                         <div class="row inModule">
                             <div class="col-sm-4">
-                                <input type="radio" name="catheterRadio" value="PVC" id="checkPVC">PVC</input>
+                                <input type="radio" class="input-module" name="catheterRadio" value="PVC" id="checkPVC">PVC</input>
                             </div>
 
                             <div class="col-sm-4 catheterDesCol">
-                                <input class="form-control" id="PVCInput">
+                                <input class="form-control input-module" id="PVCInput">
                             </div>
 
                             <div class="col-sm-4 catheterDesCol">
-                                <select id="dropDownPVC">
+                                <select id="dropDownPVC" class="input-module">
                                     <option value=""></option>
                                     <option value="left">left</option>
                                     <option value="right">right</option>
@@ -741,12 +739,12 @@
                 </div>
                 <div class="row inModule">
                     <div class="col-sm-8">
-                        <label><input type="radio" name="tubeRadio" value="Stomach Tube" id="checkTube1">Stomach
+                        <label><input type="radio" class="input-module" name="tubeRadio" value="Stomach Tube" id="checkTube1">Stomach
                             tube</label>
                     </div>
 
                     <div class="col-sm-4">
-                        <select id="dropDownTube1">
+                        <select id="dropDownTube1" class="input-module">
                             <option value=""></option>
                             <option value="oral">oral</option>
                             <option value="left nasal">left nasal</option>
@@ -758,12 +756,12 @@
 
                 <div class="row inModule">
                     <div class="col-sm-8">
-                        <label><input type="radio" name="tubeRadio" value="Temperature Tube" id="checkTube2">Temperature
+                        <label><input type="radio" class="input-module" name="tubeRadio" value="Temperature Tube" id="checkTube2">Temperature
                             tube</label>
                     </div>
 
                     <div class="col-sm-4">
-                        <select id="dropDownTube2">
+                        <select id="dropDownTube2" class="input-module">
                             <option value=""></option>
                             <option value="oral">oral</option>
                             <option value="rectal">rectal</option>
@@ -775,12 +773,12 @@
 
                 <div class="row inModule">
                     <div class="col-sm-8">
-                        <label><input type="radio" name="tubeRadio" value="TEE-Tube"
+                        <label><input type="radio" class="input-module" name="tubeRadio" value="TEE-Tube"
                                       id="checkTube3">TEE-tube</label>
                     </div>
 
                     <div class="col-sm-4">
-                        <select id="dropDownTube3">
+                        <select id="dropDownTube3" class="input-module">
                             <option value=""></option>
                             <option value="oral">oral</option>
                             <option value="rectal">rectal</option>
@@ -794,7 +792,7 @@
                 </div>
                 <div class="row inModule">
                     <div class="format-inline">
-                        <input type="time" id="timeTube"> (hh:mm)
+                        <input type="time" class="input-module" id="timeTube"> (hh:mm)
                     </div>
                 </div>
 
@@ -826,25 +824,25 @@
                 <div class="row inModule">
                     <div class="col-sm-6 mainPos">
                         <label class="subheading">Main</label>
-                        <label><input type="radio" name="posRadio" value="supine position" id="supinePos">Supine
+                        <label><input type="radio" class="input-module" name="posRadio" value="supine position" id="supinePos">Supine
                             position</label>
                         <label id="torso"><input type="radio" name="posRadio" value="torso high" id="torsoHigh">Torso
                             high</label>
-                        <label><input type="radio" name="posRadio" value="torso low" id="torsoLow">Torso low</label>
-                        <label><input type="radio" name="posRadio" value="stomach" id="stomach">Stomach</label>
+                        <label><input type="radio" class="input-module" name="posRadio" value="torso low" id="torsoLow">Torso low</label>
+                        <label><input type="radio" class="input-module" name="posRadio" value="stomach" id="stomach">Stomach</label>
                     </div>
 
                     <div class="col-sm-6 head">
                         <label class="subheading">Head</label>
                         <p>
-                            <label><input type="radio" name="headRadio" value="in foam shell" id="foamShell">In foam
+                            <label><input type="radio" class="input-module" name="headRadio" value="in foam shell" id="foamShell">In foam
                                 shell</label>
-                            <label><input type="radio" name="headRadio" value="on gel ring" id="gelRing">On gel
+                            <label><input type="radio" class="input-module" name="headRadio" value="on gel ring" id="gelRing">On gel
                                 ring</label>
                         <p id="trunk"><label class="subheading">Trunk</label>
-                            <label id="spine"><input type="radio" name="trunkRadio" value="spine orthograde"
+                            <label id="spine"><input type="radio" class="input-module" name="trunkRadio" value="spine orthograde"
                                                      id="spineOrtho">Spine orthograde</label>
-                            <label id="shoulder"><input type="radio" name="trunkRadio" value="shoulder support"
+                            <label id="shoulder"><input type="radio" class="input-module" name="trunkRadio" value="shoulder support"
                                                         id="shoulderSupport">Shoulder support</label></p>
                     </div>
                 </div>
