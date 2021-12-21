@@ -28,10 +28,7 @@ import publisher.*
 import tornadofx.*
 import utils.ValueChangeDialog
 import java.awt.Desktop
-import java.awt.MouseInfo
 import java.awt.Robot
-import java.awt.Toolkit
-import java.io.File
 import java.net.URL
 import java.util.*
 
@@ -51,6 +48,7 @@ class NetworkingServiceMonitor : View() {
     val alerttone = Media(alertPath.toString())
     val mediaPlayer = MediaPlayer(alerttone)
 
+    private var lockCursorTimer: Timer? = null
 
     private var isPollLoggingEnabled = true
 
@@ -233,6 +231,11 @@ class NetworkingServiceMonitor : View() {
                     val interruptionLength = contentObject.get("interruptionLength")
                     val hololensCueType = contentObject.get("hololensCueType")
 
+                    if (hololensCueType.toString() == HololensCueType.MANUAL.identifier)
+                    {
+                        lockCursorTimer = lockCursor(null)
+                    }
+
                     if (hololensCueType.toString() != HololensCueType.NONE.identifier)
                     {
                         val holoLensMsg = JSONObject()
@@ -287,6 +290,11 @@ class NetworkingServiceMonitor : View() {
                 if (content.has("cueSetDurationMilliseconds"))
                 {
                     cueSetDurationMilliseconds = content.get("cueSetDurationMilliseconds") as Number
+
+                    // the cursor is unlocked, but will be locked again immediately after the interruption starts
+                    // this way, they will not overlap
+                    lockCursorTimer?.cancel()
+                    lockCursorTimer = null
                 }
 
                 val jsonMsg = JSONObject()
@@ -415,8 +423,8 @@ class NetworkingServiceMonitor : View() {
             }
             val jsonMessage = JSONObject(message)
 
-            // TODO: Wieso ist das hier im OnMessage und nicht im SubscriberChangeListener?
-            // weil alle Nachrichten, die ans frontend gesendet werden im Publisher::publish auch an den Monitor gesendet werden
+            // Wieso ist das hier im OnMessage und nicht im SubscriberChangeListener?
+            // weil alle Nachrichten, die ans frontend gesendet werden via Publisher::publish auch an den Monitor gesendet werden
 
             // Message is sent to the frontend
             if (jsonMessage.get("type") == "frontend") {
@@ -428,44 +436,59 @@ class NetworkingServiceMonitor : View() {
                     val content = jsonMessage.get("content") as Number
                     val interruptionLength = content.toLong()
 
-                    // woher kommen die 600ms?
-                    val constDelay = 600
+                    // woher kommen die 300ms?
+                    val constDelay = 300
                     val delayLength = constDelay + (interruptionLength * 1000)
 
-                    val timer = Timer()
-
-                    var x = 960
-                    var y = 600
-                    val r = Robot()
-
-                    timer.schedule(object : TimerTask() {
-                        override fun run() {
-
-                            timer.scheduleAtFixedRate(
-                                object : TimerTask() {
-                                    override fun run(){
-                                        r.mouseMove(x, y)
-                                        // TODO: comment back in (or disable when in debug?)
-                                    }
-                                },
-                                0, 1)
-                        }
-                    }, 300)
-                    //Set the schedule function
-
-                    timer.schedule(object : TimerTask() {
-                        override fun run() {
-                            mediaPlayer.play()
-                            mediaPlayer.seek(Duration(0.0))
-                            timer.cancel()
-                        }
-                    }, delayLength)
+                    lockCursor(delayLength)
 
                 } else {
                     println(jsonMessage.toString())
                 }
             }
         }
+    }
+
+    /**
+     * If duration is [null], the timer will run forever.
+     */
+    fun lockCursor(duration: Long?) : Timer
+    {
+        val timer = Timer()
+
+        val x = 960
+        val y = 600
+        val r = Robot()
+
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+
+                timer.scheduleAtFixedRate(
+                    object : TimerTask() {
+                        override fun run(){
+                            r.mouseMove(x, y)
+                            // TODO: comment back in (or disable when in debug?)
+                        }
+                    },
+                    0, 1)
+            }
+        }, 300) //woher kommen die 300ms?
+        //Set the schedule function
+
+        if (duration != null)
+        {
+
+            timer.schedule(object : TimerTask() {
+                override fun run() {
+                    mediaPlayer.play()
+                    mediaPlayer.seek(Duration(0.0))
+                    timer.cancel()
+                }
+            }, duration)
+
+        }
+
+        return timer
     }
 
     fun convertToCSVFile(csvData: JSONObject) {
