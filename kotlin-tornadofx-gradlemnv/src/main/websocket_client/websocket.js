@@ -156,12 +156,26 @@ class WebSocketConnection {
 
         let obj = {};
         obj.type = "backend"
-        obj.content = content;
-        obj.target = "frontend";
+        obj.content = content
+        obj.target = "frontend"
         let jsonString= JSON.stringify(obj);
 
         this.websocket.send(jsonString)
 
+    }
+
+    resetInterruptionTaskIndex()
+    {
+        let cont = {}
+        cont.resetInterruptionTaskIndex = true
+
+        let msg = {}
+        msg.type = "frontend"
+        msg.content = cont
+
+        let json = JSON.stringify(msg);
+
+        this.websocket.send(json);
     }
 
     reportCalibration(){

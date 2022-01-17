@@ -467,6 +467,9 @@ $(document).ready(function () {
             $("#overlay").css("display", "none");
             checkConfigTrial();
             refreshPatient();
+
+            WS.resetInterruptionTaskIndex()
+
             if (metaInfo.CalibrationIncluded) {
                 document.getElementById('primaryTask').style.display = "none";
                 switch (metaInfo.Device.toString()) {
