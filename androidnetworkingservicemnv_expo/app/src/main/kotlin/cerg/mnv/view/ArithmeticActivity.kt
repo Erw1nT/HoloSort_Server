@@ -74,7 +74,8 @@ class ArithmeticActivity : AbstractServiceView() {
             val json = JSONObject(message)
             if (json.get("type") == "frontend" && message.isNotEmpty()) {
 
-                if (json.has("dataType")) {
+                if (json.has("dataType"))
+                {
                     println(json.get("dataType"))
 
                     if (json.get("dataType") == "endTraining") {
@@ -86,7 +87,17 @@ class ArithmeticActivity : AbstractServiceView() {
                         this@ArithmeticActivity.startActivity(Intent(this@ArithmeticActivity, CalibrationActivity::class.java))
                     }
                 }
-                else {
+                else if (json.get("content") is JSONObject) //resetInterruptionTaskIndex from web client
+                {
+                    val isResetTriggered = (json.get("content") as JSONObject).has("resetInterruptionTaskIndex")
+                    if (isResetTriggered)
+                    {
+                     equationIndex = 50 // set to a fixed value, so that all participants will start with the same questions
+                     // preferably one they have not yet seen.
+                    }
+                }
+                else // only has interruptionLength in content
+                {
 
                     val interruptionLength = (json.get("content") as Number).toLong().times(1000)
 
