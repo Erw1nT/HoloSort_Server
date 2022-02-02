@@ -230,12 +230,12 @@ $(document).ready(function () {
 
         // Application shall be run in fullscreen!
         // availWidth/Height exclude the taskbar width/height
-        let screenWidth = window.screen.availWidth;
-        let screenHeight = window.screen.availHeight;
+        let screenWidth = window.screen.width;
+        let screenHeight = window.screen.height;
 
         // center position relative to screen
         let relativeX = (rect.x + (rect.width  /2)) / screenWidth
-        let relativeY = (rect.y + (rect.height /2)) / screenHeight
+        let relativeY = (rect.y + 18 + (rect.height /2)) / screenHeight //button is 35x35 px
 
         let relCenter = {}
         relCenter.x = relativeX
