@@ -50,7 +50,7 @@ class NetworkingServiceMonitor : View() {
 
     private var lockCursorTimer: Timer? = null
 
-    private var isPollLoggingEnabled = true
+    private var isPollLoggingEnabled = false
 
     private val subscriberTable = tableview<Subscriber> {
         readonlyColumn("ID", Subscriber::key).pctWidth(40)
@@ -429,7 +429,8 @@ class NetworkingServiceMonitor : View() {
             // Message is sent to the frontend
             if (jsonMessage.get("type") == "frontend") {
 
-                if (!jsonMessage.has("dataType")) {
+                // nur wenn eine Interruption gesendet wird, wird der Ton gespielt
+                if (isInterruption(jsonMessage)) {
                     mediaPlayer.play()
                     mediaPlayer.seek(Duration(0.0))
 
@@ -450,7 +451,18 @@ class NetworkingServiceMonitor : View() {
     }
 
     /**
-     * If duration is [null], the timer will run forever.
+     * There are 3 types of messages that are sent to the frontend:
+     * 1) Interruptions | {type: frontend, content = 15}
+     * 2) calibration | {type: frontend, datatype: calibration / calibrationStart, content: bool/string}
+     * 3) ResetInterruptionTaskIndex | {type: frontend, content = {resetInterruptionTaskIndex: true}}
+     * Only 1) is an interruption
+     */
+    private fun isInterruption(jsonObj: JSONObject): Boolean {
+        return (jsonObj.has("content") && jsonObj["content"] is Number && !jsonObj.has("dataType"))
+    }
+
+    /**
+     * If duration is null, the timer will run forever.
      */
     fun lockCursor(duration: Long?) : Timer
     {
