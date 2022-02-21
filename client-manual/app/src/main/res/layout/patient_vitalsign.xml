@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="@dimen/patient_columns_width"
+    android:layout_height="@dimen/vital_signs_height"
+    android:background="#00000000"
+    tools:context=".view.MainActivity"
+    >
+
+
+    <TextView
+        android:id="@+id/border"
+        android:layout_width="@dimen/vital_signs_border_width"
+        android:layout_height="@dimen/vital_signs_height"
+        android:layout_alignParentTop="true"
+        android:background="#000000"
+        android:text=""
+        android:textSize="@dimen/vital_signs_size"
+        android:gravity="left"
+        />
+
+    <TextView
+        android:id="@+id/vitalSignValue"
+        android:layout_width="@dimen/vital_signs_value_width"
+        android:layout_height="@dimen/vital_signs_height"
+        android:layout_alignParentTop="true"
+        android:background="#00000000"
+        android:text="160"
+        android:textSize="@dimen/vital_signs_size"
+        android:gravity="center"
+        android:layout_toRightOf="@+id/border"
+        android:layout_toLeftOf="@+id/vitalSignLevels"
+        android:layout_toStartOf="@+id/vitalSignLevels" />
+
+    <LinearLayout
+        android:layout_width="@dimen/vital_sign_bound_width"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:id="@+id/vitalSignLevels"
+        android:layout_alignParentRight="true"
+        android:gravity="center_vertical"
+        android:background="#00000000"
+        >
+
+        <TextView
+            android:id="@+id/vitalSignVH"
+            android:layout_width="@dimen/vital_sign_bound_width"
+            android:layout_height="@dimen/vital_sign_bound_height"
+            android:background="#00000000"
+            android:gravity="center"
+            android:text="140"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/vital_sign_bound_size" />
+
+        <TextView
+            android:id="@+id/vitalSignH"
+            android:layout_width="@dimen/vital_sign_bound_width"
+            android:layout_height="@dimen/vital_sign_bound_height"
+            android:background="#00000000"
+            android:gravity="center"
+            android:text="140"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/vital_sign_bound_size" />
+
+        <TextView
+            android:layout_width="@dimen/vital_sign_bound_width"
+            android:layout_height="@dimen/vital_sign_bound_height"
+            android:gravity="center"
+            android:textSize="@dimen/vital_sign_bound_size"
+            android:id="@+id/vitalSignN"
+            android:text=""
+            />
+
+        <TextView
+            android:layout_width="@dimen/vital_sign_bound_width"
+            android:layout_height="@dimen/vital_sign_bound_height"
+            android:gravity="center"
+            android:textSize="@dimen/vital_sign_bound_size"
+            android:id="@+id/vitalSignL"
+            android:textColor="#FFFFFF"
+            android:background="#00000000"
+            android:text="140"
+            />
+
+        <TextView
+            android:layout_width="@dimen/vital_sign_bound_width"
+            android:layout_height="@dimen/vital_sign_bound_height"
+            android:gravity="center"
+            android:textSize="@dimen/vital_sign_bound_size"
+            android:id="@+id/vitalSignVL"
+            android:textColor="#FFFFFF"
+            android:background="#00000000"
+            android:text="140"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#000000"
+        android:background="#000000"
+        android:textSize="1dp"/>
+
+</RelativeLayout>

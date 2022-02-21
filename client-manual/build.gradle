@@ -1,0 +1,28 @@
+buildscript {
+    ext.kotlin_version = '1.3.31'
+
+    repositories {
+        jcenter()
+        google()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:4.0.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories.ext.cergRepo = {
+        repositories.maven {
+            url "https://cerg2.uqcloud.net/repository/cerg"
+        }
+    }
+
+    repositories {
+        mavenCentral()
+        google()
+        jcenter()
+        cergRepo()
+    }
+}

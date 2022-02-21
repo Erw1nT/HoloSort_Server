@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+
+    <!-- The recommended margin for the top, left, and right edges of a card.
+         Original margin was 40 px, changed to 10px to use more space for HMD -->
+    <dimen name="glass_card_margin">2px</dimen>
+
+    <!--Tweaking the bottom margin to allow vertical centering-->
+    <dimen name="glass_card_bottom_margin">6px</dimen>
+
+    <!-- The recommended margin between the bottom of the card and the footer. This is
+         an adjusted value so that the baseline of the text in the footer sits 40px
+         from the bottom of the card, matching the other margins. -->
+    <dimen name="glass_card_footer_margin">33px</dimen>
+
+    <!-- The recommended margin for the left column of the two-column card. -->
+    <dimen name="glass_card_two_column_margin">30px</dimen>
+
+    <!-- The maximum height of the body content inside a card. -->
+    <dimen name="glass_card_body_height">240px</dimen>
+
+    <!-- The width of the left column in the two-column layout. -->
+    <dimen name="glass_card_left_column_width">240px</dimen>
+
+    <!-- Vital Sign Headings Text -->
+    <dimen name="vital_sign_heading_text_size">13dp</dimen>
+    <dimen name="vital_sign_heading_width">25dp</dimen>
+
+    <!-- Vital Sign Data Text -->
+    <dimen name="vital_sign_height">20dp</dimen>
+    <dimen name="vital_sign_width">18dp</dimen>
+    <dimen name="vital_sign_text_size">13dp</dimen>
+
+    <!-- Vital Sign Bounds Text -->
+    <dimen name="vital_sign_bounds_height">20dp</dimen>
+    <dimen name="vital_sign_bounds_width">20dp</dimen>
+    <dimen name="vital_sign_bounds_text_size">8dp</dimen>
+
+    <!-- Ratio of Vital Signs to Bounds Width -->
+    <integer name="vital_sign_gravity_weight">4</integer>
+    <integer name="bounds_gravity_weight">5</integer>
+
+
+    <!-- New layout parameters -->
+    <dimen name="vital_sign_columns_width">40dp</dimen>
+
+
+    <!-- VUZIX PARAMS -->
+    <dimen name="vital_sign_vuzix">16dp</dimen>
+    <dimen name="bounds_vuzix">10dp</dimen>
+
+    <dimen name="margin_vuzix">5dp</dimen>
+
+
+</resources>

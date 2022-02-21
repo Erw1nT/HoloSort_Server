@@ -1,0 +1,41 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    implementation "cerg.networking:NetworkingService:mnv-version-7"
+    implementation "cerg.logging:Logging:0.3.2"
+    implementation 'com.android.support:support-v4:23.4.0'
+}
+
+android {
+    sourceSets {
+        main.java.srcDirs = ['src/main/kotlin']
+        debug {
+            java.srcDirs = ['build/generated/not_namespaced_r_class_sources/debug']
+        }
+        release {
+            java.srcDirs = ['build/generated/not_namespaced_r_class_sources/release']
+        }
+    }
+
+    lintOptions {
+        disable 'GoogleAppIndexingWarning'
+        disable 'MissingApplicationIcon'
+        disable 'TrustAllX509TrustManager'
+        lintConfig file("lint.xml")
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    compileSdkVersion 23
+    buildToolsVersion '29.0.2'
+
+    defaultConfig {
+        minSdkVersion 19
+    }
+}
