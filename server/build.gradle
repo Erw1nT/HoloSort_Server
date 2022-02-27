@@ -13,9 +13,9 @@ javafx {
     modules = [ 'javafx.controls', 'javafx.web', 'javafx.media']
 }
 
-def artifactName = 'Hololag'
+def artifactName = 'Pill-Exp-Server'
 group 'cerg.mpmgame'
-version '0.6.10'
+version '0.0.1'
 
 sourceCompatibility = 1.8
 
@@ -94,7 +94,7 @@ task menu(type: Jar, dependsOn: jar) {
         attributes 'Implementation-Title': getDate()
     }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    archiveName = "${artifactName}-Server-${version}.${extension}"
+    archiveName = "${artifactName}.${extension}"
     from { configurations.compileClasspath.findAll().collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }

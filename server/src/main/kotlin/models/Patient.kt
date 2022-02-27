@@ -160,8 +160,5 @@ class Patient(id: Int = 1, name: String="test", dateOfBrith: String="01/01/0001"
         }
     }
 
-
-
     override fun toString(): String = toJSON().toString()
-
 }

@@ -13,11 +13,6 @@ class ExperimentConfiguration : JsonModel {
     val participantNumProperty = SimpleIntegerProperty(0)
     var participantNumber by participantNumProperty
 
-    //Pfad als String oder Json
-    /*val trialsConfigProperty = SimpleObjectProperty<TrialsConfiguration<Trial>>()
-    var trialsConfig by trialsConfigProperty
-
-     */
     val trialsConfigProperty = SimpleObjectProperty<TrialsConfiguration<Trial>>()
     var trialsConfig by trialsConfigProperty
 
@@ -29,9 +24,6 @@ class ExperimentConfiguration : JsonModel {
 
     val trainingIncludedProperty = SimpleBooleanProperty(true)
     var trainingIncluded by trainingIncludedProperty
-
-    val calibrationIncludedProperty = SimpleBooleanProperty(false)
-    var calibrationIncluded by calibrationIncludedProperty
 
     val filePathProperty = SimpleStringProperty(null)
     var filePath: String? by filePathProperty
@@ -49,7 +41,6 @@ class ExperimentConfiguration : JsonModel {
             outputDirectory = string("OutputDirectory")
             interruptionTask = string("InterruptionTask")
             trainingIncluded = boolean("TrainingIncluded")!!
-            calibrationIncluded = boolean("CalibrationIncluded")!!
             hololensCueType = string("HololensCueType")
         }
     }
@@ -63,7 +54,6 @@ class ExperimentConfiguration : JsonModel {
             add("InterruptionTask", interruptionTask)
             add("Device", device)
             add("TrainingIncluded", trainingIncluded)
-            add("CalibrationIncluded", calibrationIncluded)
             add("HololensCueType", hololensCueType)
         }
     }
@@ -78,7 +68,6 @@ class ExperimentConfiguration : JsonModel {
         interruptionTask = null
         device = null
         trainingIncluded = true
-        calibrationIncluded = true
         hololensCueType = null
     }
 
