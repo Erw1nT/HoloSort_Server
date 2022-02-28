@@ -182,6 +182,24 @@ object CustomUIComponents {
         return HBox(5.0, addButton, removeButton, upButton, downButton)
     }
 
+    fun <S> getCrudUiForList(t: ListView<S>, factory: () -> S) : HBox {
+        val addButton = Button("+")
+        addButton.setOnAction {
+            t.items?.add(factory())
+        }
+
+        val removeButton = Button("-")
+        removeButton.setOnAction {
+            if (t.items != null && t.items.size > 0 && t.selectedItem != null) {
+                t.items.remove(t.selectedItem)
+
+            }
+        }
+
+
+        return HBox(5.0, addButton, removeButton)
+    }
+
     class FileOpenDialogButtonCell<T>(val action : (T, String) -> Unit) : TableCell<T, String>() {
         override fun updateItem(item: String?, empty: Boolean) {
             super.updateItem(item, empty)

@@ -5,7 +5,9 @@ import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
 import tornadofx.*
+import javax.json.JsonArray
 import javax.json.JsonObject
+import javax.json.JsonValue
 
 /**
  The day-properties of a patient are lists of strings, which contain either the color of the next pill or the duration of the interruption.
@@ -23,13 +25,13 @@ class PillPatient(
     ) : JsonModel {
 
     constructor(ID: Int, Name: String) : this(ID, Name,
-        observableListOf("1`", "ad", "3", "4", "6"),
-        observableListOf("1`", "ad", "3", "4", "6"),
-        observableListOf("1`", "ad", "3", "4", "6"),
-        observableListOf("1`", "ad", "3", "4", "6"),
-        observableListOf("1`", "ad", "3", "4", "6"),
-        observableListOf("1`", "ad", "3", "4", "6"),
-        observableListOf("1`", "ad", "3", "4", "6")) {}
+        observableListOf("yellow"),
+        observableListOf("yellow"),
+        observableListOf("yellow"),
+        observableListOf("yellow"),
+        observableListOf("yellow"),
+        observableListOf("yellow"),
+        observableListOf("yellow"))
 
     val idProperty = SimpleIntegerProperty(ID)
     var id by idProperty
@@ -62,14 +64,19 @@ class PillPatient(
         with(json) {
             id = int("id")!!
             name = string("name")!!
-            monday = observableListOf("monday")
-            tuesday = observableListOf("tuesday")
-            wednesday = observableListOf("wednesday")
-            thursday = observableListOf("thursday")
-            friday = observableListOf("friday")
-            saturday = observableListOf("saturday")
-            sunday = observableListOf("sunday")
+            monday = jsonArray("monday")?.getObservableFromArray()
+            tuesday = jsonArray("tuesday")?.getObservableFromArray()
+            wednesday = jsonArray("wednesday")?.getObservableFromArray()
+            thursday = jsonArray("thursday")?.getObservableFromArray()
+            friday = jsonArray("friday")?.getObservableFromArray()
+            saturday = jsonArray("saturday")?.getObservableFromArray()
+            sunday = jsonArray("sunday")?.getObservableFromArray()
         }
+    }
+
+    private fun JsonArray.getObservableFromArray() : ObservableList<String>
+    {
+        return this.toList().map { (it as JsonValue).toString() }.toObservable()
     }
 
     override fun toJSON(json: JsonBuilder) {

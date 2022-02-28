@@ -221,7 +221,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
 
     //functions
     private fun sendPatientAndTrialInformation() {
-        createFixedPatients()
+//        createFixedPatients()
 
 //        if (trialsConfig.trials.size > patients.size) {
 //            statusArea.clear()
@@ -270,32 +270,30 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
     }
 
     fun loadTrialConfig() {
-        return
 
-//        val file = chooseFile(
-//            "Load config",
-//            filters = arrayOf(FileChooser.ExtensionFilter("HMDLag trial configuration files (*.json)", "*.json"))
-//        )
-//        if (file.isEmpty()) return
-//
-//        val reader = BufferedReader(FileReader(file.first()))
-//        val jsonString = reader.lines().collect(Collectors.joining())
-//
-//        trialsConfig.clear()
-//        trialsConfig.updateModel(loadJsonObject(jsonString))
-//
-//        filePath = file.first().absolutePath
-//        expConfiguration.trialsConfig = trialsConfig
-//
-//        statusArea.clear()
-//        statusArea.appendText("Loaded trialConfig!")
-//
-//        if (expConfiguration.trialsConfig.logDir != file.first().absolutePath) {
-//            statusArea.clear()
-//            statusArea.appendText("[!] ${expConfiguration.trialsConfig.patientSeed}: File location in config is different to actual file location... updating location to:\n")
-//            expConfiguration.trialsConfig.logDir = file.first().absolutePath
-//            statusArea.appendText(file.first().absolutePath)
-//        }
+        val file = chooseFile(
+            "Load config",
+            filters = arrayOf(FileChooser.ExtensionFilter("Pill-Exp trial files (*.json)", "*.json"))
+        )
+        if (file.isEmpty()) return
+
+        val reader = BufferedReader(FileReader(file.first()))
+        val jsonString = reader.lines().collect(Collectors.joining())
+
+        trial.updateModel(loadJsonObject(jsonString))
+
+        filePath = file.first().absolutePath
+        expConfiguration.trial = trial
+
+        statusArea.clear()
+        statusArea.appendText("Loaded trialConfig!")
+
+        if (expConfiguration.trial.logDir != file.first().absolutePath) {
+            statusArea.clear()
+            statusArea.appendText("File location in config is different to actual file location... updating location to:\n")
+            statusArea.appendText(file.first().absolutePath)
+            expConfiguration.trial.logDir = file.first().absolutePath
+        }
 
     }
 
