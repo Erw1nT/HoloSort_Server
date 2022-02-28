@@ -67,12 +67,12 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
     private var selectedPatient = SimpleObjectProperty<PillPatient>()
 
     private val patientTable = tableview(trial.patientsList) {
-        column("ID", PillPatient::idProperty).pctWidth(20)
-        column("Name", PillPatient::nameProperty).pctWidth(20)
+        column("ID", PillPatient::idProperty).pctWidth(20).makeEditable()
+        column("Name", PillPatient::nameProperty).pctWidth(20).makeEditable()
         bindSelected(selectedPatient)
 
         prefHeight = 300.0
-        prefWidth = 750.0
+        prefWidth = 500.0
         vgrow = Priority.ALWAYS
         smartResize()
     }
@@ -120,15 +120,12 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
         PillPatient(0, "Name")
     }
 
-    private fun getCrudForListView(lw: ListView<String>): HBox
-    {
-        return CustomUIComponents.getCrudUiForList(lw){ pillEventType.first() }
+    private fun getCrudForListView(lw: ListView<String>): HBox {
+        return CustomUIComponents.getCrudUiForList(lw) { pillEventType.first() }
     }
 
-    private fun getDayLabelByIndex(index: Int): Label
-    {
-        val result = when(index)
-        {
+    private fun getDayLabelByIndex(index: Int): Label {
+        val result = when (index) {
             0 -> "Monday"
             1 -> "Tuesday"
             2 -> "Wednesday"
@@ -156,14 +153,22 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
                 isFillWidth = true
                 paddingAll = 10
 
-                hbox {
+                vbox{
                     label("1. Configurate Trial") {
                         font = Font(15.0)
                         padding = insets(15, 0)
                     }
 
-                    this += crudForTrialsTable
+                    label("Trial ID")
+                    textfield(trial.idProperty) {
+                        maxWidth = 30.0
+                        useMaxWidth = true
+                    }
+
                 }
+
+                this += crudForTrialsTable
+                label ( "Patients" )
 
                 hbox {
                     this += patientTable
@@ -171,8 +176,7 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
 
                     val days = getDayProperties()
 
-                    for (idx in days.indices)
-                    {
+                    for (idx in days.indices) {
                         // die days-Liste ist am Anfang 7xnull, aber fürs Initialisieren reichts :D
                         val day = days[idx]
 
@@ -188,13 +192,6 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
                         }
                     }
                 }
-
-                this += label("Trial ID")
-                this +=  textfield(trial.idProperty) {
-                    maxWidth = 100.0
-                    useMaxWidth = true
-                }
-
 
                 hbox(20) {
                     label("2. Save & Load") {
@@ -215,8 +212,7 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
         }
     }
 
-    private fun getDayProperties() : List<SimpleListProperty<String>?>
-    {
+    private fun getDayProperties(): List<SimpleListProperty<String>?> {
         return listOf(
             selectedPatient.value?.mondayProperty,
             selectedPatient.value?.tuesdayProperty,

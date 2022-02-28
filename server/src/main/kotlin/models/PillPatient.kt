@@ -76,7 +76,7 @@ class PillPatient(
 
     private fun JsonArray.getObservableFromArray() : ObservableList<String>
     {
-        return this.toList().map { (it as JsonValue).toString() }.toObservable()
+        return this.toList().map { (it as JsonValue).toString().replace("\"", "") }.toObservable()
     }
 
     override fun toJSON(json: JsonBuilder) {
