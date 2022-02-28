@@ -11,16 +11,25 @@ import javax.json.JsonObject
  The day-properties of a patient are lists of strings, which contain either the color of the next pill or the duration of the interruption.
  */
 class PillPatient(
-    private var ID: Int,
-    private var Name: String,
-    private var Monday: ObservableList<String>,
-    private var Tuesday: ObservableList<String>,
-    private var Wednesday: ObservableList<String>,
-    private var Thursday: ObservableList<String>,
-    private var Friday: ObservableList<String>,
-    private var Saturday: ObservableList<String>,
-    private var Sunday: ObservableList<String>
+    ID: Int,
+    Name: String,
+    Monday: ObservableList<String>,
+    Tuesday: ObservableList<String>,
+    Wednesday: ObservableList<String>,
+    Thursday: ObservableList<String>,
+    Friday: ObservableList<String>,
+    Saturday: ObservableList<String>,
+    Sunday: ObservableList<String>
     ) : JsonModel {
+
+    constructor(ID: Int, Name: String) : this(ID, Name,
+        observableListOf("1`", "ad", "3", "4", "6"),
+        observableListOf("1`", "ad", "3", "4", "6"),
+        observableListOf("1`", "ad", "3", "4", "6"),
+        observableListOf("1`", "ad", "3", "4", "6"),
+        observableListOf("1`", "ad", "3", "4", "6"),
+        observableListOf("1`", "ad", "3", "4", "6"),
+        observableListOf("1`", "ad", "3", "4", "6")) {}
 
     val idProperty = SimpleIntegerProperty(ID)
     var id by idProperty

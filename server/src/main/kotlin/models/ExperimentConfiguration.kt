@@ -13,8 +13,8 @@ class ExperimentConfiguration : JsonModel {
     val participantNumProperty = SimpleIntegerProperty(0)
     var participantNumber by participantNumProperty
 
-    val trialsConfigProperty = SimpleObjectProperty<TrialsConfiguration<Trial>>()
-    var trialsConfig by trialsConfigProperty
+    val trialConfigProperty = SimpleObjectProperty<Trial>()
+    var trialConfig by trialConfigProperty
 
     val outputDirectoryProperty = SimpleStringProperty()
     var outputDirectory by outputDirectoryProperty
@@ -49,7 +49,7 @@ class ExperimentConfiguration : JsonModel {
     override fun toJSON(json: JsonBuilder) {
         with(json) {
             add("ParticipantNumber", participantNumber)
-            add("TrialsConfiguration", trialsConfig)
+            add("TrialsConfiguration", trialConfig)
             add("OutputDirectory", outputDirectory)
             add("InterruptionTask", interruptionTask)
             add("Device", device)
@@ -60,7 +60,7 @@ class ExperimentConfiguration : JsonModel {
 
     fun clear() {
         participantNumber = 0
-        trialsConfig = null
+        trialConfig = null
         outputDirectory = HMDLagUserPrefsManager.loadPrefs(
             HMDLagUserPrefsManager.OUTPUT_DIRECTORY_KEY,
             System.getProperty("user.home")
