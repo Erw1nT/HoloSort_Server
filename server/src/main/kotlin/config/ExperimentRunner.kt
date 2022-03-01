@@ -250,6 +250,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
             {
                 val jsonObj = JSONObject()
                 jsonObj.put("type", "expData")
+                jsonObj.put("participantNr", expConfiguration.participantNumber)
                 jsonObj.put("hololensCueType", expConfiguration.hololensCueType)
                 jsonObj.put("trial", JSONObject(trial.toString())) //es muss hier .toString sein, sonst klappt IRGENDWAS nicht -.-
 
