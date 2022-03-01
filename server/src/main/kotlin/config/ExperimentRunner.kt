@@ -221,12 +221,6 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
 
     //functions
     private fun sendPatientAndTrialInformation() {
-//        createFixedPatients()
-
-//        if (trialsConfig.trials.size > patients.size) {
-//            statusArea.clear()
-//            statusArea.appendText("Please create more patients manually")
-//        }
 
         if (!Publisher.isNetworkingActiveAndRunning()) {
             statusArea.clear()
@@ -234,7 +228,6 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
         }
 
         val subscribers = Publisher.getSubscribers()
-
         if (subscribers.size == 1) {
             statusArea.clear()
             statusArea.appendText("No subscriber connected")
@@ -258,7 +251,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
                 val jsonObj = JSONObject()
                 jsonObj.put("type", "expData")
                 jsonObj.put("hololensCueType", expConfiguration.hololensCueType)
-                jsonObj.put("patients", patients)
+                jsonObj.put("trial", JSONObject(trial.toString())) //es muss hier .toString sein, sonst klappt IRGENDWAS nicht -.-
 
                 Publisher.sendMessage(jsonObj, lens)
             }
@@ -287,13 +280,6 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
 
         statusArea.clear()
         statusArea.appendText("Loaded trialConfig!")
-
-        if (expConfiguration.trial.logDir != file.first().absolutePath) {
-            statusArea.clear()
-            statusArea.appendText("File location in config is different to actual file location... updating location to:\n")
-            statusArea.appendText(file.first().absolutePath)
-            expConfiguration.trial.logDir = file.first().absolutePath
-        }
 
     }
 
@@ -375,33 +361,4 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
         startExpButton.isDisable = !enabled
 
     }
-
-    //patients
-    private val patients: ObservableList<PillPatient> = FXCollections.observableArrayList()
-
-    private fun createFixedPatients() {
-        patients.clear()
-
-        patients.add(PillPatient(1, "Jens Busen",
-            Monday= observableListOf(yellow, red, green, blue),
-            Tuesday= observableListOf(red, short, green, pink),
-            Wednesday = observableListOf(purple, green, long, orange),
-            Thursday = observableListOf(yellow, short, green, blue),
-            Friday= observableListOf(blue, green, long, blue),
-            Saturday= observableListOf(short, yellow, yellow, red),
-            Sunday= observableListOf(blue, pink, red, red),
-            )
-        )
-    }
-
-    private val yellow = "yellow"
-    private val orange = "orange"
-    private val red = "red"
-    private val green = "green"
-    private val blue = "blue"
-    private val purple = "purple"
-    private val pink = "pink"
-    private val short = "15"
-    private val long = "45"
-
 }

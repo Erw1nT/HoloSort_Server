@@ -63,7 +63,6 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
 
     }
 
-
     private var selectedPatient = SimpleObjectProperty<PillPatient>()
 
     private val patientTable = tableview(trial.patientsList) {
@@ -93,12 +92,19 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
 
                                 action {
                                     val idx = this@listview.selectionModel.selectedIndex
-                                    // ex. Index 0
-                                    // Add new Item at 0, prev 0 ist now 1
-                                    // Remove at 0+1
+                                    if (idx == -1) {
+                                        // idx ist -1 wenn auf ein leeres Feld rechtsgeklickt wird
+                                        this@listview.items.add(pillType)
+                                    }
+                                    else
+                                    {
+                                        // ex. Index 0
+                                        // Add new Item at 0, prev 0 ist now 1
+                                        // Remove at 0+1
+                                        this@listview.items.add(idx, pillType)
+                                        this@listview.items.removeAt(idx + 1)
+                                    }
 
-                                    this@listview.items.add(idx, pillType)
-                                    this@listview.items.removeAt(idx + 1)
                                 }
 
                             }
@@ -266,7 +272,6 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
 
         PrintWriter(file.first()).use { writer ->
             filePath = file.first().absolutePath
-            //trialsConfig.logDir = filePath
             writer.write(trial.toJSON().toString())
         }
 

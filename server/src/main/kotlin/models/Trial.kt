@@ -2,6 +2,7 @@ package models
 
 
 import javafx.beans.property.*
+import org.json.JSONPropertyIgnore
 import tornadofx.*
 import javax.json.JsonObject
 import javax.json.JsonValue
@@ -13,9 +14,6 @@ class Trial(id: Int = 1) : JsonModel {
 
     val patientsProperty = SimpleListProperty<PillPatient>()
     var patientsList by patientsProperty
-
-    val logDirProperty = SimpleStringProperty("")
-    var logDir by logDirProperty
 
     init {
         patientsList = observableListOf<PillPatient>()
