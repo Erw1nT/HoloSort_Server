@@ -56,6 +56,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
 
         expConfiguration.interruptionTask = "arithmetic"
         expConfiguration.deviceProperty.value = "Tablet"
+        expConfiguration.handednessProperty.value = "right"
     }
 
     //Menu bar
@@ -149,8 +150,8 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
                         }
                     }
 
-                    field("Select Interruption Task"){
-                        vbox{
+                    field("Select Interruption Task") {
+                        vbox {
                             // to show that arithmetic is enabled by default it is not removed from the UI
                             checkbox("Arithmetic") {
                                 isSelected = (expConfiguration.interruptionTask == "arithmetic")
@@ -159,7 +160,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
                         }
                     }
 
-                    field("Select Hololens Cue Type"){
+                    field("Select Hololens Cue Type") {
                         val toggleGroup = ToggleGroup()
                         vbox {
                             radiobutton("None", toggleGroup) {
@@ -178,6 +179,25 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
                                 }
                             }
                         }
+                    }
+
+                    field("Handedness")
+                    {
+                        val toggleGroup = ToggleGroup()
+                        vbox {
+                            radiobutton("Right", toggleGroup) {
+                                action {
+                                    expConfiguration.handedness = "right"
+                                }
+                            }
+                            radiobutton("Left", toggleGroup) {
+                                action {
+                                    expConfiguration.handedness = "left"
+                                }
+                            }
+
+                        }
+
                     }
 
                 }
@@ -228,7 +248,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
         }
 
         val subscribers = Publisher.getSubscribers()
-        if (subscribers.size == 1) {
+        if (subscribers.size <= 1) { // nur Monitor connected oder nichts
             statusArea.clear()
             statusArea.appendText("No subscriber connected")
         }
@@ -252,7 +272,10 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
                 jsonObj.put("type", "expData")
                 jsonObj.put("participantNr", expConfiguration.participantNumber)
                 jsonObj.put("hololensCueType", expConfiguration.hololensCueType)
-                jsonObj.put("trial", JSONObject(trial.toString())) //es muss hier .toString sein, sonst klappt IRGENDWAS nicht -.-
+                jsonObj.put("handedness", expConfiguration.handedness)
+                jsonObj.put("trial", JSONObject(trial.toString()))
+                //es muss hier trial.toString() sein, sonst klappt IRGENDWAS nicht bei der JSON Serialisierung
+                // und dann gibt es Probleme wie: //// statt //
 
                 Publisher.sendMessage(jsonObj, lens)
             }

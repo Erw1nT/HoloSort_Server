@@ -7,6 +7,7 @@ import javafx.scene.control.*
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.text.Font
+import javafx.scene.text.Text
 import javafx.stage.FileChooser
 import models.*
 import models.enums.HololensCueType
@@ -50,17 +51,16 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
         trial.patientsList.add(PillPatient(2, "LT"))
         trial.patientsList.add(PillPatient(3, "KS"))
 
-        //set interruption lengths for dropdowns
+        //interruption types for dropdowns
+        pillEventType.add("white")
         pillEventType.add("yellow")
-        pillEventType.add("orange")
         pillEventType.add("red")
         pillEventType.add("green")
         pillEventType.add("blue")
         pillEventType.add("purple")
-        pillEventType.add("pink")
+
         pillEventType.add("short")
         pillEventType.add("long")
-
     }
 
     private var selectedPatient = SimpleObjectProperty<PillPatient>()
@@ -145,6 +145,8 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
         return label(result)
     }
 
+    private var validationTextField: Text? = null
+
     override val root = borderpane() {
         title = "Trial Designer"
         vgrow = Priority.ALWAYS
@@ -200,7 +202,23 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
                 }
 
                 hbox(20) {
-                    label("2. Save & Load") {
+                    label("2. Validate") {
+                        font = Font(15.0)
+                        padding = insets(15, 0)
+                    }
+
+                    validationTextField = text { prefHeight=144.0
+                        prefWidth = 450.0
+                        wrappingWidthProperty().set(345.0);
+                    }
+                    button("Validate").action {
+                        validationTextField?.text = validateSetup()
+                    }
+                }
+
+
+                hbox(20) {
+                    label("3. Save & Load") {
                         font = Font(15.0)
                         padding = insets(15, 0)
                     }
@@ -216,6 +234,105 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
                 }
             }
         }
+    }
+
+    private fun validateSetup(): String {
+
+        val sb = StringBuilder()
+
+        for (patient in patientTable.items)
+        {
+
+            val patSb = mutableListOf<String>()
+
+            if (!validateDay(patient.monday)) {
+                patSb.add("Monday")
+            }
+
+            if (!validateDay(patient.tuesday)) {
+                patSb.add("Tuesday")
+            }
+
+            if (!validateDay(patient.wednesday)) {
+                patSb.add("Wednesday")
+            }
+
+            if (!validateDay(patient.thursday)) {
+                patSb.add("Thursday")
+            }
+
+            if (!validateDay(patient.friday)) {
+                patSb.add("Friday")
+            }
+
+            if (!validateDay(patient.saturday)) {
+                patSb.add("Saturday")
+            }
+
+            if (!validateDay(patient.sunday)) {
+                patSb.add("Sunday")
+            }
+            if (patSb.isNotEmpty()) {
+                sb.appendLine("${patient.name} - ${patSb.joinToString()}")
+            }
+        }
+
+        if (sb.isNotEmpty())
+        {
+            return sb.toString()
+        }
+
+        return ""
+    }
+
+    private fun validateDay(day: ObservableList<String>): Boolean
+    {
+        // current min/max is 6...12
+        if (day.count() < 6 || day.count() > 12)
+        {
+            return false
+        }
+
+        // first item may not be an interruption
+        if (day.first() == "short" || day.last() == "short" || day.first() == "long" || day.last() == "long")
+        {
+            return false
+        }
+
+
+
+        for (i in day.indices)
+        {
+            if (i == day.count() - 2) break //höre beim vorletzten item auf
+
+            val currentItem = day[i]
+            val nextItem = day[i+1]
+
+            // no two consecutive interruptons are allowed
+            if ((currentItem == "short" || currentItem == "long") && (nextItem == "short" || nextItem == "long"))
+            {
+                return false
+            }
+
+            // no two consecutive pills of the same type are allowed
+            if (currentItem == nextItem)
+            {
+                return false
+            }
+
+            // also not with an interruption in between
+            if (nextItem == "short" || nextItem == "long")
+            {
+                val nextnextItem = day[i+2]
+                if (currentItem == nextnextItem)
+                {
+                    return false
+                }
+            }
+
+        }
+
+        return true
     }
 
     private fun getDayProperties(): List<SimpleListProperty<String>?> {
@@ -261,6 +378,12 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
     }
 
     private fun saveTrialConfiguration() {
+
+        validationTextField?.text = validateSetup()
+        if (validationTextField?.text != "")
+        {
+            return
+        }
 
         val file = chooseFile(
             "Save config",

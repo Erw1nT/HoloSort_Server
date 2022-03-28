@@ -257,45 +257,14 @@ class NetworkingServiceMonitor : View() {
                 return
             }
 
-            if (jsonObject.isDedicatedTo("web client"))
-            {
-                val webClient = subscriberTable.items.find{ it.name == "web client" } ?: return
-                val content = jsonObject.getJSONObject("content") as JSONObject
-
-                val errorCountInterruption = content.get("errorCountInterruption")
-
-                val jsonObj = JSONObject()
-                jsonObj.put("type", "web client")
-                jsonObj.put("errorCountInterruption", errorCountInterruption)
-
-                // only relay the errorCountInterruption to the webClient, since the timestamp isnt needed
-                Publisher.sendMessage(jsonObj, webClient)
-                return
-            }
-
             if (jsonObject.isDedicatedTo("frontend"))
             {
                 // relay the interruption to the frontend and at the same time to the web client
                 // so the main task may be hidden
                 val frontend = subscriberTable.items.find{ it.name == "frontend" } ?: return
-                val webClient = subscriberTable.items.find{ it.name == "web client" } ?: return
-
-                // if this msg is sent from web client, there is no cueSetDuration
-                // cueSetDuration comes from the hololens, manual condition
 
                 val content = (jsonObject.get("content") as JSONObject)
                 val interruptionLength = content.get("interruptionLength") as Number
-
-                var cueSetDurationMilliseconds: Number = 0
-                if (content.has("cueSetDurationMilliseconds"))
-                {
-                    cueSetDurationMilliseconds = content.get("cueSetDurationMilliseconds") as Number
-
-                    // the cursor is unlocked, but will be locked again immediately after the interruption starts
-                    // this way, they will not overlap
-                    lockCursorTimer?.cancel()
-                    lockCursorTimer = null
-                }
 
                 val jsonMsg = JSONObject()
                 jsonMsg.put("type", "frontend")
@@ -305,17 +274,10 @@ class NetworkingServiceMonitor : View() {
 
                 val cont = JSONObject()
                 cont.put("interruptionLength", interruptionLength)
-                cont.put("cueSetDurationMilliseconds", cueSetDurationMilliseconds)
-
-                val webclientMsg = JSONObject()
-                webclientMsg.put("type", "web client")
-                webclientMsg.put("content", cont)
-
-                Publisher.sendMessage(webclientMsg, webClient)
             }
 
             if (jsonObject.containsCSVData())
-            {
+             {
                 val csvData = jsonObject.getJSONArray("content") as JSONArray
 
                 for (i in 0 until csvData.length()) {
@@ -511,7 +473,7 @@ class NetworkingServiceMonitor : View() {
         val trials = csvData.optString("trial", " ")
         val clickInModule = csvData.optString("time", " ")
         val clickInModuleInt = csvData.optString("timeInt", " ")
-        val resumptionError = csvData.optString("timeResumptionError", " ")
+        val resumptionError = csvData.optString("timeResumptionError", " ") // is actually a number, not a time!
         val patientID = csvData.optString("patientID", " ")
         val module = csvData.optString("module", " ")
         val wrongModule = csvData.optString("errorsModule", " ")
