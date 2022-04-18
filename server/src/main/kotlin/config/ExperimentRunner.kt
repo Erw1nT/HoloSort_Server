@@ -56,7 +56,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
 
         expConfiguration.interruptionTask = "arithmetic"
         expConfiguration.deviceProperty.value = "Tablet"
-        expConfiguration.handednessProperty.value = "right"
+        expConfiguration.handednessProperty.value = "both"
     }
 
     //Menu bar
@@ -173,11 +173,13 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
                                     expConfiguration.hololensCueType = HololensCueType.AUTOMATIC.identifier
                                 }
                             }
-                            radiobutton("Manual", toggleGroup) {
-                                action {
-                                    expConfiguration.hololensCueType = HololensCueType.MANUAL.identifier
-                                }
-                            }
+                            // Bei der Pillendose gibt es kein Manual mehr
+
+//                            radiobutton("Manual", toggleGroup) {
+//                                action {
+//                                    expConfiguration.hololensCueType = HololensCueType.MANUAL.identifier
+//                                }
+//                            }
                         }
                     }
 
@@ -185,6 +187,14 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
                     {
                         val toggleGroup = ToggleGroup()
                         vbox {
+                            radiobutton("Both", toggleGroup) {
+                                isSelected = expConfiguration.handedness == "both"
+
+                                action {
+                                    expConfiguration.handedness = "both"
+                                }
+                            }
+
                             radiobutton("Right", toggleGroup) {
                                 action {
                                     expConfiguration.handedness = "right"
@@ -195,6 +205,7 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
                                     expConfiguration.handedness = "left"
                                 }
                             }
+
 
                         }
 
@@ -212,7 +223,6 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
                     isDisable = true
                     action {
                         sendPatientAndTrialInformation()
-                        createLogger()
                     }
                 }
             }
