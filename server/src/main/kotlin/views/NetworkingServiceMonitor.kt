@@ -254,6 +254,14 @@ class NetworkingServiceMonitor : View() {
                     Publisher.sendMessage(hololensMsg, lens)
                 }
 
+                if (contentObject.has("errorCountInterruption"))
+                {
+                    val hololensMsg = JSONObject()
+                    hololensMsg.put("errorCountInterruption", contentObject.get("errorCountInterruption"))
+
+                    Publisher.sendMessage(hololensMsg, lens)
+                }
+
                 return
             }
 
