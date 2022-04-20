@@ -271,17 +271,24 @@ class NetworkingServiceMonitor : View() {
                 // so the main task may be hidden
                 val frontend = subscriberTable.items.find{ it.name == "frontend" } ?: return
 
+
                 val content = (jsonObject.get("content") as JSONObject)
                 val interruptionLength = content.get("interruptionLength") as Number
 
-                val jsonMsg = JSONObject()
-                jsonMsg.put("type", "frontend")
-                jsonMsg.put("content", interruptionLength)
-
-                Publisher.sendMessage(jsonMsg, frontend)
-
                 val cont = JSONObject()
                 cont.put("interruptionLength", interruptionLength)
+
+                // Hololag1 sendet nur interruptionLength, Pill-Lag auch den Start-Delay
+                if (content.has("interruptionStartDelay")) {
+                    val interruptionStartDelay = content.get("interruptionStartDelay") as Number
+                    cont.put("interruptionStartDelay", interruptionStartDelay)
+                }
+
+                val jsonMsg = JSONObject()
+                jsonMsg.put("type", "frontend")
+                jsonMsg.put("content", cont)
+
+                Publisher.sendMessage(jsonMsg, frontend)
             }
 
             if (jsonObject.containsCSVData())
