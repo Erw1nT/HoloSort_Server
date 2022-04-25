@@ -160,19 +160,19 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
                         }
                     }
 
-                    field("Select Hololens Cue Type") {
-                        val toggleGroup = ToggleGroup()
-                        vbox {
-                            radiobutton("None", toggleGroup) {
-                                action {
-                                    expConfiguration.hololensCueType = HololensCueType.NONE.identifier
-                                }
-                            }
-                            radiobutton("Automatic", toggleGroup) {
-                                action {
-                                    expConfiguration.hololensCueType = HololensCueType.AUTOMATIC.identifier
-                                }
-                            }
+//                    field("Select Hololens Cue Type") {
+//                        val toggleGroup = ToggleGroup()
+//                        vbox {
+//                            radiobutton("None", toggleGroup) {
+//                                action {
+//                                    expConfiguration.hololensCueType = HololensCueType.NONE.identifier
+//                                }
+//                            }
+//                            radiobutton("Automatic", toggleGroup) {
+//                                action {
+//                                    expConfiguration.hololensCueType = HololensCueType.AUTOMATIC.identifier
+//                                }
+//                            }
                             // Bei der Pillendose gibt es kein Manual mehr
 
 //                            radiobutton("Manual", toggleGroup) {
@@ -180,8 +180,8 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
 //                                    expConfiguration.hololensCueType = HololensCueType.MANUAL.identifier
 //                                }
 //                            }
-                        }
-                    }
+//                        }
+//                    }
 
                     field("Handedness")
                     {
@@ -281,7 +281,6 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
                 val jsonObj = JSONObject()
                 jsonObj.put("type", "expData")
                 jsonObj.put("participantNr", expConfiguration.participantNumber)
-                jsonObj.put("hololensCueType", expConfiguration.hololensCueType)
                 jsonObj.put("handedness", expConfiguration.handedness)
                 jsonObj.put("trial", JSONObject(trial.toString()))
                 //es muss hier trial.toString() sein, sonst klappt IRGENDWAS nicht bei der JSON Serialisierung
@@ -387,10 +386,6 @@ class ExperimentRunner : AbstractTrialDesigner<Trial>(Trial()) {
 //            enabled = false
 //            statusArea.text += "No Trials Config selected" + "\n"
 //        }
-        if (expConfiguration.hololensCueType == null) {
-            enabled = false
-            statusArea.text += "No Hololens Cue Type selected" + "\n"
-        }
 
         startExpButton.isDisable = !enabled
 

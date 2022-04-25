@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
+import models.enums.HololensCueType
 import tornadofx.*
 import javax.json.JsonArray
 import javax.json.JsonObject
@@ -15,6 +16,7 @@ import javax.json.JsonValue
 class PillPatient(
     ID: Int,
     Name: String,
+    CueType: String,
     Monday: ObservableList<String>,
     Tuesday: ObservableList<String>,
     Wednesday: ObservableList<String>,
@@ -24,7 +26,7 @@ class PillPatient(
     Sunday: ObservableList<String>
     ) : JsonModel {
 
-    constructor(ID: Int, Name: String) : this(ID, Name,
+    constructor(ID: Int, Name: String) : this(ID, Name, HololensCueType.NONE.identifier,
         observableListOf("yellow"),
         observableListOf("yellow"),
         observableListOf("yellow"),
@@ -38,6 +40,9 @@ class PillPatient(
 
     val nameProperty = SimpleStringProperty(Name)
     var name by nameProperty
+
+    val cueTypeProperty = SimpleStringProperty(CueType)
+    var cueType by cueTypeProperty
 
     val mondayProperty = SimpleListProperty(Monday)
     var monday by mondayProperty
@@ -83,6 +88,7 @@ class PillPatient(
         with(json) {
             add("id", id)
             add("name", name)
+            add("cueType", cueType)
             add("monday", monday)
             add("tuesday", tuesday)
             add("wednesday", wednesday)

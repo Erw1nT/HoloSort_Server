@@ -68,10 +68,21 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
     private val patientTable = tableview(trial.patientsList) {
         column("ID", PillPatient::idProperty).pctWidth(20).makeEditable()
         column("Name", PillPatient::nameProperty).pctWidth(20).makeEditable()
+        column("CueType", PillPatient::cueTypeProperty).pctWidth(20).makeEditable()
         bindSelected(selectedPatient)
 
+        contextmenu {
+            item("CueType None").action {
+                selectedPatient.apply { value.cueType = HololensCueType.NONE.identifier }
+            }
+            item("CueType Automatic").action {
+                selectedPatient.apply { value.cueType = HololensCueType.AUTOMATIC.identifier }
+            }
+        }
+
+
         prefHeight = 300.0
-        prefWidth = 500.0
+        prefWidth = 400.0
         vgrow = Priority.ALWAYS
         smartResize()
     }
@@ -199,7 +210,11 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
 
                         }
                     }
+
                 }
+
+
+
 
                 hbox(20) {
                     label("2. Validate") {

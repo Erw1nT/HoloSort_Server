@@ -31,8 +31,6 @@ class ExperimentConfiguration : JsonModel {
     val interruptionTaskProperty = SimpleStringProperty(null)
     var interruptionTask: String? by interruptionTaskProperty
 
-    val hololensCueTypeProperty = SimpleStringProperty(null)
-    var hololensCueType: String? by hololensCueTypeProperty
 
     val handednessProperty = SimpleStringProperty(null)
     var handedness: String? by handednessProperty
@@ -44,7 +42,6 @@ class ExperimentConfiguration : JsonModel {
             outputDirectory = string("OutputDirectory")
             interruptionTask = string("InterruptionTask")
             trainingIncluded = boolean("TrainingIncluded")!!
-            hololensCueType = string("HololensCueType")
             handedness = string("Handedness")
         }
     }
@@ -57,7 +54,6 @@ class ExperimentConfiguration : JsonModel {
             add("InterruptionTask", interruptionTask)
             add("Device", device)
             add("TrainingIncluded", trainingIncluded)
-            add("HololensCueType", hololensCueType)
             add("Handedness", handedness)
         }
     }
@@ -72,7 +68,6 @@ class ExperimentConfiguration : JsonModel {
         interruptionTask = null
         device = null
         trainingIncluded = true
-        hololensCueType = null
         handedness = null
     }
 
