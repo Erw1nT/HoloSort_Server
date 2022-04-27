@@ -190,9 +190,13 @@ object CustomUIComponents {
 
         val removeButton = Button("-")
         removeButton.setOnAction {
-            if (t.items != null && t.items.size > 0 && t.selectedItem != null) {
-                t.items.remove(t.selectedItem)
+            if (t.items != null &&
+                t.items.size > 0 &&
+                t.selectedItem != null &&
+                t.selectionModel != null &&
+                t.selectionModel.selectedIndex >= 0) {
 
+                t.items.removeAt(t.selectionModel.selectedIndex)
             }
         }
 

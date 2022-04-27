@@ -69,6 +69,7 @@ class PillPatient(
         with(json) {
             id = int("id")!!
             name = string("name")!!
+            cueType = string("cueType")!!
             monday = jsonArray("monday")?.getObservableFromArray()
             tuesday = jsonArray("tuesday")?.getObservableFromArray()
             wednesday = jsonArray("wednesday")?.getObservableFromArray()

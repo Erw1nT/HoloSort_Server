@@ -308,13 +308,34 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
             return false
         }
 
-        // first item may not be an interruption
+        // first and last item may not be an interruption
         if (day.first() == "short" || day.last() == "short" || day.first() == "long" || day.last() == "long")
         {
             return false
         }
 
+        //Farben dürfen mehrfach vorkommen, aber dann darf NICHT nach ihnen unterbrochen werden
+        for (i in day.indices)
+        {
+            if (i == day.count() - 1) break //höre beim vorletzten item auf
 
+            val currentItem = day[i]
+            val num = day.count {it == currentItem}
+            if (num <= 1)  continue
+
+            // wenn es mehrere gleiche Farben gibt, dann prüfe bei allen davon, ob das nächste short oder long ist
+            for (j in day.indices)
+            {
+                if (j == day.count() - 1) break
+                if (day[j] != currentItem) continue
+
+                val nextItem = day[j+1]
+                if (nextItem == "short" || nextItem == "long")
+                {
+                    return false
+                }
+            }
+        }
 
         for (i in day.indices)
         {
@@ -346,6 +367,8 @@ class TrialDesigner : AbstractTrialDesigner<Trial>(Trial()) {
             }
 
         }
+
+
 
         return true
     }
