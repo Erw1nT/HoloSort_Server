@@ -8,6 +8,9 @@
       <entry key="client-interruption.app">
         <State />
       </entry>
+      <entry key="client-interruption.app.main">
+        <State />
+      </entry>
       <entry key="client-manual.app">
         <State />
       </entry>

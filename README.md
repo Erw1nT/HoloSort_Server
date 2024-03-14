@@ -38,7 +38,7 @@ _Ignore the warnings, if the Gradle Sync shows green arrows, everything is fine.
     - ![img_2.png](sources%2Fimg_2.png)
     - ![img_1.png](sources%2Fimg_1.png)
 
-
+**For more information, see the [User Manual](sources/Einführung_Programmcode.pdf) and for installation troubleshooting see [Installation and Troubleshooting Guide](sources/Installation-troubleshooting-guide.pdf)** 
 ## Relevant files
 
 The executable file for the Desktop PC:

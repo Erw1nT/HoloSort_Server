@@ -46,21 +46,21 @@ class ConfigActivity : AbstractServiceView() {
             val json: JSONObject?
             json = JSONObject(message)
             if (json.get("type") == "expDataHMD" && message.isNotEmpty()) {
-                val calibration = json.getBoolean("calibration")
+                //val calibration = json.getBoolean("calibration")
                 val training = json.getBoolean("training")
                 this@ConfigActivity.setPreference("Training", training.toString())
                 val interruptionTask = json.getString("interruptionTask") as String
                 this@ConfigActivity.setPreference("interruptionTask", interruptionTask)
-                println(calibration)
-                if (calibration) {
-                    this@ConfigActivity.startActivity(Intent(this@ConfigActivity, CalibrationActivity::class.java))
-                } else {
+//                println(calibration)
+//                if (calibration) {
+//                    this@ConfigActivity.startActivity(Intent(this@ConfigActivity, CalibrationActivity::class.java))
+//                } else {
                     if (interruptionTask == "alarm") {
                         this@ConfigActivity.startActivity(Intent(this@ConfigActivity, AlarmActivity::class.java))
                     } else if (interruptionTask == "arithmetic") {
                         this@ConfigActivity.startActivity(Intent(this@ConfigActivity, ArithmeticActivity::class.java))
                     }
-                }
+            //    }
             }
         }
 
