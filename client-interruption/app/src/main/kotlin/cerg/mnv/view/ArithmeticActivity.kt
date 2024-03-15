@@ -143,7 +143,10 @@ class ArithmeticActivity : AbstractServiceView() {
                         jsonObj.put("time", time.toString())
                         jsonObj.put("errorCountInterruption", this@ArithmeticActivity.errorCount)
 
-                        this@ArithmeticActivity.sendBackEndMessage(jsonObj, "web client")
+                        //this@ArithmeticActivity.sendBackEndMessage(jsonObj, "web client")
+                        this@ArithmeticActivity.sendBackEndMessage(jsonObj, "lens")
+
+
 
                         runOnUiThread {
                             this@ArithmeticActivity.tableRow?.visibility = View.INVISIBLE
