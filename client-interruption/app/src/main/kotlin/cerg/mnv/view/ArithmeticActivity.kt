@@ -87,7 +87,7 @@ class ArithmeticActivity : AbstractServiceView() {
                         this@ArithmeticActivity.startActivity(Intent(this@ArithmeticActivity, CalibrationActivity::class.java))
                     }
                 }
-                else if (json.get("content") is JSONObject) //resetInterruptionTaskIndex from web client
+                else if (json.get("content") is JSONObject && (json.get("content") as JSONObject).has("resetInterruptionTaskIndex")) //resetInterruptionTaskIndex from web client
                 {
                     val isResetTriggered = (json.get("content") as JSONObject).has("resetInterruptionTaskIndex")
                     if (isResetTriggered)
@@ -98,8 +98,9 @@ class ArithmeticActivity : AbstractServiceView() {
                 }
                 else // only has interruptionLength in content
                 {
-
-                    val interruptionLength = (json.get("content") as Number).toLong().times(1000)
+                    val content = json.get("content") as JSONObject
+                    val interruptionLength = (content.get("interruptionLength") as Number).toLong() * 1000 //Convert from milliseconds to seconds
+                    val interruptionStartDelay = (content.get("interruptionStartDelay") as Number).toLong()
 
                     showFlash(true)
 
@@ -110,7 +111,7 @@ class ArithmeticActivity : AbstractServiceView() {
                     val timer = Timer()
 
                     // Shows a new equation every 5 seconds
-                    Timer().schedule(300) {
+                    Timer().schedule(interruptionStartDelay) {
                         showFlash(false)
                         setTextVisible(true)
 
@@ -142,7 +143,10 @@ class ArithmeticActivity : AbstractServiceView() {
                         jsonObj.put("time", time.toString())
                         jsonObj.put("errorCountInterruption", this@ArithmeticActivity.errorCount)
 
-                        this@ArithmeticActivity.sendBackEndMessage(jsonObj, "web client")
+                        //this@ArithmeticActivity.sendBackEndMessage(jsonObj, "web client")
+                        this@ArithmeticActivity.sendBackEndMessage(jsonObj, "lens")
+
+
 
                         runOnUiThread {
                             this@ArithmeticActivity.tableRow?.visibility = View.INVISIBLE
