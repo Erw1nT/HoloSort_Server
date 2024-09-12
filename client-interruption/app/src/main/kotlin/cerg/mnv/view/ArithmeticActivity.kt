@@ -4,6 +4,8 @@ package cerg.mnv.view
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -35,18 +37,56 @@ class ArithmeticActivity : AbstractServiceView() {
     private var flash: ImageView? = null
     private var background: ImageView? = null
 
+    // Class variables for the interruption task
+    private var interruptionStartDelay: Long = 0
+    private var interruptionLength: Long = 0
+    private var isInterruptionAccepted: Boolean = false
+    private val handler = Handler(Looper.getMainLooper())
+    private val timeToAcceptInterruption: Long = 8000L
+
     // the parent element of the buttons
     private var tableRow: TableRow? = null
     private var answerButton1: Button? = null
     private var answerButton2: Button? = null
     private var answerButton3: Button? = null
     private var answerButton4: Button? = null
+    private var acceptButton: Button? = null
 
     private var equationIndex: Int = 0
     private var currentAnswer: Int = 0
 
     private var wasEquationAnswered: Boolean? = null
     private var errorCount: Int = 0
+
+    public override fun onCreate(savedInstanceState: Bundle?) {
+
+        super.onCreate(savedInstanceState)
+
+        this.initPreferences()
+        this.addClientListener(this.defaultClientListener)
+
+        // Set layout
+        setContentView(R.layout.activity_arith)
+
+        this.background = this@ArithmeticActivity.findViewById(R.id.background) as ImageView
+        this.equation = this@ArithmeticActivity.findViewById(R.id.arithTextView) as TextView
+        this.flash = this@ArithmeticActivity.findViewById(R.id.flashView) as ImageView
+
+        this.tableRow = this@ArithmeticActivity.findViewById(R.id.tableRow1) as TableRow
+
+        this.answerButton1 = this@ArithmeticActivity.findViewById(R.id.answerButton1) as Button
+        this.answerButton2 = this@ArithmeticActivity.findViewById(R.id.answerButton2) as Button
+        this.answerButton3 = this@ArithmeticActivity.findViewById(R.id.answerButton3) as Button
+        this.answerButton4 = this@ArithmeticActivity.findViewById(R.id.answerButton4) as Button
+        this.acceptButton = this@ArithmeticActivity.findViewById(R.id.acceptButton) as Button
+
+        this.answerButton1?.setOnClickListener { buttonHandler(this.answerButton1!!) }
+        this.answerButton2?.setOnClickListener { buttonHandler(this.answerButton2!!) }
+        this.answerButton3?.setOnClickListener { buttonHandler(this.answerButton3!!) }
+        this.answerButton4?.setOnClickListener { buttonHandler(this.answerButton4!!) }
+        this.acceptButton?.setOnClickListener { onInterruptionButtonClicked() }
+
+    }
 
     private val defaultClientListener = object : ClientListener {
         override fun onClientMessage(message: String) {
@@ -68,6 +108,10 @@ class ArithmeticActivity : AbstractServiceView() {
             this@ArithmeticActivity.endScenario()
         }
 
+        /**
+         * Method that will parse the incoming data from Lens or Server.
+         * Relevant part in the else statement.
+         */
         override fun onServerMessage(message: String) {
             this@ArithmeticActivity.processServerMessage(message)
 
@@ -87,7 +131,7 @@ class ArithmeticActivity : AbstractServiceView() {
                         this@ArithmeticActivity.startActivity(Intent(this@ArithmeticActivity, CalibrationActivity::class.java))
                     }
                 }
-                else if (json.get("content") is JSONObject) //resetInterruptionTaskIndex from web client
+                else if (json.get("content") is JSONObject && (json.get("content") as JSONObject).has("resetInterruptionTaskIndex")) //resetInterruptionTaskIndex from web client
                 {
                     val isResetTriggered = (json.get("content") as JSONObject).has("resetInterruptionTaskIndex")
                     if (isResetTriggered)
@@ -98,61 +142,19 @@ class ArithmeticActivity : AbstractServiceView() {
                 }
                 else // only has interruptionLength in content
                 {
+                    // Parse JSON data
+                    val content = json.get("content") as JSONObject
+                    Log.d("Content", content.toString())
+                    interruptionLength = (content.get("interruptionLength") as Number).toLong() * 1000 //Convert from milliseconds to seconds
+                    interruptionStartDelay = (content.get("interruptionStartDelay") as Number).toLong()
+                    val isInterruptionWaiting = (content.getBoolean("interruptionWaiting"))
 
-                    val interruptionLength = (json.get("content") as Number).toLong().times(1000)
-
-                    showFlash(true)
-
-                    // Reset errors before every interruption
-                    errorCount = 0
-                    wasEquationAnswered = null
-
-                    val timer = Timer()
-
-                    // Shows a new equation every 5 seconds
-                    Timer().schedule(300) {
-                        showFlash(false)
-                        setTextVisible(true)
-
-                        timer.scheduleAtFixedRate(
-                                object : TimerTask() {
-                                    override fun run() {
-
-                                        // before every new equation, evaluate whether the input of the user was correct
-                                        evaluateUserInput()
-                                        showEquation(equationList[equationIndex % equationList.count()])
-                                        equationIndex++
-
-                                        wasEquationAnswered = false
-
-                                    }
-                                }, 10, 5000)
-
-                    }
-
-
-                    // Task is done, send confirmation to backend, cancel previous Timer
-                    Timer().schedule(interruptionLength) {
-                        timer.cancel()
-
-                        evaluateUserInput()
-
-                        val time = Timestamp(System.currentTimeMillis())
-                        val jsonObj = JSONObject()
-                        jsonObj.put("time", time.toString())
-                        jsonObj.put("errorCountInterruption", this@ArithmeticActivity.errorCount)
-
-                        this@ArithmeticActivity.sendBackEndMessage(jsonObj, "web client")
-
-                        runOnUiThread {
-                            this@ArithmeticActivity.tableRow?.visibility = View.INVISIBLE
-                        }
-
-                        setTextVisible(false)
-                        showFlash(true)
-                        Timer().schedule(300) {
-                            showFlash(false)
-                        }
+                    if (isInterruptionWaiting)
+                    {
+                        // Display button to start interruption
+                       showAcceptButtonAndWaitForAcceptance()
+                    } else {
+                        showMathEquationsAndProcessInput(interruptionStartDelay, interruptionLength)
                     }
                 }
             }
@@ -163,38 +165,121 @@ class ArithmeticActivity : AbstractServiceView() {
         }
     }
 
+    /**
+     * Method that will show the accept button when waiting for interruption to be accepted.
+     * If the button is not pressed within 8 seconds, hide the button and send notification to Lens that interruption was missed.
+     **/
+    private fun showAcceptButtonAndWaitForAcceptance() {
+        runOnUiThread {
+            acceptButton?.visibility = View.VISIBLE
+            isInterruptionAccepted = false;
+            // Wait 8s, when not accepted in 8s, hide button and send msg to HoloLens that interruption was missed
+            handler.postDelayed({
+                if (!isInterruptionAccepted) {
+                    acceptButton?.visibility = View.INVISIBLE
+                    //send missed interruption to lens
+                    sendInterruptionMissedMessageToLens()
+                }
+            }, timeToAcceptInterruption)
+        }
+    }
+
+    /**
+     * Method used when the interruption button was clicked.
+     * Send notification to Lens that button was clicked and start showing the Math equations.
+     * TODO: Send Timestamp
+     **/
+    private fun onInterruptionButtonClicked() {
+        isInterruptionAccepted = true
+        acceptButton?.visibility = View.INVISIBLE
+        val time = Timestamp(System.currentTimeMillis())
+        val jsonObj = JSONObject()
+        // JSON object containing string "interrupt" and the current time
+        jsonObj.put("interruptionAccepted", "true")
+        jsonObj.put("time", time.toString())
+        showMathEquationsAndProcessInput(interruptionStartDelay, interruptionLength)
+        // Send message to server that the interruption has started
+        this.sendBackEndMessage(jsonObj, "lens")
+    }
+
+    /**
+     * Method used when the interruption button was NOT clicked and 8s passed => Interruption missed by the user
+     * Send notification to Lens that interruption was missed since no button has been clicked.
+     **/
+    private fun sendInterruptionMissedMessageToLens() {
+        Log.d("Interruption", "Interruption was not accepted within 8 seconds.")
+        val jsonObj = JSONObject()
+        jsonObj.put("interruptionAccepted", "false")
+
+        this.sendBackEndMessage(jsonObj,"lens")
+
+    }
+
+    /**
+     * Method showing math equations and evaluating the user input.
+     * Counting how many errors has been made
+     */
+    private fun showMathEquationsAndProcessInput(interruptionStartDelay: Long, interruptionLength: Long) {
+        showFlash(true)
+
+        // Reset errors before every interruption
+        errorCount = 0
+        wasEquationAnswered = null
+
+        val timer = Timer()
+
+        // Shows a new equation every 5 seconds
+        Timer().schedule(interruptionStartDelay) {
+            showFlash(false)
+            setTextVisible(true)
+
+            timer.scheduleAtFixedRate(
+                object : TimerTask() {
+                    override fun run() {
+
+                        // before every new equation, evaluate whether the input of the user was correct
+                        evaluateUserInput()
+                        showEquation(equationList[equationIndex % equationList.count()])
+                        equationIndex++
+
+                        wasEquationAnswered = false
+
+                    }
+                }, 10, 5000
+            )
+
+        }
+
+        // Task is done, send confirmation to backend, cancel previous Timer
+        Timer().schedule(interruptionLength) {
+            timer.cancel()
+
+            evaluateUserInput()
+
+            val time = Timestamp(System.currentTimeMillis())
+            val jsonObj = JSONObject()
+            jsonObj.put("time", time.toString())
+            jsonObj.put("errorCountInterruption", this@ArithmeticActivity.errorCount)
+
+            //this@ArithmeticActivity.sendBackEndMessage(jsonObj, "web client")
+            this@ArithmeticActivity.sendBackEndMessage(jsonObj, "lens")
+
+
+
+            runOnUiThread {
+                this@ArithmeticActivity.tableRow?.visibility = View.INVISIBLE
+            }
+
+            setTextVisible(false)
+            showFlash(true)
+            Timer().schedule(300) {
+                showFlash(false)
+            }
+        }
+    }
 
     private fun endScenario() {
         super.dealWithScenarioEnd()
-    }
-
-    public override fun onCreate(savedInstanceState: Bundle?) {
-
-        super.onCreate(savedInstanceState)
-
-        this.initPreferences()
-        this.addClientListener(this.defaultClientListener)
-
-        // Set layout
-        setContentView(R.layout.activity_arith)
-
-        //TODO get device and set background
-        this.background = this@ArithmeticActivity.findViewById(R.id.background) as ImageView
-        this.equation = this@ArithmeticActivity.findViewById(R.id.arithTextView) as TextView
-        this.flash = this@ArithmeticActivity.findViewById(R.id.flashView) as ImageView
-
-        this.tableRow = this@ArithmeticActivity.findViewById(R.id.tableRow1) as TableRow
-
-        this.answerButton1 = this@ArithmeticActivity.findViewById(R.id.answerButton1) as Button
-        this.answerButton2 = this@ArithmeticActivity.findViewById(R.id.answerButton2) as Button
-        this.answerButton3 = this@ArithmeticActivity.findViewById(R.id.answerButton3) as Button
-        this.answerButton4 = this@ArithmeticActivity.findViewById(R.id.answerButton4) as Button
-
-        this.answerButton1?.setOnClickListener { buttonHandler(this.answerButton1!!) }
-        this.answerButton2?.setOnClickListener { buttonHandler(this.answerButton2!!) }
-        this.answerButton3?.setOnClickListener { buttonHandler(this.answerButton3!!) }
-        this.answerButton4?.setOnClickListener { buttonHandler(this.answerButton4!!) }
-
     }
 
     private fun buttonHandler(button: Button)
@@ -360,7 +445,8 @@ class ArithmeticActivity : AbstractServiceView() {
 
 
     //1-100
-    val equationsEasy = listOf<String>("13-4",
+    val equationsEasy = listOf<String>(
+        "13-4",
         "14+10",
         "7+3",
         "16-9",
@@ -369,6 +455,7 @@ class ArithmeticActivity : AbstractServiceView() {
         "15+5",
         "8-4",
         "10-6",
+        // First interruption ends
         "15-6",
         "12+5",
         "5-1",
